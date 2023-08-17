@@ -61,8 +61,10 @@ set(PROJECT_SOURCES
         widget.cpp
 )
 
+
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(GUI_Builder
+        SkinRessource.qrc
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )

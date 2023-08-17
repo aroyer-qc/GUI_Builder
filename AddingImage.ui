@@ -321,8 +321,8 @@ border-style: solid;
     <string>Browse...</string>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/Images/browse20.png</normaloff>:/Images/browse20.png</iconset>
+    <iconset resource="SkinRessource.qrc">
+     <normaloff>:/graphic/browse20.png</normaloff>:/graphic/browse20.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -344,7 +344,6 @@ border-style: solid;
     <font>
      <family>Ubuntu</family>
      <pointsize>22</pointsize>
-     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -722,7 +721,6 @@ border-style: solid;
    <property name="font">
     <font>
      <pointsize>-1</pointsize>
-     <weight>75</weight>
      <italic>false</italic>
      <bold>true</bold>
     </font>
@@ -802,8 +800,8 @@ border-style: solid;
     <string>Add</string>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/Images/plus20.png</normaloff>:/Images/plus20.png</iconset>
+    <iconset resource="SkinRessource.qrc">
+     <normaloff>:/graphic/plus20.png</normaloff>:/graphic/plus20.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -828,8 +826,8 @@ border-style: solid;
     <string>Close</string>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/Images/exit20.png</normaloff>:/Images/exit20.png</iconset>
+    <iconset resource="SkinRessource.qrc">
+     <normaloff>:/graphic/exit20.png</normaloff>:/graphic/exit20.png</iconset>
    </property>
   </widget>
   <widget class="QSlider" name="loadCheckerBoardSlider">
@@ -849,6 +847,8 @@ border-style: solid;
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="SkinRessource.qrc"/>
+ </resources>
  <connections/>
 </ui>

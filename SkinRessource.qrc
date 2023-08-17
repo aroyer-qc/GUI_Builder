@@ -1,12 +1,9 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
-    <qresource prefix="/gif">
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
         <file>graphic/loader.gif</file>
-    </qresource>
-    <qresource prefix="/Images">
-        <file>Ressource/down.png</file>
-        <file>Ressource/check-marks_check.png</file>
-        <file>Ressource/check-marks_uncheck.png</file>
+        <file>graphic/down.png</file>
+        <file>graphic/check-marks_check.png</file>
+        <file>graphic/check-marks_uncheck.png</file>
         <file>graphic/argb20.png</file>
         <file>graphic/bezel.png</file>
         <file>graphic/browse20.png</file>

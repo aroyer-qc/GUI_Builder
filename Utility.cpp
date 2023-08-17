@@ -85,7 +85,7 @@ extern QPoint CenterPoint(QSize Size, QSize MaxSize)
 void CheckerPattern(QGraphicsScene* pScene)
 {
     QBrush Brush;
-    QPixmap checker(":/Images/checker.png");
+    QPixmap checker(":/graphic/checker.png");
 
     Brush.setTexture(checker);
     pScene->setBackgroundBrush(Brush);

@@ -77,7 +77,7 @@ void MainWindow::on_actionSave_Skin_triggered()
         {
             QMessageBox msgBox;
             msgBox.setText("<font size=\"5\">" + tr("File already up to date</font>"));
-            msgBox.setIconPixmap(QPixmap(":/Images/Warning64.png"));
+            msgBox.setIconPixmap(QPixmap(":/graphic/Warning64.png"));
             msgBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
             msgBox.exec();
         }
@@ -86,7 +86,7 @@ void MainWindow::on_actionSave_Skin_triggered()
     {
         QMessageBox msgBox;
         msgBox.setText("<font size=\"5\">" + tr("Nothing to save</font>"));
-        msgBox.setIconPixmap(QPixmap(":/Images/Warning64.png"));
+        msgBox.setIconPixmap(QPixmap(":/graphic/Warning64.png"));
         msgBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
         msgBox.exec();
     }
@@ -125,7 +125,7 @@ bool MainWindow::SaveSkinAndClearData()
     {
         QMessageBox msgBox;
         msgBox.setText("<font size=\"5\">" + tr("Current skin not saved<br>Do you want to save?</font>"));
-        msgBox.setIconPixmap(QPixmap(":/Images/question_mark64.png"));
+        msgBox.setIconPixmap(QPixmap(":/graphic/question_mark64.png"));
         msgBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);

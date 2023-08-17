@@ -26,8 +26,8 @@
    <string>Skin Builder</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>graphic/InterfaceBuilder.png</normaloff>graphic/InterfaceBuilder.png</iconset>
+   <iconset resource="SkinRessource.qrc">
+    <normaloff>:/graphic/InterfaceBuilder.png</normaloff>:/graphic/InterfaceBuilder.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -281,8 +281,8 @@
        <string>Add</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/plus20.png</normaloff>:/Images/plus20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/plus20.png</normaloff>:/graphic/plus20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -307,8 +307,8 @@
        <string>Remove</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/remove20.png</normaloff>:/Images/remove20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/remove20.png</normaloff>:/graphic/remove20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -333,8 +333,8 @@
        <string>Up</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Up_Arrow20.png</normaloff>:/Images/Up_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Up_Arrow20.png</normaloff>:/graphic/Up_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -359,8 +359,8 @@
        <string>Down</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Down_Arrow20.png</normaloff>:/Images/Down_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Down_Arrow20.png</normaloff>:/graphic/Down_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -2146,6 +2146,8 @@ font-size: 12px;
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="SkinRessource.qrc"/>
+ </resources>
  <connections/>
 </ui>
