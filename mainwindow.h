@@ -48,9 +48,9 @@ class MainWindow : public QMainWindow
         QVector<sAudioInfo>*    getAudioInfoPtr()                       { return &m_AudioInfo; }
         QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
         eEndianess*             getEndianPtr()                          { return &m_Endian; }
-        static QScreen*         getPrimaryScreen()                      { return m_Primary; }
+        static QScreen*         getPrimaryScreen()                      { return m_pPrimary; }
 
-        static void             setPrimaryScreen(QScreen* pScreen)      { m_Primary = pScreen; }
+        static void             setPrimaryScreen(QScreen* pScreen)      { m_pPrimary = pScreen; }
 
 
     signals:
@@ -110,10 +110,10 @@ class MainWindow : public QMainWindow
         void on_ButtonDownAudio_clicked();
         void on_ButtonAddAudio_clicked();
         void on_ButtonRemoveAudio_clicked();
-        //void on_TableAudio_cellClicked(int row, int column);
-        //void on_TableAudio_cellDoubleClicked(int row, int column);
-        //void on_TableAudio_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
-        //void on_TableAudio_itemChanged(QTableWidgetItem *item);
+        void on_TableAudio_cellClicked(int row, int column);
+        void on_TableAudio_cellDoubleClicked(int row, int column);
+        void on_TableAudio_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+        void on_TableAudio_itemChanged(QTableWidgetItem *item);
         
         // Slot for Converter
         void on_ButtonBrowse_clicked();
@@ -176,7 +176,7 @@ class MainWindow : public QMainWindow
         void     ResetAudioGUI           ();
         void     UpdateAudioGUI          (int row);
         void     AdjustTabAudio          (QSize Offset, QRect ViewRect);
-        void     InsertNewRowInTableAudio(int row, QString File, uint16_t SamplingRate, time_t Duration, QString Size);
+        void     InsertNewRowInTableAudio(int row, QString File, QString SamplingRate, QString Duration, QString Size);
 
         // Function for Converter
         void     InitConverter           ();
@@ -192,7 +192,7 @@ class MainWindow : public QMainWindow
 
         Ui::MainWindow*         ui;
         eEndianess              m_Endian;
-        static QScreen*         m_Primary;
+        static QScreen*         m_pPrimary;
 
         // Layout info
         QSize                   m_DisplaySize;
@@ -246,6 +246,8 @@ class MainWindow : public QMainWindow
         // Variable for Audio Tab
         QVector<sAudioInfo>     m_AudioInfo;                    // Array of audio structure information
         QVector<uint8_t>        m_RawAudio;                     // Raw audio data
+        ComboBoxDelegate*       m_pAudioComboBoxDelegate;
+        SpinBoxDelegate*        m_pAudioSpinBoxDelegate;
 
         // Variable for Converter Tab
         QGraphicsScene          m_SceneConverter;

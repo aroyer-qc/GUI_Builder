@@ -21,7 +21,6 @@
 #include <QDir>
 #include "AddingImage.h"
 #include "ui_AddingImage.h"
-#include "mainwindow.h"
 #include "Utility.h"
 
 // ************************************************************************************************

@@ -24,6 +24,8 @@
 #include "setEndianess.h"
 #include "Utility.h"
 
+QScreen* MainWindow::m_pPrimary;
+
 // ************************************************************************************************
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -32,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     ui->setupUi(this);
-   // setStyleSheet("background-image: url(:/Images/Marble.jpg);");
+    setStyleSheet("background-image: url(:/graphic/Marble.jpg);");
     statusBar()->setSizeGripEnabled(false);                                     // Remove the hand grip
 
     m_pInUseCode = new QVector<uint8_t>;
@@ -47,6 +49,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_pFontComboBoxDelegate = new ComboBoxDelegate;
     ui->TableFont->setItemDelegateForColumn(1, m_pFontComboBoxDelegate);
+
+    // Not sure i need this
+    m_pAudioComboBoxDelegate = new ComboBoxDelegate;
+    ui->TableAudio->setItemDelegateForColumn(1, m_pAudioComboBoxDelegate);
+
+    m_pAudioSpinBoxDelegate = new SpinBoxDelegate(m_pInUseCode);
+    ui->TableAudio->setItemDelegateForColumn(2, m_pAudioSpinBoxDelegate);
+
 
     m_pImage          = nullptr;
     m_pProcessedImage = nullptr;

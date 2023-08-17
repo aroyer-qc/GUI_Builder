@@ -69,6 +69,7 @@ typedef enum Caller_e
     CALLER_IMAGE = 0,
     CALLER_BUTTON,
     CALLER_ICON,
+    CALLER_AUDIO,           // Not sure if it is good !
 } eCaller;
 
 typedef enum Scale_e
@@ -119,8 +120,11 @@ typedef enum WidgetType_e
     TYPE_FONT,
     TYPE_GLYPH,
     TYPE_ICON,
-   TYPE_IMAGE,
-   TYPE_AUDIO,
+    TYPE_IMAGE,
+    TYPE_AUDIO_WAV,
+    TYPE_AUDIO_MP3,
+    TYPE_AUDIO_FLAC,
+    TYPE_AUDIO_RAW,
 } eWidgetType;
 
 #pragma pack (push)

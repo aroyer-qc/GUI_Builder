@@ -21,7 +21,6 @@
 #include <QDir>
 #include "AddingAudio.h"
 #include "ui_AddingAudio.h"
-#include "mainwindow.h"
 #include "Utility.h"
 
 // ************************************************************************************************
@@ -46,10 +45,16 @@ AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* pare
     ui->ComboBoxDirectory->blockSignals(false);
 
     ui->comboBoxAudioMode->blockSignals(true);
-    ui->comboBoxAudioMode->setCurrentIndex(FORMAT_RGB565);
+    ui->comboBoxAudioMode->setCurrentIndex(0); /// ???
     ui->comboBoxAudioMode->blockSignals(false);
 
     ui->comboBoxSamplingRate->setCurrentIndex(SCALE_FIT);
+
+    this->connect( ui->pushButtonAdd, SIGNAL(Clicked()),
+                  this, SLOT(on_pushButtonAdd_clicked()));
+
+    this->connect( ui->pushButtonClose, SIGNAL(Clicked()),
+                  this, SLOT(on_pushButtonClose_clicked()));
 
     //ui->LabelNote->setVisible(false);
 
@@ -62,8 +67,8 @@ AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* pare
 
 AddingAudio::~AddingAudio()
 {
-//    if(m_pImage          != NULL)       delete m_pImage;
-//    if(m_pProcessedImage != NULL)       delete m_pProcessedImage;
+//    if(m_pAudio          != NULL)       delete m_pAudio;
+//    if(m_pProcessedAudio != NULL)       delete m_pProcessedAudio;
 
     delete ui;
 }
@@ -82,14 +87,14 @@ void AddingAudio::on_pushButtonAdd_clicked()
 
 void AddingAudio::on_pushButtonClose_clicked()
 {
-    CloseAddAudio();
+   // CloseAddAudio();
 }
 
 // ************************************************************************************************
 
 void AddingAudio::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_currentDir.absolutePath());
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Audio Files"), m_currentDir.absolutePath());
 
     if (!directory.isEmpty())
     {
@@ -228,7 +233,7 @@ void AddingAudio::ReloadingAudio()
     int row = ui->TableFilesFound->currentRow();
     if(row >= 0)
     {
-    //    LoadingImage(row, RELOAD_FORMAT);
+    //    LoadingAudio(row, RELOAD_AUDIO);
     }
 }
 

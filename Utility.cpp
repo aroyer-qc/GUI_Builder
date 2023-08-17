@@ -256,7 +256,7 @@ int getNextFreeNumber_Down(QVector<uint8_t>* pData, uint32_t Code)
 
 // ************************************************************************************************
 
-eWidgetType getTypeImageFromText(QString ID_CodeText)
+eWidgetType getWidgetTypeFromText(QString ID_CodeText)
 {
     eWidgetType Type;
 
@@ -266,6 +266,8 @@ eWidgetType getTypeImageFromText(QString ID_CodeText)
     if((ID_CodeText.at(0) == QChar('G')) && (ID_CodeText.at(1) == QChar('L'))) Type = TYPE_GLYPH;
     if((ID_CodeText.at(0) == QChar('I')) && (ID_CodeText.at(1) == QChar('C'))) Type = TYPE_ICON;
     if((ID_CodeText.at(0) == QChar('I')) && (ID_CodeText.at(1) == QChar('M'))) Type = TYPE_IMAGE;
+    if((ID_CodeText.at(0) == QChar('W')) && (ID_CodeText.at(1) == QChar('A'))) Type = TYPE_AUDIO_WAV;
+    if((ID_CodeText.at(0) == QChar('R')) && (ID_CodeText.at(1) == QChar('A'))) Type = TYPE_AUDIO_RAW;
 
     return Type;
 }

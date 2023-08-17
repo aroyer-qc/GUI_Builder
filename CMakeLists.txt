@@ -24,6 +24,7 @@ set(PROJECT_SOURCES
         AddingImage.cpp
         AddingImage.h
         AddingImage.ui
+        Audio.cpp
         ComboBoxDelegate.cpp
         ComboBoxDelegate.h
         compression.cpp

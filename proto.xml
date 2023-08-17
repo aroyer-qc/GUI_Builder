@@ -33,13 +33,13 @@
     <File>Warning.png</File>
   </Image>
   <Font>
-    <Family fontdescription="Arial Black,48,-1,5,87,0,0,0,0,0"/>
-    <Option>39</Option>
-    <Family fontdescription="DS-Digital,96,-1,5,75,0,0,0,0,0"/>
+    <Family fontdescription="Arial Black,48,-1,5,900,0,0,0,0,0,0,0,0,0,0,1"/>
+    <Option>55</Option>
+    <Family fontdescription="DS-Digital,96,-1,5,700,0,0,0,0,0,0,0,0,0,0,1"/>
     <Option>38</Option>
-    <Family fontdescription="DS-Digital,48,-1,5,75,0,0,0,0,0"/>
+    <Family fontdescription="DS-Digital,48,-1,5,700,0,0,0,0,0,0,0,0,0,0,1"/>
     <Option>38</Option>
-    <Family fontdescription="DS-Digital,36,-1,5,75,0,0,0,0,0"/>
+    <Family fontdescription="DS-Digital,36,-1,5,700,0,0,0,0,0,0,0,0,0,0,1"/>
     <Option>38</Option>
   </Font>
 </Skin>

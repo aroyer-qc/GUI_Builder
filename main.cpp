@@ -24,9 +24,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
+    MainWindow::setPrimaryScreen(a.primaryScreen());
     MainWindow w;
-    w.setPrimaryScreen(a.primaryScreen());
     w.show();
 
     return a.exec();

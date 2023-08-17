@@ -106,7 +106,7 @@
      <widget class="QTableWidget" name="TableImage">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>40</x>
         <y>20</y>
         <width>681</width>
         <height>461</height>
@@ -218,7 +218,6 @@
       </property>
       <property name="font">
        <font>
-        <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -667,7 +666,6 @@
       </property>
       <property name="font">
        <font>
-        <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -783,7 +781,6 @@
       </property>
       <property name="font">
        <font>
-        <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -965,6 +962,251 @@ border-width: 2px;</string>
         <width>761</width>
         <height>291</height>
        </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Audio">
+     <attribute name="title">
+      <string>Audio</string>
+     </attribute>
+     <widget class="QPushButton" name="ButtonUpAudio">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>490</y>
+        <width>81</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Up</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/Images/Up_Arrow20.png</normaloff>:/Images/Up_Arrow20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonDownAudio">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>490</y>
+        <width>81</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Down</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/Images/Down_Arrow20.png</normaloff>:/Images/Down_Arrow20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonRemoveAudio">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>490</y>
+        <width>91</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Remove</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/Images/remove20.png</normaloff>:/Images/remove20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonAddAudio">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>490</y>
+        <width>91</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Add</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/Images/plus20.png</normaloff>:/Images/plus20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="TableAudio">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>681</width>
+        <height>461</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="lineWidth">
+       <number>-1</number>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="sortingEnabled">
+       <bool>false</bool>
+      </property>
+      <property name="columnCount">
+       <number>4</number>
+      </property>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>40</number>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>120</number>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderHighlightSections">
+       <bool>true</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>Filename</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Code Type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Code ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Size</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QLabel" name="LabelStaticFilenameAudio">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>380</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Original filename:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelFilenameAudio">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>410</y>
+        <width>491</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Empty</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticAudio">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>350</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Audio info:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticSizeAudio">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>440</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Size:</string>
       </property>
      </widget>
     </widget>
@@ -1317,7 +1559,6 @@ font-size: 12px;
       </property>
       <property name="font">
        <font>
-        <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -1630,7 +1871,6 @@ font-size: 12px;
       </property>
       <property name="font">
        <font>
-        <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -1879,7 +2119,6 @@ font-size: 12px;
    <property name="font">
     <font>
      <family>Ubuntu</family>
-     <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>

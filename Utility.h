@@ -46,7 +46,7 @@ void                    setStateID_Code                     (QVector<uint8_t>* p
 void                    clearStateID_Code                   (QVector<uint8_t>* pData, class ID_Code ID);
 int                     getNextFreeNumber_Up                (QVector<uint8_t>* pData, uint32_t ID_Code);
 int                     getNextFreeNumber_Down              (QVector<uint8_t>* pData, uint32_t ID_Code);
-eWidgetType             getTypeImageFromText                (QString ID_CodeText);
+eWidgetType             getWidgetTypeFromText               (QString ID_CodeText);
 int                     getPointSizeFontFromText            (QString ID_CodeText);
 
 // ---------- Utility to add other type to uint8_t Vector ----------
