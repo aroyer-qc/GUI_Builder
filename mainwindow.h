@@ -48,6 +48,10 @@ class MainWindow : public QMainWindow
         QVector<sAudioInfo>*    getAudioInfoPtr()                       { return &m_AudioInfo; }
         QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
         eEndianess*             getEndianPtr()                          { return &m_Endian; }
+        static QScreen*         getPrimaryScreen()                      { return m_Primary; }
+
+        static void             setPrimaryScreen(QScreen* pScreen)      { m_Primary = pScreen; }
+
 
     signals:
 
@@ -188,6 +192,7 @@ class MainWindow : public QMainWindow
 
         Ui::MainWindow*         ui;
         eEndianess              m_Endian;
+        static QScreen*         m_Primary;
 
         // Layout info
         QSize                   m_DisplaySize;

@@ -123,6 +123,7 @@ typedef enum WidgetType_e
    TYPE_AUDIO,
 } eWidgetType;
 
+#pragma pack (push)
 #pragma pack (1)
 typedef struct ImageInfo_s
 {
@@ -135,9 +136,7 @@ typedef struct ImageInfo_s
     QString         Filename;
     QString         Description;
 } sImageInfo;
-#pragma pack (4)
 
-#pragma pack (1)
 typedef struct AudioInfo_s
 {
     uint32_t        ID;
@@ -148,7 +147,7 @@ typedef struct AudioInfo_s
     QString         Filename;
     QString         Description;
 } sAudioInfo;
-#pragma pack (4)
+#pragma pack (pop)
 
 // Struct for data in skin file.
 typedef struct SkinInfoData_s
@@ -156,6 +155,7 @@ typedef struct SkinInfoData_s
         uint32_t        ID;
         uint32_t        DataSize;
         uint8_t         Compression;
+#pragma pack (push)
     #pragma pack (1)
     union
     {
@@ -175,7 +175,7 @@ typedef struct SkinInfoData_s
             uint8_t         LabelCount;
         };
     }u;
-    #pragma pack (4)
+#pragma pack (pop)
 } sSkinInfoData;
 
 

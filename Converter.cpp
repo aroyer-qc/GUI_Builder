@@ -21,6 +21,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Utility.h"
+#include <QRegExp>
 
 
 // ************************************************************************************************

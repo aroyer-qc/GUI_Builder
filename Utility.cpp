@@ -18,6 +18,7 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "mainwindow.h"
 #include "Utility.h"
 #include "qxmlputget.h"
 
@@ -145,12 +146,11 @@ void setWidgetSize(QWidget* pWidget, int Width, int Height)
 
 QPoint SelectScreenAndCenter(QSize Size)
 {
-    QGuiApplication Desktop;
+    QScreen* pPrimary = MainWindow::getPrimaryScreen();
 
-    QScreen* primary = Desktop.primaryScreen();
-    int screenWidth  = primary->geometry().width();
-    int screenHeight = primary->geometry().height();
-    QRect Resolution = primary->geometry();
+    int screenWidth  = pPrimary->geometry().width();
+    int screenHeight = pPrimary->geometry().height();
+    QRect Resolution = pPrimary->geometry();
     Resolution.setX(Resolution.x() + ((screenWidth / 2)  - (Size.width()  / 2)));
     Resolution.setY(Resolution.y() + ((screenHeight / 2) - (Size.height() / 2)));
     return(QPoint(Resolution.x(), Resolution.y()));
