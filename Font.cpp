@@ -245,6 +245,8 @@ void MainWindow::on_checkBoxAlphaFont_clicked(bool checked)
     setSkinHasUnsavedData(true);
 }
 
+// ************************************************************************************************
+
 void MainWindow::on_checkBoxNumericFont_clicked(bool checked)
 {
     int row = ui->TableFont->currentRow();
@@ -264,6 +266,8 @@ void MainWindow::on_checkBoxNumericFont_clicked(bool checked)
     setSkinHasUnsavedData(true);
 }
 
+// ************************************************************************************************
+
 void MainWindow::on_checkBoxSymbolFont_clicked(bool checked)
 {
     int row = ui->TableFont->currentRow();
@@ -274,6 +278,8 @@ void MainWindow::on_checkBoxSymbolFont_clicked(bool checked)
     setSkinHasUnsavedData(true);
 }
 
+// ************************************************************************************************
+
 void MainWindow::on_checkBoxExtraSymbolFont_clicked(bool checked)
 {
     int row = ui->TableFont->currentRow();
@@ -283,6 +289,8 @@ void MainWindow::on_checkBoxExtraSymbolFont_clicked(bool checked)
     LoadFont(row);
     setSkinHasUnsavedData(true);
 }
+
+// ************************************************************************************************
 
 void MainWindow::on_checkBoxLatinFont_clicked(bool checked)
 {
@@ -412,7 +420,7 @@ void MainWindow::LoadFont(int row)
 {
     QGraphicsTextItem* pItem;
     int Height = 0;
-    int HeightOff;
+   // int HeightOff;
 
     Q_UNUSED(row);
 
@@ -427,7 +435,7 @@ void MainWindow::LoadFont(int row)
         }
 
         QFontMetrics FontMetric(m_Font[row]);
-        HeightOff = FontMetric.height();
+       // HeightOff = FontMetric.height();
 
         // Added image to the scene
         if(ui->checkBoxAlphaFont->isChecked() == true)
@@ -438,7 +446,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("The quick brown fox jumps over the lazy dog");
             m_SceneFont.addItem(pItem);
-            Height += HeightOff;
+          //  Height += HeightOff;
         }
 
         if(ui->checkBoxNumericFont->isChecked() == true)
@@ -478,7 +486,7 @@ void MainWindow::LoadFont(int row)
                 pItem->setPlainText("0123456789");
                 m_SceneFont.addItem(pItem);
             }
-            Height += HeightOff;
+          //  Height += HeightOff;
         }
 
         if(ui->checkBoxSymbolFont->isChecked() == true)
@@ -489,7 +497,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("!\"#$%'()*+,-./:;<=>?@[\\]^_`{|}");
             m_SceneFont.addItem(pItem);
-            Height += HeightOff;
+         //   Height += HeightOff;
         }
 
         if(ui->checkBoxExtraSymbolFont->isChecked() == true)
@@ -500,7 +508,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("°©®±");
             m_SceneFont.addItem(pItem);
-            Height += HeightOff;
+          //  Height += HeightOff;
         }
 
         if(ui->checkBoxLatinFont->isChecked() == true)
@@ -511,7 +519,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ\nàáâãäåæèéêëìíîïðñòóôõöøùúûüýÞÿ");
             m_SceneFont.addItem(pItem);
-            Height += HeightOff;
+          //  Height += HeightOff;
         }
 
         ui->LabelFontName->setText(m_Font[row].family());
@@ -557,11 +565,21 @@ void MainWindow::InsertNewRowInTableFont(int row, QString Name, QString Size, QS
     QTableWidgetItem *FontSizeItem = new QTableWidgetItem(Size);
     QTableWidgetItem *FontPropertiesItem  = new QTableWidgetItem(Properties);
     FontNameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    // This will put the row name in red since we did not find the Font installed in the system
+    if(QFont(Name).exactMatch() == false)
+    {
+        FontNameItem->setForeground(QColor(255,0,0));
+        m_IsAllFontValide = false;
+    }
+
     FontSizeItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
     FontPropertiesItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     ui->TableFont->setItem(row, 0, FontNameItem);
     ui->TableFont->setItem(row, 1, FontSizeItem);
     ui->TableFont->setItem(row, 2, FontPropertiesItem);
+
+    checkValidFont();   // to update StatusBar
 }
 
 // ************************************************************************************************
@@ -666,3 +684,12 @@ void MainWindow::DisplayExample(int row)
     m_SceneExample.addPixmap(*pPix);
 }
 
+// ************************************************************************************************
+void MainWindow::checkValidFont()
+{
+    if(m_IsAllFontValide == false)
+    {
+        m_SpecialNote = "One or more font are not available on the system.";
+        UpdateStatusBar();
+    }
+}

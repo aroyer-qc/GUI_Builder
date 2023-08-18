@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Xml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Xml)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core5Compat REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -88,6 +89,8 @@ endif()
 
 target_link_libraries(GUI_Builder PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml)
 target_link_libraries(GUI_Builder PUBLIC Qt6::Core5Compat)
+target_link_libraries(GUI_Builder PRIVATE Qt6::Multimedia)
+
 
 set_target_properties(GUI_Builder PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

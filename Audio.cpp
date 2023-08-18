@@ -359,7 +359,16 @@ void MainWindow::InitAudio()
   //  m_pAudioComboBoxDelegate->addItems("IC - Icon");
   //  m_pAudioComboBoxDelegate->addItems("IM - Image");
 
-    ResetImageGUI();
+    // controls is the ui stuff
+   // connect(controls, SIGNAL(play()), m_Player, SLOT(play()));
+   // connect(controls, SIGNAL(pause()), m_Player, SLOT(pause()));
+   // connect(controls, SIGNAL(stop()), m_Player, SLOT(stop()));
+   // connect(controls, SIGNAL(changeVolume(int)), m_Player, SLOT(setVolume(int)));
+
+    // for the slot.. use
+    //controls->setVolume(m_Player->volume());
+
+    ResetAudioGUI();
 }
 
 // ************************************************************************************************

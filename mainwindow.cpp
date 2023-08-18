@@ -63,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pStatusLabel    = nullptr;
     m_pPixmapItem     = nullptr;
 
+    // Make sure there is no special note to add to Status bar.
+    m_SpecialNote.clear();
+
     m_IsNeedCompleteFileOpen = false;
     m_IsNeedToClearDataAfterSave = false;
     m_IsNeedToCloseAfterSave = false;
@@ -108,21 +111,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::ClearAllData()
 {
+
+    m_SpecialNote.clear();      // Make sure there is no special note to add to Status bar.
     m_SkinSize = 0;
     m_SkinName = "none";
     m_IsSkinSaveAs = true;
     m_IsSkinHasUnsavedData = false;
     m_IsWarningDisplayed = true;
-    m_ImageInfo.clear();    // Remove all image info structure
-    m_RawImage.clear();     // Remove all raw image data
-    m_Font.clear();         // Remove all font info structure
-    m_SamplingFont.clear(); // Remove all Sampling info structure
+    m_ImageInfo.clear();        // Remove all image info structure
+    m_RawImage.clear();         // Remove all raw image data
+    m_Font.clear();             // Remove all font info structure
+    m_SamplingFont.clear();     // Remove all Sampling info structure
 
-    //m_RawLabel.clear();     // Remove all Label
-    //m_WidgetIndex.clear();  // remove all widget index
-    //m_Widget.clear();       // remove all widget
+    //m_RawLabel.clear();       // Remove all Label
+    //m_WidgetIndex.clear();    // remove all widget index
+    //m_Widget.clear();         // remove all widget
 
-    m_pStatusLabel->setText(QString("       Status :    Skin name : none       Skin size : 0 byte "));
+    UpdateStatusBar();
 }
 
 // ************************************************************************************************
@@ -131,7 +136,6 @@ void MainWindow::ResetAllSkinTab()
 {
     InitImage();            // Reset tab Image
     InitFont();
-
 }
 
 // ************************************************************************************************
@@ -234,10 +238,11 @@ void MainWindow::SetEndianess(eEndianess Endian)
 
 void MainWindow::UpdateStatusBar()
 {
-    m_pStatusLabel->setText(QString("       Status :    Skin name : %1       Skin size : %2 byte%3")
-                            .arg(m_SkinName)
+    m_pStatusLabel->setText(QString("&nbsp;&nbsp; Status :&nbsp;&nbsp;%1&nbsp;&nbsp;&nbsp;&nbsp;%2 byte%3 &nbsp;&nbsp;&nbsp;&nbsp;<font color=\"red\">%4")
+                            .arg("Skin size :" + m_SkinName)
                             .arg(m_SkinSize)
-                            .arg(((m_SkinSize) ? 's' : ' ')));
+                            .arg(((m_SkinSize > 1) ? 's' : ' '))
+                            .arg( m_SpecialNote.isEmpty() ? "" : "Note: " + m_SpecialNote));
 }
 
 // ************************************************************************************************
@@ -269,3 +274,21 @@ void MainWindow::closeEvent(QCloseEvent *bar)
 }
 
 // ************************************************************************************************
+
+void MainWindow::on_TabFunctionSelect_tabBarClicked(int index)
+{
+    // Clear special note.
+    m_SpecialNote.clear();
+
+    if(index == 1)  // Font tab
+    {
+        checkValidFont();
+    }
+    else
+    {
+        UpdateStatusBar();
+    }
+}
+
+// ************************************************************************************************
+

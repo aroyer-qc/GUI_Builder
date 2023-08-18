@@ -36,6 +36,161 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+font: bold &quot;Ubuntu&quot;;
+font-size: 12px;
+color: lightgray;
+}
+
+QComboBox{
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
+color: white;
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 7px;
+padding: 3px;
+font: bold &quot;Ubuntu&quot;;
+font-size: 12px;
+padding-left: 5px;
+padding-right: 5px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+	image: url(:/Images/down.png);
+/*    border-left-width: 1px; */
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QPushButton {
+color: white;
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 7;
+padding: 3px;
+font: bold &quot;Ubuntu&quot;;
+font-size: 12px;
+padding-left: 5px;
+padding-right: 5px;
+}
+QScrollBar:horizontal {
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 4px;
+background: lightgray;
+height: 15px;
+margin: 0px 20px 0 20px;
+}
+
+QScrollBar::handle:horizontal {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);;
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 4px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: 2px solid grey;
+    background: #32CC99;
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 2px solid grey;
+    background: #32CC99;
+    width: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+ QScrollBar::left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
+     border-color: solid grey;
+	 border-radius: 4px;
+     border-width: 2px;
+     border-height: 2px;
+     background: white;
+ }
+
+ QScrollBar:vertical {
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+background: lightgray;
+width: 15px;
+margin: 22px 0 22px 0;
+ }
+
+QScrollBar::handle:vertical {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);;
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 4px;
+}
+
+ QScrollBar::add-line:vertical {
+     border: 2px solid grey;
+     background: #68F;
+     height: 20px;
+     subcontrol-position: bottom;
+     subcontrol-origin: margin;
+ }
+
+ QScrollBar::sub-line:vertical {
+     border: 2px solid grey;
+     background: #32CC99;
+     height: 20px;
+     subcontrol-position: top;
+     subcontrol-origin: margin;
+ }
+ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+     border-color: solid grey;
+	 border-radius: 4px;
+     border-width: 2px;
+     border-height: 2px;
+     background: white;
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+     background: none;
+ }
+
+QTableWidget { 
+background-color: lightgray;
+selection-background-color: #778EB8;
+selection-color: white;
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+border-radius: 7px;
+font: bold &quot;Ubuntu&quot;;
+font-size: 12px;
+}
+
+QHeaderView::section {			/* this is for the header in the QTableWidget*/
+background-color: #646464;
+color: lightgray;
+/*padding: 2px;*/
+font: bold &quot;Ubuntu&quot;;
+font-size: 13px;
+border-width: 1px;
+border-color: lightgray;
+border-style: solid;
+/*border-radius: 1px;*/
+}
+</string>
+   </property>
    <widget class="QTabWidget" name="TabFunctionSelect">
     <property name="geometry">
      <rect>
@@ -58,7 +213,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="iconSize">
      <size>
@@ -106,7 +261,7 @@
      <widget class="QTableWidget" name="TableImage">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>20</x>
         <y>20</y>
         <width>681</width>
         <height>461</height>
@@ -218,6 +373,7 @@
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -541,8 +697,8 @@
        <string>Add</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/plus20.png</normaloff>:/Images/plus20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/plus20.png</normaloff>:/graphic/plus20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -567,8 +723,8 @@
        <string>Remove</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/remove20.png</normaloff>:/Images/remove20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/remove20.png</normaloff>:/graphic/remove20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -593,8 +749,8 @@
        <string>Up</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Up_Arrow20.png</normaloff>:/Images/Up_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Up_Arrow20.png</normaloff>:/graphic/Up_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -619,8 +775,8 @@
        <string>Down</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Down_Arrow20.png</normaloff>:/Images/Down_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Down_Arrow20.png</normaloff>:/graphic/Down_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -666,6 +822,7 @@
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -781,6 +938,7 @@
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -985,8 +1143,8 @@ border-width: 2px;</string>
        <string>Up</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Up_Arrow20.png</normaloff>:/Images/Up_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Up_Arrow20.png</normaloff>:/graphic/Up_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -1011,8 +1169,8 @@ border-width: 2px;</string>
        <string>Down</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/Down_Arrow20.png</normaloff>:/Images/Down_Arrow20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/Down_Arrow20.png</normaloff>:/graphic/Down_Arrow20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -1037,8 +1195,8 @@ border-width: 2px;</string>
        <string>Remove</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/remove20.png</normaloff>:/Images/remove20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/remove20.png</normaloff>:/graphic/remove20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -1063,8 +1221,8 @@ border-width: 2px;</string>
        <string>Add</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/plus20.png</normaloff>:/Images/plus20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/plus20.png</normaloff>:/graphic/plus20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -1188,12 +1346,26 @@ border-width: 2px;</string>
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
        <string>Audio info:</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_V_Image_2">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>10</y>
+        <width>20</width>
+        <height>511</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticSizeAudio">
@@ -1206,7 +1378,7 @@ border-width: 2px;</string>
        </rect>
       </property>
       <property name="text">
-       <string>Size:</string>
+       <string>Raw data size:</string>
       </property>
      </widget>
     </widget>
@@ -1480,8 +1652,8 @@ font-size: 12px;
         <string>RGB565</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/rgb20.png</normaloff>:/Images/rgb20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/rgb20.png</normaloff>:/graphic/rgb20.png</iconset>
        </property>
       </item>
       <item>
@@ -1489,8 +1661,8 @@ font-size: 12px;
         <string>ARGB8888</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/argb20.png</normaloff>:/Images/argb20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/argb20.png</normaloff>:/graphic/argb20.png</iconset>
        </property>
       </item>
       <item>
@@ -1498,8 +1670,8 @@ font-size: 12px;
         <string>File Data</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/file.png</normaloff>:/Images/file.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/file.png</normaloff>:/graphic/file.png</iconset>
        </property>
       </item>
      </widget>
@@ -1525,8 +1697,8 @@ font-size: 12px;
        <string>Generate source file</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>:/Images/convert20.png</normaloff>:/Images/convert20.png</iconset>
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/convert20.png</normaloff>:/graphic/convert20.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -1559,6 +1731,7 @@ font-size: 12px;
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -1746,8 +1919,8 @@ font-size: 12px;
         <string>None</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/none20.png</normaloff>:/Images/none20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/none20.png</normaloff>:/graphic/none20.png</iconset>
        </property>
       </item>
       <item>
@@ -1755,8 +1928,8 @@ font-size: 12px;
         <string>Scale to fit</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleFit20.png</normaloff>:/Images/ScaleFit20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/ScaleFit20.png</normaloff>:/graphic/ScaleFit20.png</iconset>
        </property>
       </item>
       <item>
@@ -1764,8 +1937,8 @@ font-size: 12px;
         <string>Scale to width</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleWidth20.png</normaloff>:/Images/ScaleWidth20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/ScaleWidth20.png</normaloff>:/graphic/ScaleWidth20.png</iconset>
        </property>
       </item>
       <item>
@@ -1773,8 +1946,8 @@ font-size: 12px;
         <string>Scale to height</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleHeight20.png</normaloff>:/Images/ScaleHeight20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/ScaleHeight20.png</normaloff>:/graphic/ScaleHeight20.png</iconset>
        </property>
       </item>
      </widget>
@@ -1871,6 +2044,7 @@ font-size: 12px;
       </property>
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <italic>false</italic>
         <bold>true</bold>
        </font>
@@ -1952,8 +2126,8 @@ font-size: 12px;
         <string>None</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/none20.png</normaloff>:/Images/none20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/none20.png</normaloff>:/graphic/none20.png</iconset>
        </property>
       </item>
       <item>
@@ -1961,8 +2135,8 @@ font-size: 12px;
         <string>RLE</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleFit20.png</normaloff>:/Images/ScaleFit20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/RLE.png</normaloff>:/graphic/RLE.png</iconset>
        </property>
       </item>
       <item>
@@ -1970,17 +2144,8 @@ font-size: 12px;
         <string>LZW</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleWidth20.png</normaloff>:/Images/ScaleWidth20.png</iconset>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Scale to height</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>:/Images/ScaleHeight20.png</normaloff>:/Images/ScaleHeight20.png</iconset>
+        <iconset resource="SkinRessource.qrc">
+         <normaloff>:/graphic/lzw.png</normaloff>:/graphic/lzw.png</iconset>
        </property>
       </item>
      </widget>
@@ -2000,7 +2165,7 @@ font-size: 12px;
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Rezise mode:</string>
+       <string>Compress mode:</string>
       </property>
      </widget>
      <widget class="Line" name="line_H_Converter_2">

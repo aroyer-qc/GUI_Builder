@@ -382,8 +382,8 @@ border-style: solid;
      <string>Mono</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>:/Images/mono.png</normaloff>:/Images/mono.png</iconset>
+     <iconset resource="SkinRessource.qrc">
+      <normaloff>:/graphic/mono.png</normaloff>:/graphic/mono.png</iconset>
     </property>
    </item>
    <item>
@@ -391,8 +391,8 @@ border-style: solid;
      <string>Stereo</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>:/Images/Stereo.png</normaloff>:/Images/Stereo.png</iconset>
+     <iconset resource="SkinRessource.qrc">
+      <normaloff>:/graphic/Stereo.png</normaloff>:/graphic/Stereo.png</iconset>
     </property>
    </item>
   </widget>

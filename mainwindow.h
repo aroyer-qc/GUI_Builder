@@ -24,6 +24,7 @@
 #include <QMainWindow>
 #include <QDir>
 #include <QtWidgets>
+#include <QMediaPlayer>
 #include "AddingImage.h"
 #include "AddingAudio.h"
 #include "progress.h"
@@ -139,7 +140,9 @@ class MainWindow : public QMainWindow
 
         void on_CheckerBoardSlider_sliderMoved(int position);
 
-   private:
+        void on_TabFunctionSelect_tabBarClicked(int index);
+
+    private:
 
         void     ClearAllData            ();
         void     ResetAllSkinTab         ();
@@ -170,6 +173,7 @@ class MainWindow : public QMainWindow
         void     InsertNewRowInTableFont (int row, QString Name, QString Size, QString Properties);
         void     CheckBoxActivation      (bool state);
         void     DisplayExample          (int row);
+        void     checkValidFont          ();
 
         // Function for Audio
         void     InitAudio               ();
@@ -194,6 +198,8 @@ class MainWindow : public QMainWindow
         eEndianess              m_Endian;
         static QScreen*         m_pPrimary;
 
+        QMediaPlayer*           m_Player;
+
         // Layout info
         QSize                   m_DisplaySize;
         QLabel*                 m_pStatusLabel;
@@ -202,6 +208,7 @@ class MainWindow : public QMainWindow
         QRect                   m_MainRect;
         QString                 m_SkinName;
         int                     m_SkinSize;
+        QString                 m_SpecialNote;
 
         QVector<uint8_t>*       m_pInUseCode;
 
@@ -242,6 +249,7 @@ class MainWindow : public QMainWindow
         QVector<QFont>          m_Font;
         QVector<uint8_t>        m_SamplingFont;
         ComboBoxDelegate*       m_pFontComboBoxDelegate;
+        bool                    m_IsAllFontValide;
 
         // Variable for Audio Tab
         QVector<sAudioInfo>     m_AudioInfo;                    // Array of audio structure information

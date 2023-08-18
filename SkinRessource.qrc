@@ -1,4 +1,4 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
     <qresource prefix="/">
         <file>graphic/loader.gif</file>
         <file>graphic/down.png</file>
@@ -32,5 +32,7 @@
         <file>graphic/stop.png</file>
         <file>graphic/Up_Arrow20.png</file>
         <file>graphic/Warning64.png</file>
+        <file>graphic/RLE.png</file>
+        <file>graphic/lzw.png</file>
     </qresource>
 </RCC>

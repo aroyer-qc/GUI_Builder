@@ -21,7 +21,7 @@
 #include "ui_mainwindow.h"
 #include "SkinOpen.h"
 #include "compression.h"
-#include "utility.h"
+#include "Utility.h"
 #include "qxmlputget.h"
 
 // ************************************************************************************************
@@ -36,8 +36,6 @@ void MainWindow::Open(QString File)
     connect(m_pSkinOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
     connect(m_pSkinOpen, SIGNAL(OpenDone()),                 this,        SLOT(on_OpenDone()));
     m_pSkinOpen->start();
-
-
 }
 
 // ************************************************************************************************
@@ -71,6 +69,7 @@ void MainWindow::on_OpenDone()
     m_SkinSize += m_RawImage.size();
 
     // Add each found item in the table
+    m_IsAllFontValide = true;
     Count = m_Font.count();
     for(int i = 0; i < Count; i++)
     {
@@ -137,7 +136,7 @@ void SkinOpen::run(void)
     // Process data
     m_NextBlockOfData = 0;                        // Not used at this point
     OpenImageInfo(&CompxData);                    // Open image info structure
-    DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to methos found in file
+    DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to method found in file
 
     // Close file and exit
     File.close();
