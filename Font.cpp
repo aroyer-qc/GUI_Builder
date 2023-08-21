@@ -420,7 +420,7 @@ void MainWindow::LoadFont(int row)
 {
     QGraphicsTextItem* pItem;
     int Height = 0;
-   // int HeightOff;
+    int HeightOff;
 
     Q_UNUSED(row);
 
@@ -435,7 +435,7 @@ void MainWindow::LoadFont(int row)
         }
 
         QFontMetrics FontMetric(m_Font[row]);
-       // HeightOff = FontMetric.height();
+        HeightOff = FontMetric.height();
 
         // Added image to the scene
         if(ui->checkBoxAlphaFont->isChecked() == true)
@@ -446,7 +446,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("The quick brown fox jumps over the lazy dog");
             m_SceneFont.addItem(pItem);
-          //  Height += HeightOff;
+            Height += HeightOff;
         }
 
         if(ui->checkBoxNumericFont->isChecked() == true)
@@ -486,7 +486,7 @@ void MainWindow::LoadFont(int row)
                 pItem->setPlainText("0123456789");
                 m_SceneFont.addItem(pItem);
             }
-          //  Height += HeightOff;
+            Height += HeightOff;
         }
 
         if(ui->checkBoxSymbolFont->isChecked() == true)
@@ -497,7 +497,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("!\"#$%'()*+,-./:;<=>?@[\\]^_`{|}");
             m_SceneFont.addItem(pItem);
-         //   Height += HeightOff;
+            Height += HeightOff;
         }
 
         if(ui->checkBoxExtraSymbolFont->isChecked() == true)
@@ -508,7 +508,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("°©®±");
             m_SceneFont.addItem(pItem);
-          //  Height += HeightOff;
+            Height += HeightOff;
         }
 
         if(ui->checkBoxLatinFont->isChecked() == true)
@@ -519,7 +519,7 @@ void MainWindow::LoadFont(int row)
             pItem->setPos(0,Height);
             pItem->setPlainText("ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ\nàáâãäåæèéêëìíîïðñòóôõöøùúûüýÞÿ");
             m_SceneFont.addItem(pItem);
-          //  Height += HeightOff;
+           // Height += HeightOff;          // if in future other if are added for any reason, then uncomment this line
         }
 
         ui->LabelFontName->setText(m_Font[row].family());

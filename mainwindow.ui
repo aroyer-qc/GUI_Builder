@@ -213,7 +213,7 @@ border-style: solid;
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <property name="iconSize">
      <size>
@@ -601,6 +601,9 @@ border-style: solid;
       </property>
       <property name="maximum">
        <number>255</number>
+      </property>
+      <property name="value">
+       <number>200</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -2211,6 +2214,9 @@ font-size: 12px;
       </property>
       <property name="maximum">
        <number>255</number>
+      </property>
+      <property name="value">
+       <number>200</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>

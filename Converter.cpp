@@ -321,6 +321,8 @@ void MainWindow::ClearSceneConverter()
     ui->graphicsViewConverter->setSceneRect(0, 0, m_DisplaySize.width(), m_DisplaySize.height());
     CheckerPattern(&m_SceneConverter);
     ui->graphicsViewConverter->setScene(&m_SceneConverter);
+    int position = ui->CheckerBoardSlider->value();  // Update checker board to default value of ui slider
+    ui->graphicsViewConverter->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
 }
 
 // ************************************************************************************************

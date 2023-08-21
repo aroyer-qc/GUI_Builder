@@ -247,8 +247,8 @@ void MainWindow::on_TableImage_itemChanged(QTableWidgetItem *item)
 
 void MainWindow::on_ImageCheckerBoardSlider_sliderMoved(int position)
 {
-   ui->graphicsViewImage->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
-   CheckerPattern(&m_SceneImage);
+    ui->graphicsViewImage->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
+    CheckerPattern(&m_SceneImage);
 }
 
 // ************************************************************************************************
@@ -357,6 +357,9 @@ void MainWindow::InitImage()
     m_pImageComboBoxDelegate->addItems("IM - Image");
 
     ResetImageGUI();
+
+    int position = ui->ImageCheckerBoardSlider->value();        // Update checker board to default value of ui slider
+    ui->graphicsViewImage->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
 }
 
 // ************************************************************************************************
@@ -475,6 +478,7 @@ void MainWindow::UpdateImageGUI(int row)
         QPoint Point = CenterPoint(m_ImageInfo[row].Size, m_DisplaySize);                                   // Calculate Center position for the image
         PixmapItem->setPos(Point);                                                                          // Then set it
     }
+
     UpdateStatusBar();
 }
 

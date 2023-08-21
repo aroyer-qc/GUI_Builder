@@ -529,10 +529,10 @@ void SavePathToXML(QString Path)
 {
     if(GetPathFromXML().compare(Path) != 0)
     {
-        QXmlPut xmlPut("SkinAssembler");
+        QXmlPut xmlPut("GUI_Builder");
 
         xmlPut.putString("PATH", Path);
-        xmlPut.save("SA_Path.xml");
+        xmlPut.save("GB_Path.xml");
     }
 }
 
@@ -543,7 +543,7 @@ QString GetPathFromXML()
     QString Path;
     QXmlGet xmlGet;
 
-    xmlGet.load("SA_Path.xml");
+    xmlGet.load("GB_Path.xml");
 
     if(xmlGet.find("PATH"))
     {
@@ -559,7 +559,7 @@ void SaveSkinPathToXML(QString Path)
 {
     if(GetPathFromXML().compare(Path) != 0)
     {
-        QXmlPut xmlPut("SkinAssembler");
+        QXmlPut xmlPut("GUI_Builder");
 
         xmlPut.putString("SkinPath", Path);
         xmlPut.save("SKN_Path.xml");
@@ -587,14 +587,14 @@ QString GetSkinPathFromXML()
 
 void SaveDisplaySizeToXML(QSize Size)
 {
-    QXmlPut xmlPut("SkinAssembler");
+    QXmlPut xmlPut("GUI_Builder");
 
     xmlPut.descend("SizeDisplay");
     xmlPut.putInt("width", Size.width());
     xmlPut.putInt("height", Size.height());
     xmlPut.rise();
 
-    xmlPut.save("SA_DisplaySize.xml");
+    xmlPut.save("GB_DisplaySize.xml");
 }
 
 // ************************************************************************************************
@@ -604,7 +604,7 @@ QSize GetDisplaySizeFromXML()
     QSize Size;
     QXmlGet xmlGet;
 
-    xmlGet.load("SA_DisplaySize.xml");
+    xmlGet.load("GB_DisplaySize.xml");
 
     if(xmlGet.findNext("SizeDisplay"))
     {
@@ -620,11 +620,11 @@ QSize GetDisplaySizeFromXML()
 
 void SaveEndianToXML(eEndianess Endian)
 {
-    QXmlPut xmlPut("SkinAssembler");
+    QXmlPut xmlPut("GUI_Builder");
 
     xmlPut.putString("Endian", (Endian == LITTLE_ENDIAN) ? "LITTLE" :"BIG");
 
-    xmlPut.save("SA_Endian.xml");
+    xmlPut.save("GB_Endian.xml");
 }
 
 // ************************************************************************************************
@@ -635,7 +635,7 @@ eEndianess GetEndianFromXML()
     QXmlGet xmlGet;
     QString EndianName;
 
-    xmlGet.load("SA_Endian.xml");
+    xmlGet.load("GB_Endian.xml");
 
     if(xmlGet.find("Endian"))
     {
@@ -700,12 +700,12 @@ void ID_Code::textToCode()
 {
     if(m_CodeText.length() >= 6)
     {
-        m_Code  =  (m_CodeText.at(0).toLatin1() - 'A') << 22;
-        m_Code |= ((m_CodeText.at(1).toLatin1() - 'A') << 16);
-        m_Code |= ((m_CodeText.at(2).toLatin1() - '0') << 12);
-        m_Code |= ((m_CodeText.at(3).toLatin1() - '0') << 8);
-        m_Code |= ((m_CodeText.at(4).toLatin1() - '0') << 4);
-        m_Code |= ((m_CodeText.at(5).toLatin1() - '0'));
+        m_Code  =  (uint32_t(m_CodeText.at(0).toLatin1()) - 'A') << 22;
+        m_Code |= ((uint32_t(m_CodeText.at(1).toLatin1()) - 'A') << 16);
+        m_Code |= ((uint32_t(m_CodeText.at(2).toLatin1()) - '0') << 12);
+        m_Code |= ((uint32_t(m_CodeText.at(3).toLatin1()) - '0') << 8);
+        m_Code |= ((uint32_t(m_CodeText.at(4).toLatin1()) - '0') << 4);
+        m_Code |= ((uint32_t(m_CodeText.at(5).toLatin1()) - '0'));
     }
     else
     {
