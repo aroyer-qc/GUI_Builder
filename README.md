@@ -1,4 +1,4 @@
-![alt text](https://github.com/aroyer-qc/GUI_Builder/blob/master/Ressource/Digini.png)
+![alt text](https://github.com/aroyer-qc/GUI_Builder/tree/main/Ressource/Digini.png)
 
 # GUI_Builder for Digini
 
@@ -22,6 +22,8 @@ Reach very often ratio of 4:1
 
 Note(s)
 
+Was move to cmake using Qt 6.5.2
+
 TODO in this application
     
     - Sound file
@@ -30,4 +32,4 @@ TODO in this application
       - Label and label list
       - Service
       
-![alt text](https://github.com/aroyer-qc/GUI_Builder/blob/master/chart.png)
+![alt text](https://github.com/aroyer-qc/GUI_Builder/tree/main/chart.png)
