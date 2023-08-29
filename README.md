@@ -21,7 +21,7 @@ Reach very often ratio of 4:1
 
 Note(s)
 
-#Was move to cmake using Qt 6.5.2
+**Was move to cmake using Qt 6.5.2**
 
 TODO in this application
     
