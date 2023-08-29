@@ -1,5 +1,4 @@
-![alt text](https://github.com/aroyer-qc/GUI_Builder/tree/main/Ressource/Digini.png)
-
+![alt text](https://github.com/aroyer-qc/GUI_Builder/blob/main/Ressource/Digini.png)
 # GUI_Builder for Digini
 
 Create skin file to use in project using touch screen for embedded system
@@ -32,4 +31,4 @@ TODO in this application
       - Label and label list
       - Service
       
-![alt text](https://github.com/aroyer-qc/GUI_Builder/tree/main/chart.png)
+![alt text](https://github.com/aroyer-qc/GUI_Builder/blob/main/chart.png)
