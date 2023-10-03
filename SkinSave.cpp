@@ -442,7 +442,7 @@ void SkinSave::CompressAllFont(QVector<uint8_t>* pCompxData)
 
 // ************************************************************************************************
 
-void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, char Char)
+void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, uint8_t Char)
 {
     m_OffsetFontHeader.append(pCompxData->size());          // Kept the offset for this character header
 
@@ -463,7 +463,7 @@ void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, char Char)
 
 // ************************************************************************************************
 
-void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, char Char)
+void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, uint8_t Char)
 {
     QPixmap* pPix = new QPixmap(SAMPLING_BOX_X_SIZE, SAMPLING_BOX_Y_SIZE);
     QPainter* pPainter = new QPainter(pPix);
@@ -480,15 +480,15 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, char Char)
     m_MaxX.append(0);
     m_MinY.append(SAMPLING_BOX_Y_SIZE);
     m_MaxY.append(0);
-    m_Width.append(m_pFontMetric->horizontalAdvance(Char));
-    m_LeftBearing.append(m_pFontMetric->leftBearing(Char));
-    m_RightBearing.append(m_pFontMetric->leftBearing(Char));
+    m_Width.append(m_pFontMetric->horizontalAdvance(QChar(Char)));
+    m_LeftBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
+    m_RightBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
 
     if(Char >= '0' && Char <='9')
     {
-        if(m_pFontMetric->horizontalAdvance(Char) > m_MaxX_FixedFont)
+        if(m_pFontMetric->horizontalAdvance(QChar(Char)) > m_MaxX_FixedFont)
         {
-            m_MaxX_FixedFont = m_pFontMetric->horizontalAdvance(Char);
+            m_MaxX_FixedFont = m_pFontMetric->horizontalAdvance(QChar(Char));
         }
     }
 
@@ -541,7 +541,7 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, char Char)
         Size = pCompxData->size() - Size;
         // Write raw compress datasize for this image
         Replace_uint16(pCompxData, OffsetFontHeader + 1, uint16_t(Size));
-        int8_t lb = m_pFontMetric->leftBearing(Char);
+        int8_t lb = m_pFontMetric->leftBearing(QChar(Char));
 
 
         if(lb < 0)
@@ -551,13 +551,13 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, char Char)
         }
 
         pCompxData->replace(OffsetFontHeader + 3, uint8_t(lb));
-        int8_t rb = m_pFontMetric->rightBearing(Char);
+        int8_t rb = m_pFontMetric->rightBearing(QChar(Char));
         pCompxData->replace(OffsetFontHeader + 4, uint8_t(rb));
         pCompxData->replace(OffsetFontHeader + 5,  (m_MaxX[m_TotalCharCount] - m_MinX[m_TotalCharCount]) + 1);
         pCompxData->replace(OffsetFontHeader + 6,  (m_MaxY[m_TotalCharCount] - m_MinY[m_TotalCharCount]) + 1);
         pCompxData->replace(OffsetFontHeader + 9, CompressionMethod);
     }
-    pCompxData->replace(OffsetFontHeader + 7,  m_pFontMetric->horizontalAdvance(Char));     // outside because space need width but has no data
+    pCompxData->replace(OffsetFontHeader + 7,  m_pFontMetric->horizontalAdvance(QChar(Char)));     // outside because space need width but has no data
 
     m_TotalCharCount++;
 }

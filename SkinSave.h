@@ -138,8 +138,8 @@ class SkinSave : public QThread
         bool        SaveFontInfo            (QVector<uint8_t>* pCompxData);
         bool        SaveImageInfo           (QVector<uint8_t>* pCompxData);
         void        CreateXML               (QString Path);
-        void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, char Char);
-        void        CompressFont            (QVector<uint8_t>* pCompxData, char Char);
+        void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
+        void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
 
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;
