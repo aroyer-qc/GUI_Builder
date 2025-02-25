@@ -46,7 +46,7 @@ border-radius: 3px;
 }
 
 QLabel {
-	color:	lightgray;
+	color:	black;
 	font: bold &quot;Ubuntu&quot;;
 	font-size: 12px;
 }
@@ -101,7 +101,8 @@ QLabel {
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 26pt &quot;Ubuntu&quot;;</string>
+    <string notr="true">font: 26pt &quot;Ubuntu&quot;;
+color: black;</string>
    </property>
    <property name="text">
     <string>File Operation</string>
@@ -177,6 +178,9 @@ QLabel {
      <height>16</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="text">
     <string>Stage 1</string>
    </property>
@@ -189,6 +193,9 @@ QLabel {
      <width>491</width>
      <height>16</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Stage 2</string>

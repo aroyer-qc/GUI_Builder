@@ -1,5 +1,5 @@
 /*
-   Copyright(c) 2020 Alain Royer.
+   Copyright(c) 2025 Alain Royer.
    Email: aroyer.qc@gmail.com
 
    Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -18,15 +18,15 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef __SKIN_SAVE_H__
-#define __SKIN_SAVE_H__
+#ifndef __BINARY_SAVE_H__
+#define __BINARY_SAVE_H__
 
 #include "mainwindow.h"
 #include <QThread>
 #include <QTimer>
 
 
-//                  Skin file description
+//                  Binary file description
 //
 //                   ______________________________________________
 //  Image block     |                                              |
@@ -116,13 +116,13 @@
 //
 //
 
-class SkinSave : public QThread
+class BinarySave : public QThread
 {
     Q_OBJECT
 
     public:
-        explicit    SkinSave                (QString SkinPathAndFileName, QObject* parent = 0);
-                    ~SkinSave               ();
+        explicit    BinarySave                (QString BinaryPathAndFileName, QObject* parent = 0);
+                    ~BinarySave               ();
 
     signals:
         void        SaveProgress            (QString Status, int Value);
@@ -133,17 +133,17 @@ class SkinSave : public QThread
 
     private:
 
-        void        CompressAllFont         (QVector<uint8_t>* pCompxData);
-        void        CompressAllImage        (QVector<uint8_t>* pCompxData);
+        //void        CompressAllFont         (QVector<uint8_t>* pCompxData);
+        //void        CompressAllImage        (QVector<uint8_t>* pCompxData);
         bool        SaveFontInfo            (QVector<uint8_t>* pCompxData);
         bool        SaveImageInfo           (QVector<uint8_t>* pCompxData);
         void        CreateXML               (QString Path);
         void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
-        void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
+        //void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
 
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;
-        QString                 m_SkinPathAndFileName;
+        QString                 m_BinaryPathAndFileName;
         int                     m_PreviousBlockOfData;
         int                     m_ThisBlockOfData;
 
@@ -172,4 +172,4 @@ class SkinSave : public QThread
         QFontMetrics*           m_pFontMetric;
 };
 
-#endif // SKIN_SAVE_H
+#endif // BINARY_SAVE_H

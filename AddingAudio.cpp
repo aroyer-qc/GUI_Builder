@@ -36,8 +36,8 @@ AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* pare
     m_currentDir.setPath(Path);
     m_Caller          = Caller;
 //    m_Size            = Size;
-//    m_pImage          = NULL;
-//    m_pProcessedImage = NULL;
+//    m_pImage          = nullptr;
+//    m_pProcessedImage = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(Path);
@@ -67,8 +67,8 @@ AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* pare
 
 AddingAudio::~AddingAudio()
 {
-//    if(m_pAudio          != NULL)       delete m_pAudio;
-//    if(m_pProcessedAudio != NULL)       delete m_pProcessedAudio;
+//    if(m_pAudio          != nullptr)       delete m_pAudio;
+//    if(m_pProcessedAudio != nullptr)       delete m_pProcessedAudio;
 
     delete ui;
 }
@@ -248,10 +248,10 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
     m_Filename        = item->text();
     m_PathAndFilename = m_currentDir.absoluteFilePath(m_Filename);
 
-  //  if(m_pImage != NULL)
+  //  if(m_pImage != nullptr)
   //  {
   //      delete m_pImage;
-  //      m_pImage = NULL;
+  //      m_pImage = nullptr;
   //  }
 
   //  m_pImage = new QImage();
@@ -268,10 +268,10 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
 
     //pResizedImage = new QImage();
 
-    //if(m_pProcessedImage != NULL)
+    //if(m_pProcessedImage != nullptr)
    // {
     //    delete m_pProcessedImage;
-     //   m_pProcessedImage = NULL;
+     //   m_pProcessedImage = nullptr;
    // }
    // m_pProcessedImage = new QImage();
    // *m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormat);

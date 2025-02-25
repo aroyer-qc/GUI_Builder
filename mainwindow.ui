@@ -189,6 +189,14 @@ border-color: lightgray;
 border-style: solid;
 /*border-radius: 1px;*/
 }
+
+QSlider::handle:horizontal {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
+border-width: 2px;
+border-color: #778EB8;
+border-style: solid;
+}
+
 </string>
    </property>
    <widget class="QTabWidget" name="TabFunctionSelect">
@@ -213,7 +221,7 @@ border-style: solid;
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -377,6 +385,9 @@ border-style: solid;
         <italic>false</italic>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
       </property>
       <property name="text">
        <string>Image info:</string>
@@ -830,6 +841,9 @@ border-style: solid;
         <bold>true</bold>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Font info:</string>
       </property>
@@ -945,6 +959,9 @@ border-style: solid;
         <italic>false</italic>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
       </property>
       <property name="text">
        <string>Font in Skin Will Contain:</string>
@@ -1354,6 +1371,9 @@ border-width: 2px;</string>
         <bold>true</bold>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Audio info:</string>
       </property>
@@ -1403,6 +1423,9 @@ border-width: 2px;</string>
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
       </property>
       <property name="text">
        <string>In directory:</string>
@@ -1603,6 +1626,9 @@ font-size: 12px;
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>0 File found</string>
       </property>
@@ -1613,7 +1639,7 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticConvertTo">
       <property name="geometry">
        <rect>
-        <x>980</x>
+        <x>975</x>
         <y>412</y>
         <width>91</width>
         <height>27</height>
@@ -1632,9 +1658,9 @@ font-size: 12px;
      <widget class="QComboBox" name="comboBoxPixelFormat">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1090</x>
         <y>410</y>
-        <width>171</width>
+        <width>161</width>
         <height>33</height>
        </rect>
       </property>
@@ -1739,6 +1765,9 @@ font-size: 12px;
         <bold>true</bold>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>File info:</string>
       </property>
@@ -1780,7 +1809,7 @@ font-size: 12px;
        <rect>
         <x>860</x>
         <y>430</y>
-        <width>141</width>
+        <width>111</width>
         <height>27</height>
        </rect>
       </property>
@@ -1799,7 +1828,7 @@ font-size: 12px;
        <rect>
         <x>860</x>
         <y>460</y>
-        <width>141</width>
+        <width>111</width>
         <height>27</height>
        </rect>
       </property>
@@ -1876,7 +1905,7 @@ font-size: 12px;
        <rect>
         <x>860</x>
         <y>490</y>
-        <width>141</width>
+        <width>111</width>
         <height>27</height>
        </rect>
       </property>
@@ -1896,9 +1925,9 @@ font-size: 12px;
       </property>
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1090</x>
         <y>450</y>
-        <width>171</width>
+        <width>161</width>
         <height>33</height>
        </rect>
       </property>
@@ -1976,7 +2005,7 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticResize">
       <property name="geometry">
        <rect>
-        <x>980</x>
+        <x>975</x>
         <y>452</y>
         <width>91</width>
         <height>27</height>
@@ -1997,7 +2026,7 @@ font-size: 12px;
        <rect>
         <x>860</x>
         <y>400</y>
-        <width>141</width>
+        <width>111</width>
         <height>27</height>
        </rect>
       </property>
@@ -2083,7 +2112,7 @@ font-size: 12px;
        <rect>
         <x>860</x>
         <y>370</y>
-        <width>141</width>
+        <width>111</width>
         <height>27</height>
        </rect>
       </property>
@@ -2103,9 +2132,9 @@ font-size: 12px;
       </property>
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1090</x>
         <y>490</y>
-        <width>171</width>
+        <width>161</width>
         <height>33</height>
        </rect>
       </property>
@@ -2155,7 +2184,7 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticCompress">
       <property name="geometry">
        <rect>
-        <x>980</x>
+        <x>975</x>
         <y>492</y>
         <width>91</width>
         <height>27</height>
@@ -2187,7 +2216,7 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticCheckerColor">
       <property name="geometry">
        <rect>
-        <x>980</x>
+        <x>975</x>
         <y>370</y>
         <width>91</width>
         <height>27</height>
@@ -2206,9 +2235,9 @@ font-size: 12px;
      <widget class="QSlider" name="CheckerBoardSlider">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1090</x>
         <y>374</y>
-        <width>171</width>
+        <width>161</width>
         <height>22</height>
        </rect>
       </property>
@@ -2239,9 +2268,14 @@ font-size: 12px;
      <string>File</string>
     </property>
     <addaction name="actionNew_Skin"/>
-    <addaction name="actionOpen_Skin"/>
+    <addaction name="actionOpen_Binary"/>
+    <addaction name="actionSave_Binary"/>
+    <addaction name="actionSave_Binary_As"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_Skin"/>
+    <addaction name="actionOpen_Skin"/>
     <addaction name="actionSave_Skin_As"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuFile">
@@ -2296,7 +2330,7 @@ font-size: 12px;
   </action>
   <action name="actionNew_Skin">
    <property name="text">
-    <string>New Skin</string>
+    <string>New Project</string>
    </property>
    <property name="toolTip">
     <string>Create a New Skin</string>
@@ -2313,6 +2347,21 @@ font-size: 12px;
   <action name="actionSet_Endianess">
    <property name="text">
     <string>Set Endianess</string>
+   </property>
+  </action>
+  <action name="actionOpen_Binary">
+   <property name="text">
+    <string>Open Binary</string>
+   </property>
+  </action>
+  <action name="actionSave_Binary">
+   <property name="text">
+    <string>Save Binary</string>
+   </property>
+  </action>
+  <action name="actionSave_Binary_As">
+   <property name="text">
+    <string>Save Binary As ...</string>
    </property>
   </action>
  </widget>

@@ -1,5 +1,5 @@
 /*
-   Copyright(c) 2020 Alain Royer.
+   Copyright(c) 2025 Alain Royer.
    Email: aroyer.qc@gmail.com
 
    Permission is hereby granted, free of charge, to any person obtaining a copy of this software
@@ -20,13 +20,12 @@
 
 //#include "ui_mainwindow.h"
 #include "SkinSave.h"
-#include "compression.h"
 #include "utility.h"
 #include "qxmlputget.h"
 
 // ************************************************************************************************
 
-void MainWindow::Save()
+void MainWindow::BinarySave()
 {
     m_pProgress = new Progress("Saving skin file", "Compressing", "Saving", m_SkinName);
     m_pSkinSave = new SkinSave(m_SkinName, this);
@@ -37,7 +36,7 @@ void MainWindow::Save()
 
 // ************************************************************************************************
 
-void MainWindow::on_SaveDone()
+void MainWindow::on_SaveBinaryDone()
 {
     disconnect(m_pSkinSave, SIGNAL(SaveProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
     disconnect(m_pSkinSave, SIGNAL(SaveDone()),                 this,        SLOT(on_SaveDone()));
@@ -73,10 +72,9 @@ void MainWindow::on_SaveDone()
 //  Class SkinSave ( QThread )
 //
 // ************************************************************************************************
-
-SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(parent)
+BinarySave::BinarySave(QString BinaryPathAndFileName, QObject* parent) : QThread(parent)
 {
-    m_SkinPathAndFileName = SkinPathAndFileName;
+    m_BinaryPathAndFileName = BinaryPathAndFileName;
 
     // Image
     m_pRawData            = ((MainWindow*)parent)->getRawDataPtr();
@@ -92,13 +90,13 @@ SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(paren
 
 // ************************************************************************************************
 
-SkinSave::~SkinSave()
+BinarySave::~BinarySave()
 {
 }
 
 // ************************************************************************************************
 
-void SkinSave::run(void)
+void BinarySave::run(void)
 {
     QVector<uint8_t>    CompxData;
     QFile               File(m_SkinPathAndFileName);
@@ -141,7 +139,7 @@ void SkinSave::run(void)
 
 // ************************************************************************************************
 
-bool SkinSave::SaveImageInfo(QVector<uint8_t>* pCompxData)
+bool BinarySave::SaveImageInfo(QVector<uint8_t>* pCompxData)
 {
     GFX_ePixelFormat PixelFormat;
 
@@ -185,8 +183,8 @@ bool SkinSave::SaveImageInfo(QVector<uint8_t>* pCompxData)
 }
 
 // ************************************************************************************************
-
-void SkinSave::CompressAllImage(QVector<uint8_t>* pCompxData)
+/*
+void BinarySave::CompressAllImage(QVector<uint8_t>* pCompxData)
 {
     int     Progress;
     uint8_t CompressionMethod;
@@ -260,10 +258,10 @@ void SkinSave::CompressAllImage(QVector<uint8_t>* pCompxData)
         emit SaveProgress("", Progress);
     }
 }
-
+*/
 // ************************************************************************************************
 
-bool SkinSave::SaveFontInfo(QVector<uint8_t>* pCompxData)
+bool BinarySave::SaveFontInfo(QVector<uint8_t>* pCompxData)
 {
     m_FontCount = m_pFontInfo->count();
 
@@ -351,7 +349,7 @@ bool SkinSave::SaveFontInfo(QVector<uint8_t>* pCompxData)
 }
 
 // ************************************************************************************************
-
+#if 0
 void SkinSave::CompressAllFont(QVector<uint8_t>* pCompxData)
 {
     m_TotalCharCount = 0;                                      // Reset value of the character count
@@ -439,7 +437,7 @@ void SkinSave::CompressAllFont(QVector<uint8_t>* pCompxData)
         }
     }
 }
-
+#endif
 // ************************************************************************************************
 
 void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, uint8_t Char)
@@ -462,7 +460,7 @@ void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, uint8_t Char)
 }
 
 // ************************************************************************************************
-
+/*
 void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, uint8_t Char)
 {
     QPixmap* pPix = new QPixmap(SAMPLING_BOX_X_SIZE, SAMPLING_BOX_Y_SIZE);
@@ -561,10 +559,10 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, uint8_t Char)
 
     m_TotalCharCount++;
 }
-
+*/
 // ************************************************************************************************
 
-void SkinSave::CreateXML(QString Path)
+void BinarySave::CreateXML(QString Path)
 {
     QXmlPut xmlPut("Skin");
 

@@ -25,7 +25,7 @@ border-color RGB(220,220,220);
 }
 
 QLabel{
-color: lightgray;
+color: black;
 }
 
 QLineEdit{
@@ -85,7 +85,7 @@ padding-right: 5px;
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">color: rgb(220, 220, 220);</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Enter the label use in code</string>

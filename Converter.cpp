@@ -285,8 +285,8 @@ void MainWindow::on_CheckerBoardSlider_sliderMoved(int position)
 
 void MainWindow::InitConverter()
 {
-    m_pImage          = NULL;
-    m_pProcessedImage = NULL;
+    m_pImage          = nullptr;
+    m_pProcessedImage = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(m_currentDir.absolutePath());
@@ -395,10 +395,10 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     PathAndFilename = m_currentDir.absoluteFilePath(Filename);
     m_FileSize      = QFileInfo(PathAndFilename).size();
 
-    if(m_pImage != NULL)
+    if(m_pImage != nullptr)
     {
         delete m_pImage;
-        m_pImage = NULL;
+        m_pImage = nullptr;
     }
 
     m_pImage = new QImage();
@@ -406,7 +406,9 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
 
     // Information that do not change if setting change
     ui->LabelFilename->setText(item->text());
+    ui->LabelFilename->setStyleSheet(QString("color: black;"));
     ui->LabelSize->setText(PrintSize(m_pImage->size()));
+    ui->LabelSize->setStyleSheet(QString("color: black;"));
 
     if(Resizer == AUTO_FORMAT)
     {
@@ -423,10 +425,10 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     pResizedImage = new QImage();
     ScaleToRequirement(m_pImage, pResizedImage, &m_DisplaySize, (eScaler)ui->comboBoxResize->currentIndex());
 
-    if(m_pProcessedImage != NULL)
+    if(m_pProcessedImage != nullptr)
     {
         delete m_pProcessedImage;
-        m_pProcessedImage = NULL;
+        m_pProcessedImage = nullptr;
     }
 
     m_pProcessedImage = new QImage();
@@ -440,10 +442,30 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     m_TotalCount  = m_pProcessedImage->sizeInBytes() / (m_pProcessedImage->width() * m_pProcessedImage->height());    // Adjust byte count to image size in viewport if it is the case
     m_TotalCount *= (m_Scale.width() * m_Scale.height());
 
+    // Update Static Label
+    ui->LabelStaticFileInfo->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticFilename->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticFileDataSize->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticDataSize->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticPixelFormat->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticSize->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticScaleSize->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticCheckerColor->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticConvertTo->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticResize->setStyleSheet(QString("color: black;"));
+    ui->LabelStaticCompress->setStyleSheet(QString("color: black;"));
+
     ui->LabelPixelFormat->setText(GetFormat(m_pImage->format()));
+    ui->LabelPixelFormat->setStyleSheet(QString("color: black;"));
+
     ui->LabelDataSize->setText(QString("%1 Bytes").arg(m_TotalCount));                                              // Print updated value in information
+    ui->LabelDataSize->setStyleSheet(QString("color: black;"));
+
     ui->LabelFileDataSize->setText(QString("%1 Bytes").arg(m_FileSize));
+    ui->LabelFileDataSize->setStyleSheet(QString("color: black;"));
+
     ui->LabelScaleSize->setText(PrintSize(m_Scale));                                                                // Display viewport size
+    ui->LabelScaleSize->setStyleSheet(QString("color: black;"));
 
     // Set the size for the scene (minimum size is viewport)
     Size.setWidth ((m_pProcessedImage->width()  < m_DisplaySize.width())  ? m_DisplaySize.width()  : m_pProcessedImage->width());
@@ -618,15 +640,15 @@ void MainWindow::AdjustTabConverter(QSize Offset, QRect ViewRect)
 
     // Reposition Checker color slider
     setWidgetXY(ui->LabelStaticCheckerColor,        Offset.width() + 480,                   Offset.height() + 95);
-    setWidgetXY(ui->CheckerBoardSlider,             Offset.width() + 570,                   Offset.height() + 99);
+    setWidgetXY(ui->CheckerBoardSlider,             Offset.width() + 580,                   Offset.height() + 99);
 
     // Reposition ComboBox and static label
     setWidgetXY(ui->LabelStaticConvertTo,           Offset.width() + 480,                   Offset.height() + 127);
-    setWidgetXY(ui->comboBoxPixelFormat,            Offset.width() + 570,                   Offset.height() + 125);
+    setWidgetXY(ui->comboBoxPixelFormat,            Offset.width() + 580,                   Offset.height() + 125);
     setWidgetXY(ui->LabelStaticResize,              Offset.width() + 480,                   Offset.height() + 167);
-    setWidgetXY(ui->comboBoxResize,                 Offset.width() + 570,                   Offset.height() + 165);
+    setWidgetXY(ui->comboBoxResize,                 Offset.width() + 580,                   Offset.height() + 165);
     setWidgetXY(ui->LabelStaticCompress,            Offset.width() + 480,                   Offset.height() + 207);
-    setWidgetXY(ui->comboBoCompress,                Offset.width() + 570,                   Offset.height() + 205);
+    setWidgetXY(ui->comboBoCompress,                Offset.width() + 580,                   Offset.height() + 205);
 
     // Resize Table
     setWidgetSize(ui->TableFilesFound,              -1,                                     Offset.height() + 125);

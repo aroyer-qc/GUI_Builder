@@ -34,11 +34,11 @@ AddingImage::AddingImage(eCaller Caller, QString Path, QSize Size, QWidget* pare
     //setStyleSheet("background-image: url(:/Images/Marble.jpg);");
     setSizeGripEnabled(false);
     m_currentDir.setPath(Path);
-    m_pPixmapItem     = NULL;
+    m_pPixmapItem     = nullptr;
     m_Caller          = Caller;
     m_Size            = Size;
-    m_pImage          = NULL;
-    m_pProcessedImage = NULL;
+    m_pImage          = nullptr;
+    m_pProcessedImage = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(Path);
@@ -69,8 +69,8 @@ AddingImage::AddingImage(eCaller Caller, QString Path, QSize Size, QWidget* pare
 
 AddingImage::~AddingImage()
 {
-    if(m_pImage          != NULL)       delete m_pImage;
-    if(m_pProcessedImage != NULL)       delete m_pProcessedImage;
+    if(m_pImage          != nullptr)       delete m_pImage;
+    if(m_pProcessedImage != nullptr)       delete m_pProcessedImage;
 
     delete ui;
 }
@@ -264,10 +264,10 @@ void AddingImage::ImageSelected()
 
 void AddingImage::ClearScene()
 {
-    if(m_pPixmapItem != NULL)
+    if(m_pPixmapItem != nullptr)
     {
         m_Scene.removeItem(m_pPixmapItem);
-        m_pPixmapItem = NULL;
+        m_pPixmapItem = nullptr;
     }
 
     m_Scene.clear();
@@ -313,10 +313,10 @@ void AddingImage::LoadingImage(int row, eResizer Resizer)
     m_Filename        = item->text();
     m_PathAndFilename = m_currentDir.absoluteFilePath(m_Filename);
 
-    if(m_pImage != NULL)
+    if(m_pImage != nullptr)
     {
         delete m_pImage;
-        m_pImage = NULL;
+        m_pImage = nullptr;
     }
 
     m_pImage = new QImage();
@@ -341,10 +341,10 @@ void AddingImage::LoadingImage(int row, eResizer Resizer)
     pResizedImage = new QImage();
     ScaleToRequirement(m_pImage, pResizedImage, &m_Size, (eScaler)ui->comboBoxResize->currentIndex());
 
-    if(m_pProcessedImage != NULL)
+    if(m_pProcessedImage != nullptr)
     {
         delete m_pProcessedImage;
-        m_pProcessedImage = NULL;
+        m_pProcessedImage = nullptr;
     }
     m_pProcessedImage = new QImage();
     *m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormat);
@@ -354,7 +354,7 @@ void AddingImage::LoadingImage(int row, eResizer Resizer)
     Size.setWidth ((m_pProcessedImage->width()  > m_Size.width())  ? m_Size.width()  : m_pProcessedImage->width());
     Size.setHeight((m_pProcessedImage->height() > m_Size.height()) ? m_Size.height() : m_pProcessedImage->height());
 
-    m_TotalCount  = m_pProcessedImage->sizeInBytes() / (m_pProcessedImage->width() * m_pProcessedImage->height());    // Adjust byte count to image size in viewport if it is the case
+    m_TotalCount  = m_pProcessedImage->sizeInBytes() / (m_pProcessedImage->width() * m_pProcessedImage->height());  // Adjust byte count to image size in viewport if it is the case
     m_TotalCount *= (Size.width() * Size.height());
 
     ui->LabelPixelFormat->setText(GetFormat(m_pImage->format()));

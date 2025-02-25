@@ -23,7 +23,7 @@
    <string notr="true">QLabel {
 font: bold &quot;Ubuntu&quot;;
 font-size: 12px;
-color: lightgray;
+color: black;
 }
 
 QComboBox{

@@ -348,7 +348,8 @@ border-style: solid;
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 22pt &quot;Ubuntu&quot;;</string>
+    <string notr="true">font: 22pt &quot;Ubuntu&quot;;
+color: black;</string>
    </property>
    <property name="text">
     <string>Select an Image from File</string>
@@ -572,9 +573,9 @@ border-style: solid;
   <widget class="QLabel" name="LabelFilename">
    <property name="geometry">
     <rect>
-     <x>700</x>
-     <y>400</y>
-     <width>431</width>
+     <x>740</x>
+     <y>390</y>
+     <width>381</width>
      <height>27</height>
     </rect>
    </property>

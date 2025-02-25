@@ -436,12 +436,21 @@ void MainWindow::UpdateImageGUI(int row)
 
     if(row >= 0)
     {
+        // Update Static Label
+        ui->LabelStaticFilenameImage->setStyleSheet(QString("color: black;"));
+        ui->LabelStaticPixelFormatImage->setStyleSheet(QString("color: black;"));
+        ui->LabelStaticSizeImage->setStyleSheet(QString("color: black;"));
+        ui->LabelStaticRawDataSizeImage->setStyleSheet(QString("color: black;"));
+
         // Update Label
         ui->LabelFilenameImage->setText(m_ImageInfo[row].Filename);
+        ui->LabelFilenameImage->setStyleSheet(QString("color: black;"));
         ui->LabelPixelFormatImage->setText(GetFormat(m_ImageInfo[row].PixelFormat));
+        ui->LabelPixelFormatImage->setStyleSheet(QString("color: black;"));
         ui->LabelSizeImage->setText(PrintSize(m_ImageInfo[row].Size));
+        ui->LabelSizeImage->setStyleSheet(QString("color: black;"));
         ui->LabelRawDataSizeImage->setText(QString("%1 Bytes").arg(m_ImageInfo[row].DataSize));
-
+        ui->LabelRawDataSizeImage->setStyleSheet(QString("color: black;"));
 
         // Loading raw data in QImage (Patch cannot get a pointer from QVector)
         QImage Image( m_ImageInfo[row].Size, m_ImageInfo[row].PixelFormat);
