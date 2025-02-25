@@ -31,6 +31,29 @@
 #include "ComboBoxDelegate.h"
 #include "SpinBoxDelegate.h"
 
+const int BytesPerPixel[19] =
+    {
+        0,  // 0
+        1,  // 1
+        1,  // 2
+        1,  // 3
+        4,  // 4
+        4,  // 5
+        4,  // 6
+        2,  // 7
+        3,  // 8
+        3,  // 9
+        3,  // 10
+        2,  // 11
+        3,  // 12
+        3,  // 13
+        2,  // 14
+        2,  // 15
+        4,  // 16
+        4,  // 17
+        4,  // 18
+};
+
 namespace Ui {
 class MainWindow;
 }
@@ -63,8 +86,10 @@ class MainWindow : public QMainWindow
         void SetEndianess(eEndianess Endian);
 
         // Public slot for file operation
-        void on_OpenDone();
-        void on_SaveDone();
+        void on_OpenSkinDone();
+        void on_SaveSkinDone();
+        void on_OpenBinaryDone();
+        void on_SaveBinaryDone();
 
         // Public slot for Image
         void AddImage(sLoadingInfo LoadingInfo);
@@ -127,10 +152,13 @@ class MainWindow : public QMainWindow
         void on_verticalScrollBarConverter_valueChanged(int value);
 
         // Menu action
+        void on_actionNew_Project_triggered();
+        void on_actionOpen_Binary_triggered();
+        void on_actionSave_Binary_triggered();
+        void on_actionSave_Binary_As_triggered();
+        void on_actionOpen_Skin_triggered();
         void on_actionSave_Skin_triggered();
         void on_actionSave_Skin_As_triggered();
-        void on_actionNew_Skin_triggered();
-        void on_actionOpen_Skin_triggered();
         void on_actionSet_Display_Size_triggered();
         void on_comboBoxResize_currentIndexChanged(int index);
         void on_comboBoxPixelFormat_currentIndexChanged(int index);
@@ -150,8 +178,10 @@ class MainWindow : public QMainWindow
         void     closeEvent              (QCloseEvent *bar);
 
         // Function for file operation
-        void     Open                    (QString File);
-        void     Save                    ();
+        void     BinaryOpen              (QString File);
+        void     BinarySave              ();
+        void     SkinOpen                (QString File);
+        void     SkinSave                ();
         bool     SaveSkinAndClearData    ();
         void     setSkinHasUnsavedData   (bool state);
 
@@ -225,6 +255,8 @@ class MainWindow : public QMainWindow
         AddingAudio*            m_pLoadAudio;
         QThread*                m_pSkinSave;
         QThread*                m_pSkinOpen;
+        QThread*                m_pBinarySave;
+        QThread*                m_pBinaryOpen;
         bool                    m_IsSkinSaveAs;                 // Save As or Save
         bool                    m_IsSkinHasUnsavedData;         // is there any unsaved data
         bool                    m_IsWarningDisplayed;

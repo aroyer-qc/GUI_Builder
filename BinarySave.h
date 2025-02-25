@@ -28,93 +28,55 @@
 
 //                  Binary file description
 //
-//                   ______________________________________________
-//  Image block     |                                              |
-//                  | Next block of data                (uint32_t) |
-//                  |______________________________________________|
-//                  |                                              |
-//                  | Block type 0x0000                 (uint16_t) |
-//                  |______________________________________________|
-//                  |                                              |
-//                  | Image Count                       (uint16_t) |
-//                  |______________________________________________|__
-//                  |                                              |  |
-//                  | Structure image information                  |  |
-//                  |                                              |  |
-//                  |   0-3   Image ID                  (uint32_t) |  |
-//                  |   4-7   Datasize                  (uint32_t) |  |___
-//                  |   8     Pixel format              (uint8_t)  |  |   |
-//                  |   9-10  Width                     (uint16_t) |  |   |
-//                  |   11-12 Height                    (uint16_t) |  |   |
-//                  |   13    Compression               (uint8_t)  |  |   |
-//                  |   14-17 Offset in data            (uint32_t) |  |  /_\
-//                  |______________________________________________|__|   |
-//                  |                                              |      |
-//                  |   ... Repeat last structure                  |\_____|
-//                  |       According to image count               |/
-//                  |______________________________________________|__
-//                  |                                              |  |
-//                  |   Image compressed raw data                  |  |___
-//                  |______________________________________________|__|   |
-//                  |                                              |     /_\
-//                  |   ... Repeat compressed data                 |\_____|
-//                  |       According to image count               |/
-//                  |______________________________________________|
-//
-//                   ______________________________________________
-//  Font block      |                                              |
-//                  | Next block of data                (uint32_t) |
-//                  |______________________________________________|
-//                  |                                              |
-//                  | Block type 0x0001                 (uint16_t) |
-//                  |______________________________________________|
-//                  |                                              |
-//                  | Font Count                        (uint16_t) |
-//                  |______________________________________________|__
-//                  |                                              |  |
-//                  |   0   Height                      (uint8_t)  |  |___
-//                  |   1   Interline                   (uint8_t)  |  |   |
-//                  |______________________________________________|__|   |
-//                  |                                              |     /_\
-//                  |   ... Repeat last structure                  |\_____|
-//                  |       According to font                      |/
-//                  |______________________________________________|______________
-//                  |                                              |              |
-//                  |   0-3 Font ID                     (uint32_t) |              |
-//                  |   4   Character count in font     (uint8_t)  |              |
-//                  |______________________________________________|__            |
-//                  |                                              |  |           |
-//                  | Structure font information                   |  |           |
-//                  |                                              |  |           |
-//                  |   0     Char number               (uint8_t)  |  |           |
-//                  |   1-2   Datasize                  (uint16_t) |  |           |
-//                  |   3     Left Bearing              (int8_t)   |  |___        |____
-//                  |   4     right Bearing             (int8_t)   |  |   |       |    |
-//                  |   5     Width Pixel Zone          (uint8_t)  |  |   |       |    |
-//                  |   6     Height Pixel Zone         (uint8_t)  |  |   |       |    |
-//                  |   7     Width                     (uint8_t)  |  |   |       |    |
-//                  |   8     Offset Y                  (uint8_t)  |  |  /_\      |   /_\
-//                  |   9     Compression               (uint8_t)  |  |   |       |    |
-//                  |   10-13 Offset in data            (uint32_t) |  |   |       |    |
-//                  |______________________________________________|__|   |       |    |
-//                  |                                              |      |       |    |
-//                  |   ... Repeat last structure                  |\_____|       |    |
-//                  |       According to char count in this font   |/             |    |
-//                  |______________________________________________|______________|    |
-//                  |                                              |                   |
-//                  |   ... Repeat last section                    |\__________________|
-//                  |       According to font count                |/
-//                  |______________________________________________|__
-//                  |                                              |  |
-//                  |   Image compressed raw data                  |  |___
-//                  |______________________________________________|__|   |
-//                  |                                              |     /_\
-//                  |   ... Repeat compressed data                 |\_____|
-//                  |       According to total character count for |/
-//                  |       each font                              |
-//                  |______________________________________________|
-//
-//
+//                   ______________________________________________  -----> 0x00000000
+//                  |                                              |________________________________
+//                  | Image Struct information pointer  (uint32_t) |                               |
+//                  |______________________________________________| -----> 0x00000004             |
+//                  |                                              |                               | 
+//                  | Image count into Struct           (uint16_t) |                               |
+//                  |______________________________________________| -----> 0x00000006             |
+//                  |                                              |____________________________   |
+//                  | Font Struct information pointer   (uint32_t) |                            |  |
+//                  |______________________________________________| -----> 0x0000000A          |  |
+//                  |                                              |                            |  |
+//                  | Font count into Struct            (uint16_t) |                            |  |
+//                  |______________________________________________| -----> 0x0000000C          |  |
+//                  |                                              |__________________________  |  |
+//                  | Audio Struct information pointer  (uint32_t) |                         |  |  |
+//                  |______________________________________________| -----> 0x00000010       |  |  |
+//                  |                                              |                         |  |  |
+//                  | Audio count into Struct           (uint16_t) |                         |  |  |
+//                  |______________________________________________| -----> 0x00000012       |  |  |
+//                  |                                              |_______________________  |  |  |
+//                  | Label Struct information pointer  (uint32_t) |                      |  |  |  |
+//                  |______________________________________________| -----> 0x00000016    |  |  |  |
+//                  |                                              |                      |  |  |  |
+//                  | Label count into Struct           (uint16_t) |                      |  |  |  |
+//                  |______________________________________________| -----> 0x00000018    |  |  |  |
+//                  |                                              |___________________   |  |  |  |
+//                  | Reserved for Future used Struct  and count   |                   |  |  |  |  |
+//                  |______________________________________________| -----> 0x0000003C |  |  |  |  |
+//                  |                                              |                   |  |  |  |  |
+//                  | Raw data for all struct type                 |                   |  |  |  |  |
+//                  |______________________________________________|                   |  |  |  |  |
+//                  |                                              | /_________________| _| _| _| _|
+//                  | Image Struct information                     | \                 |  |  |  |
+//                  |______________________________________________|                   |  |  |  |
+//                  |                                              | /_________________| _| _| _|
+//                  | Font Struct information                      | \                 |  |  |
+//                  |______________________________________________|                   |  |  |
+//                  |                                              | /_________________| _| _|
+//                  | Audio Struct information  (TODO)             | \                 |  |
+//                  |______________________________________________|                   |  |
+//                  |                                              | /_________________| _|
+//                  | Label Struct information  (TODO)             | \                 |
+//                  |______________________________________________|                   |
+//                  |                                              | /_________________|
+//                  | ...                                          \ \
+//                  |______________________________________________| 
+
+#define RAW_DATA_OFFSET             0x0000003C
+
 
 class BinarySave : public QThread
 {
@@ -133,13 +95,10 @@ class BinarySave : public QThread
 
     private:
 
-        //void        CompressAllFont         (QVector<uint8_t>* pCompxData);
-        //void        CompressAllImage        (QVector<uint8_t>* pCompxData);
         bool        SaveFontInfo            (QVector<uint8_t>* pCompxData);
         bool        SaveImageInfo           (QVector<uint8_t>* pCompxData);
         void        CreateXML               (QString Path);
         void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
-        //void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
 
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;

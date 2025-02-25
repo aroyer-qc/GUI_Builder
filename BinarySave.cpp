@@ -19,7 +19,7 @@
 */
 
 //#include "ui_mainwindow.h"
-#include "SkinSave.h"
+#include "BinarySave.h"
 #include "utility.h"
 #include "qxmlputget.h"
 
@@ -27,8 +27,8 @@
 
 void MainWindow::BinarySave()
 {
-    m_pProgress = new Progress("Saving skin file", "Compressing", "Saving", m_SkinName);
-    m_pSkinSave = new SkinSave(m_SkinName, this);
+    m_pProgress = new Progress("Saving skin file", "Packing Info", "Saving", m_SkinName);
+    m_pSkinSave = new class BinarySave(m_SkinName, this);
     connect(m_pSkinSave, SIGNAL(SaveProgress(QString,int)), m_pProgress, SLOT(on_UpdateProgress(QString,int)));
     connect(m_pSkinSave, SIGNAL(SaveDone()),                this,        SLOT(on_SaveDone()));
     m_pSkinSave->start();
@@ -84,6 +84,12 @@ BinarySave::BinarySave(QString BinaryPathAndFileName, QObject* parent) : QThread
     m_pFontSamplingInfo   = ((MainWindow*)parent)->getFontSamplingInfoPtr();
     m_pFontInfo           = ((MainWindow*)parent)->getFontInfoPtr();
 
+    // Audio
+    // TODO
+    
+    // Label
+    // TODO
+
     //Endian
     m_pEndian              = ((MainWindow*)parent)->getEndianPtr();
 }
@@ -99,7 +105,7 @@ BinarySave::~BinarySave()
 void BinarySave::run(void)
 {
     QVector<uint8_t>    CompxData;
-    QFile               File(m_SkinPathAndFileName);
+    QFile               File(m_BinaryPathAndFileName);
     QFileInfo           FileInfo(File.fileName());
 
     File.open(QIODevice::WriteOnly);
@@ -110,18 +116,18 @@ void BinarySave::run(void)
     m_ThisBlockOfData     = 0;
     m_PreviousBlockOfData = 0;
 
+    AppendReservedSpace(&CompxData, RAW_DATA_OFFSET);
+
     if(SaveImageInfo(&CompxData) == true)           // Save image info structure
     {
-        CompressAllImage(&CompxData);               // Try each compression method, and save best for each image in file
         m_PreviousBlockOfData = m_ThisBlockOfData;
-        m_ThisBlockOfData = CompxData.size();
+        m_ThisBlockOfData     = CompxData.size();
     }
 
     if(SaveFontInfo(&CompxData) == true)            // Save image info structure
     {
-        CompressAllFont(&CompxData);                // Try each compression method, and save best for each image in file
         m_PreviousBlockOfData = m_ThisBlockOfData;
-        m_ThisBlockOfData = CompxData.size();
+        m_ThisBlockOfData     = CompxData.size();
     }
 
     // Save all data to skin file
@@ -440,7 +446,7 @@ void SkinSave::CompressAllFont(QVector<uint8_t>* pCompxData)
 #endif
 // ************************************************************************************************
 
-void SkinSave::ExtractFontInfo(QVector<uint8_t>* pCompxData, uint8_t Char)
+void BinarySave::ExtractFontInfo(QVector<uint8_t>* pCompxData, uint8_t Char)
 {
     m_OffsetFontHeader.append(pCompxData->size());          // Kept the offset for this character header
 

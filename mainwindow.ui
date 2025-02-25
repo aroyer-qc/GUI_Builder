@@ -2267,7 +2267,7 @@ font-size: 12px;
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionNew_Skin"/>
+    <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Binary"/>
     <addaction name="actionSave_Binary"/>
     <addaction name="actionSave_Binary_As"/>
@@ -2328,7 +2328,7 @@ font-size: 12px;
     </font>
    </property>
   </action>
-  <action name="actionNew_Skin">
+  <action name="actionNew_Project">
    <property name="text">
     <string>New Project</string>
    </property>

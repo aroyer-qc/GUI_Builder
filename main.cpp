@@ -23,13 +23,8 @@
 
 int main(int argc, char *argv[])
 {
-    //QIcon icon;
     QApplication a(argc, argv);
     MainWindow::setPrimaryScreen(a.primaryScreen());
-    
-    QApplication::setWindowIcon(
-    //icon.addPixmap(QString("InterfaceBuilder.png"));
-    //a.setWindowIcon(icon);
     MainWindow w;
     w.show();
 

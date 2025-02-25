@@ -51,6 +51,10 @@ set(PROJECT_SOURCES
         setsize.h
         setsize.ui
         Simulator.cpp
+        BinaryOpen.cpp
+        BinaryOpen.h
+        BinarySave.cpp
+        BinarySave.h
         SkinOpen.cpp
         SkinOpen.h
         SkinSave.cpp

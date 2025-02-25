@@ -357,6 +357,16 @@ QImage::Format AutoSelectConversion(QComboBox* pCombo, QImage::Format Format)
 
 // ************************************************************************************************
 
+void AppendReservedSpace(QVector<uint8_t>* pData, size_t Count)
+{
+    for(size_t i =  0; i < Count; i++)
+    {
+        pData->append((uint8_t)0x00);
+    }
+}
+
+// ************************************************************************************************
+
 void Append_uint16(QVector<uint8_t>* pData, uint16_t Value)
 {
     pData->append((uint8_t)(Value >> 8));

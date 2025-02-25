@@ -26,10 +26,10 @@
 
 // ************************************************************************************************
 
-void MainWindow::Save()
+void MainWindow::SkinSave()
 {
     m_pProgress = new Progress("Saving skin file", "Compressing", "Saving", m_SkinName);
-    m_pSkinSave = new SkinSave(m_SkinName, this);
+    m_pSkinSave = new class SkinSave(m_SkinName, this);
     connect(m_pSkinSave, SIGNAL(SaveProgress(QString,int)), m_pProgress, SLOT(on_UpdateProgress(QString,int)));
     connect(m_pSkinSave, SIGNAL(SaveDone()),                this,        SLOT(on_SaveDone()));
     m_pSkinSave->start();
@@ -37,7 +37,7 @@ void MainWindow::Save()
 
 // ************************************************************************************************
 
-void MainWindow::on_SaveDone()
+void MainWindow::on_SaveSkinDone()
 {
     disconnect(m_pSkinSave, SIGNAL(SaveProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
     disconnect(m_pSkinSave, SIGNAL(SaveDone()),                 this,        SLOT(on_SaveDone()));

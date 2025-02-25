@@ -26,26 +26,26 @@
 
 // ************************************************************************************************
 
-void MainWindow::Open(QString File)
+void MainWindow::SkinOpen(QString File)
 {
     m_SkinName     = File;
     m_IsSkinSaveAs = false;
 
     m_pProgress = new Progress("Open skin file", "Loading", "Decompressing", m_SkinName);
-    m_pSkinOpen = new SkinOpen(m_SkinName, this);
+    m_pSkinOpen = new class SkinOpen(m_SkinName, this);
     connect(m_pSkinOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
-    connect(m_pSkinOpen, SIGNAL(OpenDone()),                 this,        SLOT(on_OpenDone()));
+    connect(m_pSkinOpen, SIGNAL(OpenSkinDone()),             this,        SLOT(on_OpenDone()));
     m_pSkinOpen->start();
 }
 
 // ************************************************************************************************
 
-void MainWindow::on_OpenDone()
+void MainWindow::on_OpenSkinDone()
 {
     int Count;
 
     disconnect(m_pSkinOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
-    disconnect(m_pSkinOpen, SIGNAL(OpenDone()),                 this,        SLOT(on_OpenDone()));
+    disconnect(m_pSkinOpen, SIGNAL(OpenSkinDone()),             this,        SLOT(on_OpenDone()));
     m_pSkinOpen->exit();
 
     delete m_pProgress;

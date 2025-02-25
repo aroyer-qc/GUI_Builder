@@ -25,30 +25,6 @@
 #include <QThread>
 #include <QTimer>
 
-const int BytesPerPixel[19] =
-{
-    0,  // 0
-    1,  // 1
-    1,  // 2
-    1,  // 3
-    4,  // 4
-    4,  // 5
-    4,  // 6
-    2,  // 7
-    3,  // 8
-    3,  // 9
-    3,  // 10
-    2,  // 11
-    3,  // 12
-    3,  // 13
-    2,  // 14
-    2,  // 15
-    4,  // 16
-    4,  // 17
-    4,  // 18
-};
-
-
 class BinaryOpen : public QThread
 {
     Q_OBJECT

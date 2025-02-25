@@ -30,8 +30,8 @@ void MainWindow::BinaryOpen(QString File)
     m_SkinName     = File;
     m_IsSkinSaveAs = false;
 
-    m_pProgress = new Progress("Open binary file", "Loading", "Decompressing", m_BinaryName);
-    m_pBinaryOpen = new BinaryOpen(m_SkinName, this);
+    m_pProgress = new Progress("Open binary file", "Loading", "Unpacking Info", m_SkinName);
+    m_pBinaryOpen = new class BinaryOpen(m_SkinName, this);
     connect(m_pBinaryOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
     connect(m_pBinaryOpen, SIGNAL(OpenDone()),                 this,        SLOT(on_OpenDone()));
     m_pSkinOpen->start();
@@ -43,8 +43,8 @@ void MainWindow::on_OpenBinaryDone()
 {
     int Count;
 
-    disconnect(m_pBinaryOpen, SIGNAL(OpenBinaryProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
-    disconnect(m_pBinaryOpen, SIGNAL(OpenBinaryDone()),                 this,        SLOT(on_OpenDone()));
+    disconnect(m_pBinaryOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
+    disconnect(m_pBinaryOpen, SIGNAL(OpenDone()),                 this,        SLOT(on_OpenDone()));
     m_pBinaryOpen->exit();
 
     delete m_pProgress;

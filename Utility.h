@@ -53,6 +53,7 @@ int                     getPointSizeFontFromText            (QString ID_CodeText
 
 uint16_t                GetAt_uint16                        (QVector<uint8_t>* pData, int i);
 uint32_t                GetAt_uint32                        (QVector<uint8_t>* pData, int i);
+void                    AppendReservedSpace                 (QVector<uint8_t>* pData, size_t Count);
 void                    Append_uint16                       (QVector<uint8_t>* pData, uint16_t Value);
 void                    Append_uint32                       (QVector<uint8_t>* pData, uint32_t Value);
 void                    Insert_uint16                       (QVector<uint8_t>* pData, int i, uint16_t Value);
