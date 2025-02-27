@@ -9,10 +9,20 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+# Manually set FreeType paths if find_package fails
+set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/freetype/include/")
+set(FREETYPE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/freetype/freetype.lib")
+include_directories(${FREETYPE_INCLUDE_DIRS})
+find_library(FREETYPE_LIB freetype PATHS ${FREETYPE_LIBRARIES})
+find_package(REQUIRED COMPONENTS freetype)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Xml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Xml)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core5Compat REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Multimedia)
+
 
 set(PROJECT_SOURCES
         main.cpp
@@ -51,10 +61,6 @@ set(PROJECT_SOURCES
         setsize.h
         setsize.ui
         Simulator.cpp
-        BinaryOpen.cpp
-        BinaryOpen.h
-        BinarySave.cpp
-        BinarySave.h
         SkinOpen.cpp
         SkinOpen.h
         SkinSave.cpp
@@ -66,7 +72,6 @@ set(PROJECT_SOURCES
         Utility.h
         widget.cpp
 )
-
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(GUI_Builder
@@ -96,7 +101,9 @@ endif()
 target_link_libraries(GUI_Builder PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml)
 target_link_libraries(GUI_Builder PUBLIC Qt6::Core5Compat)
 target_link_libraries(GUI_Builder PRIVATE Qt6::Multimedia)
-
+# Link FreeType library
+#link_directories("${PROJECT_SOURCES}/freetype/")
+target_link_libraries(GUI_Builder PRIVATE ${FREETYPE_LIBRARIES})
 
 set_target_properties(GUI_Builder PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

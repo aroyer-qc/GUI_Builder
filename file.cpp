@@ -36,84 +36,6 @@ void MainWindow::on_actionNew_Project_triggered()
 
 // ************************************************************************************************
 
-void MainWindow::on_actionOpen_Binary_triggered()
-{
-    if(SaveSkinAndClearData() == false)
-    {
-        QString File = QFileDialog::getOpenFileName(this,
-                                                   tr("Open file"),
-                                                   m_SkinDir.absolutePath(),
-                                                   tr("Binary file (*.bin)"));
-
-        if(!File.isEmpty())
-        {
-            BinaryOpen(File);
-        }
-    }
-    else
-    {
-        m_IsNeedCompleteFileOpen = true;            // Will trigger file open at the end saving
-    }
-}
-
-// ************************************************************************************************
-
-void MainWindow::on_actionSave_Binary_triggered()
-{
-    if(m_SkinSize != 0)
-    {
-        if(m_IsSkinHasUnsavedData == true)
-        {
-            if(m_IsSkinSaveAs == true)
-            {
-                on_actionSave_Binary_As_triggered();
-            }
-            else
-            {
-                BinarySave();
-            }
-        }
-        else if(m_IsWarningDisplayed == true)
-        {
-            QMessageBox msgBox;
-            msgBox.setText("<font size=\"5\">" + tr("File already up to date</font>"));
-            msgBox.setIconPixmap(QPixmap(":/graphic/Warning64.png"));
-            msgBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
-            msgBox.exec();
-        }
-    }
-    else if(m_IsWarningDisplayed == true)
-    {
-        QMessageBox msgBox;
-        msgBox.setText("<font size=\"5\">" + tr("Nothing to save</font>"));
-        msgBox.setIconPixmap(QPixmap(":/graphic/Warning64.png"));
-        msgBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
-        msgBox.exec();
-    }
-}
-
-// ************************************************************************************************
-
-void MainWindow::on_actionSave_Binary_As_triggered()
-{
-    QString File = QFileDialog::getSaveFileName(this,
-                                               tr("Save file as"),
-                                               m_SkinDir.absolutePath() + "/untitled.bin",
-                                               tr("Binary file (*.bin)"));
-
-    if(!File.isEmpty())
-    {
-        m_SkinName     = File;
-        m_IsSkinSaveAs = false;
-        m_IsSkinHasUnsavedData = true;             // To trigger data to save
-        on_actionSave_Binary_triggered();
-        m_IsSkinHasUnsavedData = false;
-    }
-}
-
-
-// ************************************************************************************************
-
 void MainWindow::on_actionOpen_Skin_triggered()
 {
     if(SaveSkinAndClearData() == false)
@@ -125,7 +47,7 @@ void MainWindow::on_actionOpen_Skin_triggered()
 
         if(!File.isEmpty())
         {
-            SkinOpen(File);
+            Open(File);
         }
     }
     else
@@ -148,7 +70,7 @@ void MainWindow::on_actionSave_Skin_triggered()
             }
             else
             {
-                SkinSave();
+                Save();
             }
         }
         else if(m_IsWarningDisplayed == true)

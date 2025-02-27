@@ -24,6 +24,8 @@
 #include "mainwindow.h"
 #include <QThread>
 #include <QTimer>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 
 //                  Skin file description
@@ -115,6 +117,58 @@
 //                  |______________________________________________|
 //
 //
+//                  Binary file description
+//
+//                   ______________________________________________  -----> 0x00000000
+//                  |                                              |________________________________
+//                  | Image Struct information pointer  (uint32_t) |                               |
+//                  |______________________________________________| -----> 0x00000004             |
+//                  |                                              |                               | 
+//                  | Image count into Struct           (uint16_t) |                               |
+//                  |______________________________________________| -----> 0x00000006             |
+//                  |                                              |____________________________   |
+//                  | Font Struct information pointer   (uint32_t) |                            |  |
+//                  |______________________________________________| -----> 0x0000000A          |  |
+//                  |                                              |                            |  |
+//                  | Font count into Struct            (uint16_t) |                            |  |
+//                  |______________________________________________| -----> 0x0000000C          |  |
+//                  |                                              |__________________________  |  |
+//                  | Audio Struct information pointer  (uint32_t) |                         |  |  |
+//                  |______________________________________________| -----> 0x00000010       |  |  |
+//                  |                                              |                         |  |  |
+//                  | Audio count into Struct           (uint16_t) |                         |  |  |
+//                  |______________________________________________| -----> 0x00000012       |  |  |
+//                  |                                              |_______________________  |  |  |
+//                  | Label Struct information pointer  (uint32_t) |                      |  |  |  |
+//                  |______________________________________________| -----> 0x00000016    |  |  |  |
+//                  |                                              |                      |  |  |  |
+//                  | Label count into Struct           (uint16_t) |                      |  |  |  |
+//                  |______________________________________________| -----> 0x00000018    |  |  |  |
+//                  |                                              |___________________   |  |  |  |
+//                  | Reserved for Future used Struct  and count   |                   |  |  |  |  |
+//                  |______________________________________________| -----> 0x0000003C |  |  |  |  |
+//                  |                                              |                   |  |  |  |  |
+//                  | Raw data for all struct type                 |                   |  |  |  |  |
+//                  |______________________________________________|                   |  |  |  |  |
+//                  |                                              | /_________________| _| _| _| _|
+//                  | Image Struct information                     | \                 |  |  |  |
+//                  |______________________________________________|                   |  |  |  |
+//                  |                                              | /_________________| _| _| _|
+//                  | Font Struct information                      | \                 |  |  |
+//                  |______________________________________________|                   |  |  |
+//                  |                                              | /_________________| _| _|
+//                  | Audio Struct information  (TODO)             | \                 |  |
+//                  |______________________________________________|                   |  |
+//                  |                                              | /_________________| _|
+//                  | Label Struct information  (TODO)             | \                 |
+//                  |______________________________________________|                   |
+//                  |                                              | /_________________|
+//                  | ...                                          \ \
+//                  |______________________________________________| 
+
+#define RAW_DATA_OFFSET             0x0000003C
+
+
 
 class SkinSave : public QThread
 {
@@ -140,6 +194,10 @@ class SkinSave : public QThread
         void        CreateXML               (QString Path);
         void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
         void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
+        QString     GetFontFiles            (const QString Family);
+        void        ReadFontMetadata        (const char* fontFilePath);
+        void        ExtractMetadataFromNameTable(const FT_Face& face);
+
 
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;

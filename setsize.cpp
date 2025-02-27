@@ -27,11 +27,10 @@ SetSize::SetSize(QSize Size, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SetSize)
 {
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);       // Remove Icon and Dialog title
     ui->setupUi(this);
-
     ui->lineEdit_CustomWidth->setValidator(new QIntValidator(0, 2048, this));
     ui->lineEdit_CustomHeight->setValidator(new QIntValidator(0, 2048, this));
-
     m_Size = Size;
     CheckButton();
 }

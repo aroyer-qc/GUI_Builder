@@ -2268,9 +2268,6 @@ font-size: 12px;
      <string>File</string>
     </property>
     <addaction name="actionNew_Project"/>
-    <addaction name="actionOpen_Binary"/>
-    <addaction name="actionSave_Binary"/>
-    <addaction name="actionSave_Binary_As"/>
     <addaction name="separator"/>
     <addaction name="actionSave_Skin"/>
     <addaction name="actionOpen_Skin"/>

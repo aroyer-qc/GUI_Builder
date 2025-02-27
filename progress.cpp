@@ -25,10 +25,7 @@ Progress::Progress(QString Header, QString Stage1, QString Stage2, QString Statu
     QWidget(parent),
     ui(new Ui::Progress)
 {
-    //parent->
-
-    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);
-    //setModa
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);       // Remove Icon and Dialog title
     ui->setupUi(this);
     ui->LabelHeader->setText(Header);
     ui->progressBar->setValue(0);

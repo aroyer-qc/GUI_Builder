@@ -27,6 +27,7 @@ SetEndian::SetEndian(eEndianess Endian, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SetEndian)
 {
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint);       // Remove Icon and Dialog title
     ui->setupUi(this);
     m_Endian = Endian;
     if (m_Endian == LITTLE_ENDIAN) on_radioButton_Little_clicked();

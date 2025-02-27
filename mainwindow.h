@@ -86,10 +86,8 @@ class MainWindow : public QMainWindow
         void SetEndianess(eEndianess Endian);
 
         // Public slot for file operation
-        void on_OpenSkinDone();
-        void on_SaveSkinDone();
-        void on_OpenBinaryDone();
-        void on_SaveBinaryDone();
+        void on_OpenDone();
+        void on_SaveDone();
 
         // Public slot for Image
         void AddImage(sLoadingInfo LoadingInfo);
@@ -153,9 +151,6 @@ class MainWindow : public QMainWindow
 
         // Menu action
         void on_actionNew_Project_triggered();
-        void on_actionOpen_Binary_triggered();
-        void on_actionSave_Binary_triggered();
-        void on_actionSave_Binary_As_triggered();
         void on_actionOpen_Skin_triggered();
         void on_actionSave_Skin_triggered();
         void on_actionSave_Skin_As_triggered();
@@ -178,10 +173,8 @@ class MainWindow : public QMainWindow
         void     closeEvent              (QCloseEvent *bar);
 
         // Function for file operation
-        void     BinaryOpen              (QString File);
-        void     BinarySave              ();
-        void     SkinOpen                (QString File);
-        void     SkinSave                ();
+        void     Open                    (QString File);
+        void     Save                    ();
         bool     SaveSkinAndClearData    ();
         void     setSkinHasUnsavedData   (bool state);
 
@@ -255,8 +248,6 @@ class MainWindow : public QMainWindow
         AddingAudio*            m_pLoadAudio;
         QThread*                m_pSkinSave;
         QThread*                m_pSkinOpen;
-        QThread*                m_pBinarySave;
-        QThread*                m_pBinaryOpen;
         bool                    m_IsSkinSaveAs;                 // Save As or Save
         bool                    m_IsSkinHasUnsavedData;         // is there any unsaved data
         bool                    m_IsWarningDisplayed;
