@@ -229,7 +229,7 @@ bool MainWindow::SaveSkinAndClearData()
         if(msgBox.exec() == QMessageBox::Yes)
         {
             m_IsWarningDisplayed = false;
-            on_actionSave_Skin_triggered();  // todo how to decide wich method to use!!!????
+            on_actionSave_Skin_triggered();
             m_IsWarningDisplayed = true;
             FileSaveInProgress = true;
             m_IsNeedToClearDataAfterSave = true;

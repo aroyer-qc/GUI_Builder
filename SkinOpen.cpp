@@ -101,8 +101,11 @@ SkinOpen::SkinOpen(QString SkinPathAndFileName, QObject* parent) : QThread(paren
     m_pFontSamplingInfo   = ((MainWindow*)parent)->getFontSamplingInfoPtr();
     m_pFontInfo           = ((MainWindow*)parent)->getFontInfoPtr();
 
-    //Endian
+    // Endian
     m_pEndian              = ((MainWindow*)parent)->getEndianPtr();
+    
+    // Skin Type
+    m_pSkinType            = ((MainWindow*)parent)->getSkinTypePtr();
 }
 
 // ************************************************************************************************
@@ -116,34 +119,50 @@ SkinOpen::~SkinOpen()
 void SkinOpen::run(void)
 {
     QVector<uint8_t>    CompxData;
-    QFile               File(m_SkinPathAndFileName);
-    QFileInfo           FileInfo(File.fileName());
     uint8_t             Data;
-
-    File.open(QIODevice::ReadOnly);
-
+    QFile               File;
+    QFileInfo           FileInfo(m_SkinPathAndFileName);
+  
     emit OpenProgress("", 0);
 
-    // Open skin file and fill data
-    File.seek(0);
-    int Size = File.size();
-    for(int i = 0; i < Size; i++)
-    {
-        File.getChar((char*)&Data);
-        CompxData.append(Data);
-    }
+    ReadXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
 
-    // Process data
-    m_NextBlockOfData = 0;                        // Not used at this point
-    OpenImageInfo(&CompxData);                    // Open image info structure
-    DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to method found in file
+
+
+    if(m_pSkinType == SKIN_TYPE_LOADABLE)               // Open loading skin file and fill data
+    {
+        File.setFileName(FileInfo.baseName() + ".lsk");
+        File.open(QIODevice::ReadOnly);
+        File.seek(0);
+
+        int Size = File.size();
+
+        for(int i = 0; i < Size; i++)
+        {
+            File.getChar((char*)&Data);
+            CompxData.append(Data);
+        }
+
+        // Process data
+        m_NextBlockOfData = 0;                        // Not used at this point
+        OpenImageInfo(&CompxData);                    // Open image info structure
+        DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to method found in file
+        
+        // We don't get the data for the font, because it will be to heady to rebuild font from data file, we use info from skn file to rebuild the data file when it's time to save.
+    }
+    else // m_pSkinType == SKIN_TYPE_BINARY           Open binary skin file and fill data
+    {
+        File.setFileName(FileInfo.baseName() + ".bin");
+        File.open(QIODevice::ReadOnly);
+        File.seek(0);
+        int Size = File.size();
+
+        
+    }
 
     // Close file and exit
     File.close();
-
-    ReadXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".xml");
     emit OpenProgress("", 100);
-
     emit OpenDone();
     exec();
 }
@@ -244,6 +263,15 @@ void SkinOpen::ReadXML(QString Path)
 
     xmlGet.load(Path);
 
+    if(xmlGet.findNext("Project Type"))
+    {
+        *m_pSkinType = (xmlGet.getString() == "Loadable Skin") ? SKIN_TYPE_LOADABLE : SKIN_TYPE_BINARY;
+    }
+    else
+    {
+        *m_pSkinType = SKIN_TYPE_BINARY;
+    }
+
     if(xmlGet.findNext("Endian"))
     {
         xmlGet.descend();
@@ -259,13 +287,48 @@ void SkinOpen::ReadXML(QString Path)
     if(xmlGet.findNext("Image"))
     {
         xmlGet.descend();
+
+        if(xmlGet.findNext("Count"))
+        {
+            m_ImageCount = xmlGet.getInt();
+        }
+        
         for(int i = 0; i < m_ImageCount; i++)
         {
             ImageInfo = m_pImageInfo->at(i);
-            if(xmlGet.findNext("File"))
+
+            if(xmlGet.findNext("Data"))
             {
-                ImageInfo.Filename = xmlGet.getString();
+                xmlGet.descend();
+
+                if(xmlGet.findNext("File"))
+                {
+                    ImageInfo.Filename = xmlGet.getString();
+                }
+
+                if(xmlGet.findNext("OffSet"))
+                {
+                    (*m_pImageInfo)[i].RawIndex = QImage::Format(xmlGet.getInt());
+                }
+
+                if(xmlGet.findNext("Size"))
+                {
+                    (*m_pImageInfo)[i].DataSize = size_t(xmlGet.getInt());
+                }
+
+                if(xmlGet.findNext("Format"))
+                {
+                    (*m_pImageInfo)[i].PixelFormat = QImage::Format(xmlGet.getInt());
+                }
+
+                if(xmlGet.findNext("Width"))
+                {
+                    (*m_pImageInfo)[i].DataSize = xmlGet.getInt();
+                }
+                
+                xmlGet.rise();
             }
+
             m_pImageInfo->replace(i, ImageInfo);
         }
         xmlGet.rise();
@@ -276,6 +339,11 @@ void SkinOpen::ReadXML(QString Path)
         // Font Information
         xmlGet.descend();
 
+        if(xmlGet.findNext("Count"))
+        {
+            m_ImageCount = xmlGet.getInt();
+        }
+
         while(xmlGet.findNext("Family"))
         {
             m_pFontInfo->append(xmlGet.getFont());
@@ -285,6 +353,15 @@ void SkinOpen::ReadXML(QString Path)
 
         xmlGet.rise();
     }
+
+    // Audio Information
+    // TODO
+
+    // Label Information
+    // TODO
+
+    // LabelList Information
+    // TODO
 }
 
 // ************************************************************************************************

@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_currentDir.setPath(GetPathFromXML());
     m_DisplaySize = GetDisplaySizeFromXML();
     m_Endian = BIG_ENDIAN;
-    m_SkinType = SKIN_TYPE_LOADABLE_SKIN;
+    m_SkinType = SKIN_TYPE_BINARY;
 
     m_pStatusLabel = new QLabel();
     ui->statusBar->addWidget(m_pStatusLabel);
@@ -113,7 +113,7 @@ void MainWindow::ClearAllData()
 {
 
     m_SpecialNote.clear();      // Make sure there is no special note to add to Status bar.
-    m_SkinType = SKIN_TYPE_LOADABLE_SKIN;
+    m_SkinType = SKIN_TYPE_BINARY;
     m_Endian = BIG_ENDIAN;
     m_SkinSize = 0;
     m_SkinName = "none";

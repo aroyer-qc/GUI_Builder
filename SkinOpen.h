@@ -49,6 +49,7 @@ class SkinOpen : public QThread
 
 
         eEndianess*             m_pEndian;
+        int*                    m_pSkinType;
         QVector<uint8_t>*       m_pRawData;
         QVector<sImageInfo>*    m_pImageInfo;
         QString                 m_SkinPathAndFileName;

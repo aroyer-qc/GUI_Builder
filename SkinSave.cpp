@@ -106,29 +106,39 @@ SkinSave::~SkinSave()
 void SkinSave::run(void)
 {
     QVector<uint8_t>    CompxData;
-    QFile               File(m_SkinPathAndFileName);
-    QFileInfo           FileInfo(File.fileName());
-
-    File.open(QIODevice::WriteOnly);
-
+    QFile               File;
+    QFileInfo           FileInfo(m_SkinPathAndFileName);
+  
     emit SaveProgress("", 0);
+
 
     // Process data
     m_ThisBlockOfData     = 0;
     m_PreviousBlockOfData = 0;
 
-    if(SaveImageInfo(&CompxData) == true)           // Save image info structure
+    if(m_pSkinType == SKIN_TYPE_LOADABLE)
     {
-        CompressAllImage(&CompxData);               // Try each compression method, and save best for each image in file
-        m_PreviousBlockOfData = m_ThisBlockOfData;
-        m_ThisBlockOfData = CompxData.size();
-    }
+        File.setFileName(FileInfo.baseName() + ".lsk");
+        File.open(QIODevice::WriteOnly);
 
-    if(SaveFontInfo(&CompxData) == true)            // Save image info structure
+        if(SaveImageInfo(&CompxData) == true)           // Save image info structure
+        {
+            CompressAllImage(&CompxData);               // Try each compression method, and save best for each image in file
+            m_PreviousBlockOfData = m_ThisBlockOfData;
+            m_ThisBlockOfData = CompxData.size();
+        }
+
+        if(SaveFontInfo(&CompxData) == true)            // Save image info structure
+        {
+            CompressAllFont(&CompxData);                // Try each compression method, and save best for each image in file
+            m_PreviousBlockOfData = m_ThisBlockOfData;
+            m_ThisBlockOfData = CompxData.size();
+        }
+    }
+    else // SKIN_TYPE_BINARY
     {
-        CompressAllFont(&CompxData);                // Try each compression method, and save best for each image in file
-        m_PreviousBlockOfData = m_ThisBlockOfData;
-        m_ThisBlockOfData = CompxData.size();
+        File.setFileName(FileInfo.baseName() + ".bin");
+        File.open(QIODevice::WriteOnly);
     }
 
     // Save all data to skin file
@@ -136,8 +146,7 @@ void SkinSave::run(void)
 
     // Close file and exit
     File.close();
-
-    CreateXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".xml");
+    CreateXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
     emit SaveProgress("", 100);
 
     emit SaveDone();
@@ -576,20 +585,23 @@ void SkinSave::CreateXML(QString Path)
     
     QXmlPut xmlPut("Skin");
 
-    // Little or Big endian
-    xmlPut.putString("Project Type", (*m_pSkinType == SKIN_TYPE_LOADABLE_SKIN) ? "Loadable Skin" : "Binary Skin");
-    xmlPut.descend("Endian");
-    xmlPut.putString("State", (*m_pEndian == LITTLE_ENDIAN) ? "Little" : "Big");
+    xmlPut.descend("Image");
+    xmlPut.putString("Type", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
+    //xmlPut.putInt("Width", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
+    //xmlPut.putInt("Height", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
+    xmlPut.putString("Endian", (*m_pEndian == LITTLE_ENDIAN) ? "Little" : "Big");
     xmlPut.rise();
 
     // Image information
     xmlPut.descend("Image");
+    xmlPut.putInt("Count", m_ImageCount);
+    
     for(int i = 0; i < m_ImageCount; i++)
     {
-        xmlPut.putString("File", m_pImageInfo->at(i).Filename);
         xmlPut.descend("Data");
-        xmlPut.putInt("OffSet", 0x00000000);
-        xmlPut.putInt("Data Size", m_pImageInfo->at(i).DataSize);
+        xmlPut.putString("File", m_pImageInfo->at(i).Filename);
+        xmlPut.putInt("OffSet", m_pImageInfo->at(i).RawIndex);
+        xmlPut.putInt("Size", m_pImageInfo->at(i).DataSize);
         xmlPut.putInt("Format", m_pImageInfo->at(i).PixelFormat);
         xmlPut.putInt("Width", m_pImageInfo->at(i).Size.width());
         xmlPut.putInt("Height", m_pImageInfo->at(i).Size.height());
@@ -599,11 +611,12 @@ void SkinSave::CreateXML(QString Path)
 
     // Font Information
     xmlPut.descend("Font");
+    xmlPut.putInt("Count", m_FontCount);
 
     for(int i = 0; i < m_FontCount; i++)
     {
-        xmlPut.putFont("Family", m_pFontInfo->at(i));
         xmlPut.descend("Data");
+        xmlPut.putFont("Family", m_pFontInfo->at(i));
         xmlPut.putInt("Option", m_pFontSamplingInfo->at(i));
         xmlPut.putString("Filename", GetFontFile(m_pFontInfo->at(i).family()));
         ReadFontMetadata("C:/path/to/your/fontfile.ttf");
@@ -614,11 +627,12 @@ void SkinSave::CreateXML(QString Path)
     #if 0 // do Audio
     // Audio Information
     xmlPut.descend("Audio");
+    xmlPut.putInt("Count", m_AudioCount);
 
-    for(int i = 0; i < m_FontCount; i++)
+    for(int i = 0; i < m_AudioCount; i++)
     {
-        xmlPut.putString("File", m_pAudioInfo->at(i).Filename);
         xmlPut.descend("Data");
+        xmlPut.putString("File", m_pAudioInfo->at(i).Filename);
         xmlPut.putString("Type", m_pAudioInfo->at(i).xxx);
         xmlPut.putString("Sampling", m_pAudioInfo->at(i).xxx);
         xmlPut.rise();
@@ -629,21 +643,21 @@ void SkinSave::CreateXML(QString Path)
     #if 0 // do Label
     // Audio Information
     xmlPut.descend("Label");
+    xmlPut.putInt("Count", m_LabelCount);
 
-    for(int i = 0; i < m_FontCount; i++)
+    for(int i = 0; i < m_LabelCount; i++)
     {
-        xmlPut.putString("Label", m_pAudioInfo->at(i).Filename);
         xmlPut.descend("Data");
-        xmlPut.putString("Type", m_pAudioInfo->at(i).xxx);
-        xmlPut.putString("Sampling", m_pAudioInfo->at(i).xxx);
+        xmlPut.putString("Label", m_pLabelInfo->at(i).Filename);
         xmlPut.rise();
     }
     xmlPut.rise();
 
     // Audio Information
     xmlPut.descend("Label list");
+    xmlPut.putInt("Count", m_LabelListCount);
 
-    for(int i = 0; i < m_FontCount; i++)
+    for(int i = 0; i < m_LabelListCount; i++)
     {
         xmlPut.putString("Label List", m_pLabelList);
         xmlPut.descend("Data");

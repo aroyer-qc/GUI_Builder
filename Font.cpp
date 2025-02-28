@@ -32,11 +32,17 @@
 
 void MainWindow::on_ButtonAddFont_clicked()
 {
+    QFontDialog fontDialog;
     QFont Font;
     int row;
     bool ok;
 
-    Font = QFontDialog::getFont(&ok, QFont("Arial", 12), this);
+    //fontDialog.setOption(QFontDialog::DontUseNativeDialog, true);
+    //fontDialog.resize(800, 600);
+    fontDialog.setStyleSheet("QPushButton {color: #DFD;background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97); border-width: 3px; border-color: #778EB8; border-style: solid; border-radius: 7; padding: 3px; font: bold \"Ubuntu\"; font-size: 12px; padding-left: 5px; padding-right: 5px; }");
+    fontDialog.repaint();
+
+    Font = fontDialog.getFont(&ok, QFont("Arial", 12), this);
     if(ok)
     {
         setSkinHasUnsavedData(true);
@@ -57,6 +63,47 @@ void MainWindow::on_ButtonAddFont_clicked()
         LoadFont(row);
     }
 }
+
+/*
+        QFileDialog fileDialog(this, tr("Open file"), m_SkinDir.absolutePath(), tr("Skin file (*.skn)"));
+        fileDialog.setOption(QFileDialog::DontUseNativeDialog, true);
+        fileDialog.resize(800, 600);
+        fileDialog.setStyleSheet("QPushButton {color: #DFD;background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97); border-width: 3px; border-color: #778EB8; border-style: solid; border-radius: 7; padding: 3px; font: bold \"Ubuntu\"; font-size: 12px; padding-left: 5px; padding-right: 5px; }");
+
+        QListView *listView = fileDialog.findChild<QListView*>("listView");
+        if(listView)
+        {
+            listView->setMinimumSize(400, 300); // Adjust the minimum size of the list view pane
+        }
+
+        QTreeView *treeView = fileDialog.findChild<QTreeView*>("treeView");
+        if(treeView)
+        {
+            treeView->setMinimumSize(400, 300); // Adjust the minimum size of the tree view pane
+        }
+
+        QList<QPushButton*> buttons = fileDialog.findChildren<QPushButton*>();
+        for(QPushButton *button : buttons)
+        {
+            button->setMinimumWidth(150); // Set the minimum width of the buttons
+        }
+
+        if (fileDialog.exec() == QDialog::Accepted)
+        {
+            QString File = fileDialog.selectedFiles().first();
+            if (!File.isEmpty())
+            {
+                Open(File);
+            }
+        }
+    }
+    else
+    {
+        m_IsNeedCompleteFileOpen = true;            // Will trigger file open at the end saving
+    }
+
+*/
+
 
 // ************************************************************************************************
 
