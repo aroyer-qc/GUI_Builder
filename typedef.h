@@ -48,6 +48,8 @@
 #define SAMPLING_BOX_X_SIZE     230
 #define SAMPLING_BOX_Y_SIZE     200
 
+#define SKIN_TYPE_LOADABLE_SKIN 0
+#define SKIN_TYPE_BINARY        1
 
 
 typedef QSize QOffset;

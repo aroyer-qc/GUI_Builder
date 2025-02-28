@@ -90,6 +90,9 @@ SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(paren
 
     //Endian
     m_pEndian              = ((MainWindow*)parent)->getEndianPtr();
+
+    // Skin Type
+    m_pSkinType            = ((MainWindow*)parent)->getSkinTypePtr();
 }
 
 // ************************************************************************************************
@@ -574,6 +577,7 @@ void SkinSave::CreateXML(QString Path)
     QXmlPut xmlPut("Skin");
 
     // Little or Big endian
+    xmlPut.putString("Project Type", (*m_pSkinType == SKIN_TYPE_LOADABLE_SKIN) ? "Loadable Skin" : "Binary Skin");
     xmlPut.descend("Endian");
     xmlPut.putString("State", (*m_pEndian == LITTLE_ENDIAN) ? "Little" : "Big");
     xmlPut.rise();
@@ -601,7 +605,8 @@ void SkinSave::CreateXML(QString Path)
         xmlPut.putFont("Family", m_pFontInfo->at(i));
         xmlPut.descend("Data");
         xmlPut.putInt("Option", m_pFontSamplingInfo->at(i));
-        xmlPut.putString("Filename", GetFontFiles(m_pFontInfo->at(i).family()));
+        xmlPut.putString("Filename", GetFontFile(m_pFontInfo->at(i).family()));
+        ReadFontMetadata("C:/path/to/your/fontfile.ttf");
         xmlPut.rise();
     }
     xmlPut.rise();
@@ -657,27 +662,26 @@ void SkinSave::CreateXML(QString Path)
 
 // ************************************************************************************************
 
-QString SkinSave::GetFontFiles(const QString Family)
+QString SkinSave::GetFontFile(const QString& fontName)
 {
-    QString fontFiles;
+    QStringList fontFiles;
 
-    QList<QFontDatabase::WritingSystem> writingSystems = QFontDatabase::writingSystems(Family);
-
-    for(QFontDatabase::WritingSystem ws : writingSystems)
+    QList<QFontDatabase::WritingSystem> writingSystems = QFontDatabase::writingSystems(fontName);
+    for (QFontDatabase::WritingSystem ws : writingSystems)
     {
-        QStringList fonts = QFontDatabase::applicationFontFamilies(ws);
-        for(const QString f : fonts)
+        QStringList fonts = QFontDatabase::families(ws);
+        for(const QString& f : fonts)
         {
-            if(f == Family)
+            if(f == fontName)
             {
                 fontFiles.append(f);
+                return fontFiles.join(",");
             }
         }
     }
 
-    return fontFiles;
+    return "";
 }
-
 
 // ************************************************************************************************
 

@@ -194,11 +194,11 @@ class SkinSave : public QThread
         void        CreateXML               (QString Path);
         void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
         void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
-        QString     GetFontFiles            (const QString Family);
+        QString     GetFontFile             (const QString& fontName);
         void        ReadFontMetadata        (const char* fontFilePath);
         void        ExtractMetadataFromNameTable(const FT_Face& face);
 
-
+        int*                    m_pSkinType;
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;
         QString                 m_SkinPathAndFileName;

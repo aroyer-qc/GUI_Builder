@@ -72,6 +72,7 @@ class MainWindow : public QMainWindow
         QVector<sAudioInfo>*    getAudioInfoPtr()                       { return &m_AudioInfo; }
         QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
         eEndianess*             getEndianPtr()                          { return &m_Endian; }
+        int*                    getSkinTypePtr()                        { return &m_SkinType; }
         static QScreen*         getPrimaryScreen()                      { return m_pPrimary; }
 
         static void             setPrimaryScreen(QScreen* pScreen)      { m_pPrimary = pScreen; }
@@ -154,6 +155,7 @@ class MainWindow : public QMainWindow
         void on_actionOpen_Skin_triggered();
         void on_actionSave_Skin_triggered();
         void on_actionSave_Skin_As_triggered();
+        void on_SaveBinaryButton_clicked();
         void on_actionSet_Display_Size_triggered();
         void on_comboBoxResize_currentIndexChanged(int index);
         void on_comboBoxPixelFormat_currentIndexChanged(int index);
@@ -218,6 +220,7 @@ class MainWindow : public QMainWindow
         void     BinToFile               (QTextStream* pStream, QString pFileName);
 
         Ui::MainWindow*         ui;
+        int                     m_SkinType;
         eEndianess              m_Endian;
         static QScreen*         m_pPrimary;
 

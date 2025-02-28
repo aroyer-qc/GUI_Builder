@@ -14,11 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog {
-	background-image: url(:/Images/Marble.jpg);
-}
-
-QLabel{
+   <string notr="true">QLabel{
 font: bold &quot;Ubuntu&quot;;
 font-size: 12px;
 color: lightgray;
