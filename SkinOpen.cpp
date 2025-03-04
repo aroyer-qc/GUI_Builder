@@ -31,6 +31,8 @@ void MainWindow::Open(QString File)
     m_SkinName     = File;
     m_IsSkinSaveAs = false;
 
+    //Decompressing shouls change according to type of skin
+
     m_pProgress = new Progress("Open skin file", "Loading", "Decompressing", m_SkinName);
     m_pSkinOpen = new SkinOpen(m_SkinName, this);
     connect(m_pSkinOpen, SIGNAL(OpenProgress(QString, int)), m_pProgress, SLOT(on_UpdateProgress(QString, int)));
@@ -51,7 +53,8 @@ void MainWindow::on_OpenDone()
     delete m_pProgress;
     delete m_pSkinOpen;
 
-    // Add each found item in the table
+    //----------------------------------
+    // Add each found image in the table
     Count = m_ImageInfo.count();
     for(int i = 0; i < Count; i++)
     {
@@ -68,7 +71,8 @@ void MainWindow::on_OpenDone()
 
     m_SkinSize += m_RawImage.size();
 
-    // Add each found item in the table
+    //---------------------------------
+    // Add each found font in the table
     m_IsAllFontValide = true;
     Count = m_Font.count();
     for(int i = 0; i < Count; i++)
@@ -78,6 +82,25 @@ void MainWindow::on_OpenDone()
         SetTableProperties(i);
         ui->TableFont->blockSignals(false);
     }
+
+    //----------------------------------
+    // Add each found audio in the table
+    /*
+    m_IsAllFontValide = true;
+    Count = m_Audio.count();
+
+    for(int i = 0; i < Count; i++)
+    {
+        ui->TableFont->blockSignals(true);
+        InsertNewRowInTableFont(i,
+                                m_Audio[i].Filename,
+        SetTableProperties(i);
+        ui->TableAudio->blockSignals(false);
+    }
+
+    And also add label!
+
+    */
 
     setSkinHasUnsavedData(false);
     UpdateStatusBar();
@@ -101,8 +124,15 @@ SkinOpen::SkinOpen(QString SkinPathAndFileName, QObject* parent) : QThread(paren
     m_pFontSamplingInfo   = ((MainWindow*)parent)->getFontSamplingInfoPtr();
     m_pFontInfo           = ((MainWindow*)parent)->getFontInfoPtr();
 
+    // Font
+    //m_pAudioInfo        = ((MainWindow*)parent)->getAudioInfoPtr();
+
+    // Label and Label List
+    //m_pLabelInfo        = ((MainWindow*)parent)->getLabelInfoPtr();
+    //m_pLabelList        = ((MainWindow*)parent)->getLabelListInfoPtr();
+
     // Endian
-    m_pEndian              = ((MainWindow*)parent)->getEndianPtr();
+    m_pEndian             = ((MainWindow*)parent)->getEndianPtr();
     
     // Skin Type
     m_pSkinType            = ((MainWindow*)parent)->getSkinTypePtr();
@@ -126,38 +156,35 @@ void SkinOpen::run(void)
     emit OpenProgress("", 0);
 
     ReadXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
+    File.setFileName(FileInfo.baseName() + ((m_pSkinType == SKIN_TYPE_LOADABLE) ? ".lsk" : ".bin"));
+    File.open(QIODevice::ReadOnly);
+    File.seek(0);
+    int Size = File.size();
+    m_NextBlockOfData = 0;
 
-
-
-    if(m_pSkinType == SKIN_TYPE_LOADABLE)               // Open loading skin file and fill data
+    // Read Raw Data
+    for(int i = 0; i < Size; i++)
     {
-        File.setFileName(FileInfo.baseName() + ".lsk");
-        File.open(QIODevice::ReadOnly);
-        File.seek(0);
+        File.getChar((char*)&Data);
+        CompxData.append(Data);
+    }
 
-        int Size = File.size();
-
-        for(int i = 0; i < Size; i++)
-        {
-            File.getChar((char*)&Data);
-            CompxData.append(Data);
-        }
-
+    if(m_pSkinType == SKIN_TYPE_LOADABLE)             // Open loading skin file and fill data
+    {
         // Process data
-        m_NextBlockOfData = 0;                        // Not used at this point
         OpenImageInfo(&CompxData);                    // Open image info structure
         DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to method found in file
-        
-        // We don't get the data for the font, because it will be to heady to rebuild font from data file, we use info from skn file to rebuild the data file when it's time to save.
+        // OpenAudioInfo(&CompxData);                 // Open audio info structure
+        // DeCompressAllAudio(&CompxData);            // Read all Audio and Decompress according to method found in file
+        // OpenLabelInfo(&CompxData);                 // Open label info structure
+        // DeCompressAllLabel(&CompxData);            // Read all Label and Decompress according to method found in file
+        // OpenLabelListInfo(&CompxData);             // Open label list info structure
+        // DeCompressAllLabelList(&CompxData);        // Read all Label and Decompress according to method found in file
+        // We don't get the data for the font, because it will be too heavy to rebuild font data from data file, we use info from skn file to rebuild the data file when it's time to save.
     }
     else // m_pSkinType == SKIN_TYPE_BINARY           Open binary skin file and fill data
     {
-        File.setFileName(FileInfo.baseName() + ".bin");
-        File.open(QIODevice::ReadOnly);
-        File.seek(0);
-        int Size = File.size();
 
-        
     }
 
     // Close file and exit

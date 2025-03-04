@@ -35,8 +35,8 @@ void MainWindow::on_ButtonAddImage_clicked()
     QString Path;
 
     Path   = m_currentDir.absolutePath();
-    m_pLoadImage = new AddingImage(CALLER_IMAGE, Path, m_DisplaySize);
-    connect(m_pLoadImage, SIGNAL(AddImage(sLoadingInfo)), this, SLOT(AddImage(sLoadingInfo)));
+    m_pLoadImage = new AddingImage(Path, m_DisplaySize);
+    connect(m_pLoadImage, SIGNAL(AddImage(sLoadingImageInfo)), this, SLOT(AddImage(sLoadingImageInfo)));
     connect(m_pLoadImage, SIGNAL(CloseAddImage()), this, SLOT(CloseAddImage()));
     m_pLoadImage->show();
 }
@@ -45,7 +45,7 @@ void MainWindow::on_ButtonAddImage_clicked()
 
 void MainWindow::CloseAddImage()
 {
-    disconnect(m_pLoadImage, SIGNAL(AddImage(sLoadingInfo)), this, SLOT(AddImage(sLoadingInfo)));
+    disconnect(m_pLoadImage, SIGNAL(AddImage(sLoadingImageInfo)), this, SLOT(AddImage(sLoadingImageInfo)));
     disconnect(m_pLoadImage, SIGNAL(CloseAddImage()), this, SLOT(CloseAddImage()));
     delete m_pLoadImage;
 }
@@ -253,7 +253,7 @@ void MainWindow::on_ImageCheckerBoardSlider_sliderMoved(int position)
 
 // ************************************************************************************************
 
-void MainWindow::AddImage(sLoadingInfo LoadingInfo)
+void MainWindow::AddImage(sLoadingImageInfo LoadingInfo)
 {
     QRgb        Pixel;
     uint16_t    ItemCount;

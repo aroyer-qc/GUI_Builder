@@ -26,6 +26,11 @@
 //#include <iostream>
 #include <qfontdatabase.h>
 
+#include <QDir>
+#include <ft2build.h>
+#include <freetype/ftsnames.h>
+#include FT_FREETYPE_H
+
 // ************************************************************************************************
 
 void MainWindow::Save()
@@ -80,6 +85,10 @@ SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(paren
 {
     m_SkinPathAndFileName = SkinPathAndFileName;
 
+    // Skin Type
+    m_pSkinType           = ((MainWindow*)parent)->getSkinTypePtr();
+    m_pSkinSize           = ((MainWindow*)parent)->getSkinSizePtr();
+
     // Image
     m_pRawData            = ((MainWindow*)parent)->getRawDataPtr();
     m_pImageInfo          = ((MainWindow*)parent)->getImageInfoPtr();
@@ -91,8 +100,6 @@ SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(paren
     //Endian
     m_pEndian              = ((MainWindow*)parent)->getEndianPtr();
 
-    // Skin Type
-    m_pSkinType            = ((MainWindow*)parent)->getSkinTypePtr();
 }
 
 // ************************************************************************************************
@@ -111,10 +118,16 @@ void SkinSave::run(void)
   
     emit SaveProgress("", 0);
 
-
     // Process data
     m_ThisBlockOfData     = 0;
     m_PreviousBlockOfData = 0;
+
+
+    m_ImageCount = m_pImageInfo->size();
+    m_FontCount  = m_pFontInfo->count();
+    //m_AudioCount = m_pAudioInfo->count();
+    //m_LabelCount = m_pLabelInfo->count();
+    //m_labelListCount = m_plabelListInfo->count();
 
     if(m_pSkinType == SKIN_TYPE_LOADABLE)
     {
@@ -134,6 +147,28 @@ void SkinSave::run(void)
             m_PreviousBlockOfData = m_ThisBlockOfData;
             m_ThisBlockOfData = CompxData.size();
         }
+#if 0
+        if(SaveAudioInfo(&CompxData) == true)           // Save audio info structure
+        {
+            CompressAllAudio(&CompxData);               // Try each compression method, and save best for each audio in file
+            m_PreviousBlockOfData = m_ThisBlockOfData;
+            m_ThisBlockOfData = CompxData.size();
+        }
+
+        if(SaveLabelInfo(&CompxData) == true)           // Save label info structure
+        {
+            CompressAllLabel(&CompxData);               // Try each compression method, and save best for all label in file
+            m_PreviousBlockOfData = m_ThisBlockOfData;
+            m_ThisBlockOfData = CompxData.size();
+        }
+
+        if(SaveLabelListInfo(&CompxData) == true)       // Save label list info structure
+        {
+            CompressAllLabelListFont(&CompxData);       // Try each compression method, and save best for all label list in file
+            m_PreviousBlockOfData = m_ThisBlockOfData;
+            m_ThisBlockOfData = CompxData.size();
+        }
+#endif
     }
     else // SKIN_TYPE_BINARY
     {
@@ -158,8 +193,6 @@ void SkinSave::run(void)
 bool SkinSave::SaveImageInfo(QVector<uint8_t>* pCompxData)
 {
     GFX_ePixelFormat PixelFormat;
-
-    m_ImageCount = m_pImageInfo->size();
 
     if(m_ImageCount != 0)
     {
@@ -279,8 +312,6 @@ void SkinSave::CompressAllImage(QVector<uint8_t>* pCompxData)
 
 bool SkinSave::SaveFontInfo(QVector<uint8_t>* pCompxData)
 {
-    m_FontCount = m_pFontInfo->count();
-
     if(m_FontCount != 0)
     {
         if(m_ThisBlockOfData != 0)
@@ -557,7 +588,6 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, uint8_t Char)
         Replace_uint16(pCompxData, OffsetFontHeader + 1, uint16_t(Size));
         int8_t lb = m_pFontMetric->leftBearing(QChar(Char));
 
-
         if(lb < 0)
         {
             lb--;
@@ -580,22 +610,21 @@ void SkinSave::CompressFont(QVector<uint8_t>* pCompxData, uint8_t Char)
 
 void SkinSave::CreateXML(QString Path)
 {
-    //QFontDatabase fontDatabase;
-    //QStringList fontFamilies = fontDatabase.families();
-    
     QXmlPut xmlPut("Skin");
 
-    xmlPut.descend("Image");
     xmlPut.putString("Type", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
-    //xmlPut.putInt("Width", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
-    //xmlPut.putInt("Height", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
+    xmlPut.putInt("Width", m_pSkinSize->width());
+    xmlPut.putInt("Height", m_pSkinSize->height());
     xmlPut.putString("Endian", (*m_pEndian == LITTLE_ENDIAN) ? "Little" : "Big");
-    xmlPut.rise();
+    xmlPut.putInt("Size", 0);           // Size of the data in skin (raw uncompressed data)
 
+    //-------------------------------------------------------------------------
     // Image information
     xmlPut.descend("Image");
     xmlPut.putInt("Count", m_ImageCount);
-    
+    xmlPut.putInt("Offset", 0);         // Offset of the image data block in skin (raw uncompressed data)
+    xmlPut.putInt("Size", 0);           // Size of the image data block in skin (raw uncompressed data)
+
     for(int i = 0; i < m_ImageCount; i++)
     {
         xmlPut.descend("Data");
@@ -609,25 +638,33 @@ void SkinSave::CreateXML(QString Path)
     }
     xmlPut.rise();
 
+    //-------------------------------------------------------------------------
     // Font Information
     xmlPut.descend("Font");
     xmlPut.putInt("Count", m_FontCount);
+    xmlPut.putInt("Offset", 0);         // Offset of the font data block in skin (raw uncompressed data)
+    xmlPut.putInt("Size", 0);           // Size of the font data block in skin (raw uncompressed data)
 
     for(int i = 0; i < m_FontCount; i++)
     {
         xmlPut.descend("Data");
         xmlPut.putFont("Family", m_pFontInfo->at(i));
+        xmlPut.putInt("Offset", 0);
+        xmlPut.putInt("Size", 0);
         xmlPut.putInt("Option", m_pFontSamplingInfo->at(i));
-        xmlPut.putString("Filename", GetFontFile(m_pFontInfo->at(i).family()));
-        ReadFontMetadata("C:/path/to/your/fontfile.ttf");
+        sFontMetaData MetaData = ReadFontMetadata(GetFontFile(m_pFontInfo->at(i).family()));
+        xmlPut.putString("Filename",MetaData.FileName);
+        xmlPut.putString("Manufacturer", MetaData.Manufacturer);
+        xmlPut.putString("Designer", MetaData.Designer);
         xmlPut.rise();
     }
-    xmlPut.rise();
 
     #if 0 // do Audio
     // Audio Information
     xmlPut.descend("Audio");
     xmlPut.putInt("Count", m_AudioCount);
+    xmlPut.putInt("Offset", 0);         // Offset of the audio data block in skin (raw uncompressed data)
+    xmlPut.putInt("Size", 0);           // Size of the audio data block in skin (raw uncompressed data)
 
     for(int i = 0; i < m_AudioCount; i++)
     {
@@ -641,9 +678,11 @@ void SkinSave::CreateXML(QString Path)
     #endif
 
     #if 0 // do Label
-    // Audio Information
+    // Label Information
     xmlPut.descend("Label");
     xmlPut.putInt("Count", m_LabelCount);
+    xmlPut.putInt("Offset", 0);         // Offset of the label data block in skin (raw uncompressed data)
+    xmlPut.putInt("Size", 0);           // Size of the label data block in skin (raw uncompressed data)
 
     for(int i = 0; i < m_LabelCount; i++)
     {
@@ -653,9 +692,11 @@ void SkinSave::CreateXML(QString Path)
     }
     xmlPut.rise();
 
-    // Audio Information
+    // Label List Information
     xmlPut.descend("Label list");
     xmlPut.putInt("Count", m_LabelListCount);
+    xmlPut.putInt("Offset", 0);         // Offset of the label list data block in skin (raw uncompressed data)
+    xmlPut.putInt("Size", 0);           // Size of the label list data block in skin (raw uncompressed data)
 
     for(int i = 0; i < m_LabelListCount; i++)
     {
@@ -699,76 +740,100 @@ QString SkinSave::GetFontFile(const QString& fontName)
 
 // ************************************************************************************************
 
-void SkinSave::ReadFontMetadata(const char* fontFilePath)
+sFontMetaData SkinSave::ReadFontMetadata(QString fontFile)
 {
+    sFontMetaData MetaData = {0};
     FT_Library library;
     FT_Face face;
 
     // Initialize FreeType library
     if(FT_Init_FreeType(&library))
     {
-      //  std::cerr << "Could not initialize FreeType library" << std::endl;
-        return;
+        return {0};
     }
 
+    QString PathAndFileName = getFontFilePath(fontFile);
+    QByteArray utf8Bytes = PathAndFileName.toUtf8();
+    const char* charPointer = utf8Bytes.constData();
+
     // Load the font file
-    if(FT_New_Face(library, fontFilePath, 0, &face))
+    if(FT_New_Face(library, charPointer, 0, &face))
     {
-//        std::cerr << "Could not load font file: " << fontFilePath << std::endl;
         FT_Done_FreeType(library);
-        return;
+        return {0};
     }
 
     // Extract and display manufacturer and designer metadata
-    //extractMetadataFromNameTable(face);
-
-    // Clean up
-    FT_Done_Face(face);
-    FT_Done_FreeType(library);
-}
-
-// ************************************************************************************************
-
-//#if 0
-
-//#include <iostream>
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
-//#include <libxml/parser.h>
-//#include <libxml/tree.h>
-
-void SkinSave::ExtractMetadataFromNameTable(const FT_Face& face)
-{
-/*
     FT_UInt nameCount = FT_Get_Sfnt_Name_Count(face);
 
-    for (FT_UInt i = 0; i < nameCount; ++i) {
+    for(FT_UInt i = 0; i < nameCount; ++i)
+    {
         FT_SfntName sfntName;
-        if (FT_Get_Sfnt_Name(face, i, &sfntName) == 0) {
-            std::string nameID((const char*)sfntName.string, sfntName.string_len);
-            std::string nameValue((const char*)sfntName.string, sfntName.string_len);
+
+        if(FT_Get_Sfnt_Name(face, i, &sfntName) == 0)
+        {
+            const char* utf8Data = reinterpret_cast<const char*>(sfntName.string);
+            QString nameValue = QString::fromUtf8(utf8Data, sfntName.string_len);
 
             switch (sfntName.name_id) {
             case 8: // Manufacturer
-                std::cout << "Manufacturer: " << nameValue << std::endl;
+                MetaData.Manufacturer = nameValue;
                 break;
             case 9: // Designer
-                std::cout << "Designer: " << nameValue << std::endl;
+                MetaData.Designer = nameValue;
                 break;
             default:
                 break;
             }
         }
     }
-*/
+
+    QFileInfo fileInfo(PathAndFileName);
+    MetaData.FileName = fileInfo.fileName();
+
+    // Clean up
+    FT_Done_Face(face);
+    FT_Done_FreeType(library);
+
+    return MetaData;
 }
 
+// ************************************************************************************************
 
-#if 0
-int main() {
-    const char* fontFilePath = "path/to/your/fontfile.ttf";
-    readFontMetadata(fontFilePath);
-    return 0;
+QString SkinSave::getFontFilePath(const QString& fontFamily)
+{
+    // Set the font directory (Windows example)
+    QString fontDirPath = "C:/Windows/Fonts/";
 
+    QDir fontDir(fontDirPath);
+    QStringList fontFiles = fontDir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
 
-#endif
+    FT_Library library;
+    if (FT_Init_FreeType(&library))
+    {
+        qDebug() << "Failed to initialize FreeType library.";
+        return QString();
+    }
+
+    foreach (const QString& fileName, fontFiles)
+    {
+        QString filePath = fontDirPath + fileName;
+
+        FT_Face face;
+        if (FT_New_Face(library, filePath.toUtf8().constData(), 0, &face) == 0)
+        {
+            // Match the font family
+            QString faceFamilyName = QString::fromUtf8(face->family_name);
+            if (faceFamilyName.compare(fontFamily, Qt::CaseInsensitive) == 0)
+            {
+                FT_Done_Face(face);
+                FT_Done_FreeType(library);
+                return filePath; // Return the matching file path
+            }
+            FT_Done_Face(face);
+        }
+    }
+
+    FT_Done_FreeType(library);
+    return QString(); // No match found
+}

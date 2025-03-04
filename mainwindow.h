@@ -73,6 +73,7 @@ class MainWindow : public QMainWindow
         QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
         eEndianess*             getEndianPtr()                          { return &m_Endian; }
         int*                    getSkinTypePtr()                        { return &m_SkinType; }
+        QSize*                  getSkinSizePtr()                        { return &m_DisplaySize; }
         static QScreen*         getPrimaryScreen()                      { return m_pPrimary; }
 
         static void             setPrimaryScreen(QScreen* pScreen)      { m_pPrimary = pScreen; }
@@ -82,7 +83,7 @@ class MainWindow : public QMainWindow
 
     public slots:
 
-        void CodeLabel(eCaller Caller, int Item, QString CodeLabel);
+        //void CodeLabel(eCaller Caller, int Item, QString CodeLabel);
         void SetSizeDisplay(QSize Size);
         void SetEndianess(eEndianess Endian);
 
@@ -91,11 +92,11 @@ class MainWindow : public QMainWindow
         void on_SaveDone();
 
         // Public slot for Image
-        void AddImage(sLoadingInfo LoadingInfo);
+        void AddImage(sLoadingImageInfo LoadingInfo);
         void CloseAddImage();
 
         // Public slot for Audio
-        void AddAudio(sLoadingInfo LoadingInfo);
+        void AddAudio(sLoadingAudioInfo LoadingInfo);
         void CloseAddAudio();
 
     private slots:

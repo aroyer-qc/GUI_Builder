@@ -25,7 +25,8 @@
 // ************************************************************************************************
 
 // ************************************************************************************************
-
+/*  // I have no IDEA what is this!!
+ *
 void MainWindow::CodeLabel(eCaller Caller, int Item, QString Label)
 {
     QTableWidgetItem *LabelItem = new QTableWidgetItem(Label);
@@ -42,4 +43,4 @@ void MainWindow::CodeLabel(eCaller Caller, int Item, QString Label)
     {
     }
 }
-
+*/

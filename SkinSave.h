@@ -168,6 +168,7 @@
 
 #define RAW_DATA_OFFSET             0x0000003C
 
+typedef
 
 
 class SkinSave : public QThread
@@ -175,30 +176,31 @@ class SkinSave : public QThread
     Q_OBJECT
 
     public:
-        explicit    SkinSave                (QString SkinPathAndFileName, QObject* parent = 0);
-                    ~SkinSave               ();
+        explicit        SkinSave                (QString SkinPathAndFileName, QObject* parent = 0);
+                        ~SkinSave               ();
 
     signals:
-        void        SaveProgress            (QString Status, int Value);
-        void        SaveDone                ();
+        void            SaveProgress            (QString Status, int Value);
+        void            SaveDone                ();
 
     protected:
-        void        run                     ();
+        void            run                     ();
 
     private:
 
-        void        CompressAllFont         (QVector<uint8_t>* pCompxData);
-        void        CompressAllImage        (QVector<uint8_t>* pCompxData);
-        bool        SaveFontInfo            (QVector<uint8_t>* pCompxData);
-        bool        SaveImageInfo           (QVector<uint8_t>* pCompxData);
-        void        CreateXML               (QString Path);
-        void        ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
-        void        CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
-        QString     GetFontFile             (const QString& fontName);
-        void        ReadFontMetadata        (const char* fontFilePath);
-        void        ExtractMetadataFromNameTable(const FT_Face& face);
+        void            CompressAllFont         (QVector<uint8_t>* pCompxData);
+        void            CompressAllImage        (QVector<uint8_t>* pCompxData);
+        bool            SaveFontInfo            (QVector<uint8_t>* pCompxData);
+        bool            SaveImageInfo           (QVector<uint8_t>* pCompxData);
+        void            CreateXML               (QString Path);
+        void            ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
+        void            CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
+        QString         GetFontFile             (const QString& fontName);
+        sFontMetaData   ReadFontMetadata        (QString fontFile);
+        QString         getFontFilePath         (const QString& fontFamily);
 
         int*                    m_pSkinType;
+        QSize*                  m_pSkinSize;
         eEndianess*             m_pEndian;
         QVector<uint8_t>*       m_pRawData;
         QString                 m_SkinPathAndFileName;
@@ -210,6 +212,7 @@ class SkinSave : public QThread
         uint32_t                m_OffsetImageHeader;
 
         QVector<QFont>*         m_pFontInfo;
+        QVector<uint32_t>       m_FontSamplingSize;                         // get the size in bytes for the font sampling
         QVector<uint8_t>*       m_pFontSamplingInfo;
         QVector<uint32_t>       m_OffsetFontHeader;
         QVector<uint32_t>       m_OffsetFontHeight;

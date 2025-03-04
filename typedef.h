@@ -66,14 +66,6 @@ typedef enum Resizer_e
     AUTO_FORMAT,
 } eResizer;
 
-typedef enum Caller_e
-{
-    CALLER_IMAGE = 0,
-    CALLER_BUTTON,
-    CALLER_ICON,
-    CALLER_AUDIO,           // Not sure if it is good !
-} eCaller;
-
 typedef enum Scale_e
 {
     SCALE_NONE = 0,
@@ -184,8 +176,7 @@ typedef struct SkinInfoData_s
 #pragma pack (pop)
 } sSkinInfoData;
 
-
-typedef struct LoadingInfo_s
+typedef struct LoadingImageInfo_s
 {
     QString         PathAndFilename;
     QString         Filename;
@@ -194,14 +185,26 @@ typedef struct LoadingInfo_s
     QPoint          Offset;
     eScaler         ScaleType;
     QImage::Format  PixelFormat;
-} sLoadingInfo;
+} sLoadingImageInfo;
+
+typedef struct LoadingAudioInfo_s
+{
+    QString         PathAndFilename;
+    QString         Filename;
+    size_t          DataSize;
+} sLoadingAudioInfo;
 
 typedef struct Encoding_s
 {
     eCompression Type;
     int          Size;
-
-
 } sEncoding;
+
+typedef struct FontMetadata_s
+{
+    QString      FileName;
+    QString      Manufacturer;
+    QString      Designer;
+} sFontMetaData;
 
 #endif

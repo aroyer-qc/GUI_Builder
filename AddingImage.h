@@ -34,12 +34,12 @@ class AddingImage : public QDialog
         Q_OBJECT
 
     public:
-        explicit AddingImage(eCaller Caller, QString Path, QSize Size, QWidget *parent = 0);
+        explicit AddingImage(QString Path, QSize Size, QWidget *parent = 0);
         ~AddingImage();
 
     signals:
 
-        void AddImage(sLoadingInfo LoadingInfo);                // Signal for Image file
+        void AddImage(sLoadingImageInfo LoadingInfo);           // Signal for Image file
         void CloseAddImage();                                   // signal to Main app to close this form
 
     private slots:
@@ -82,7 +82,6 @@ class AddingImage : public QDialog
         QImage::Format          m_PixelFormat;
         QGraphicsPixmapItem*    m_pPixmapItem;
         QSize                   m_Size;
-        eCaller                 m_Caller;
         int                     m_verticalScrollRange;
         int                     m_horizontalScrollRange;
 };

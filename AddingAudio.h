@@ -34,12 +34,12 @@ class AddingAudio : public QDialog
         Q_OBJECT
 
     public:
-        explicit AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget *parent = 0);
+        explicit AddingAudio(QString Path, QSize Size, QWidget *parent = 0);
         ~AddingAudio();
 
     signals:
 
-        void AddAudio(sLoadingInfo LoadingInfo);                // Signal for Audio file
+        void AddAudio(sLoadingAudioInfo LoadingInfo);                // Signal for Audio file
         void CloseAddAudio();                                   // signal to Main app to close this form
 
     private slots:
@@ -67,8 +67,6 @@ class AddingAudio : public QDialog
         QDir                    m_currentDir;
         int                     m_FileFound;
         size_t                  m_TotalCount;
-        eCaller                 m_Caller;
-
 };
 
 #endif // ADDING_AUDIO_H

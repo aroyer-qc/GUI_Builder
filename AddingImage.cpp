@@ -25,7 +25,7 @@
 
 // ************************************************************************************************
 
-AddingImage::AddingImage(eCaller Caller, QString Path, QSize Size, QWidget* parent) :
+AddingImage::AddingImage(QString Path, QSize Size, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::AddingImage)
 {
@@ -35,7 +35,6 @@ AddingImage::AddingImage(eCaller Caller, QString Path, QSize Size, QWidget* pare
     setSizeGripEnabled(false);
     m_currentDir.setPath(Path);
     m_pPixmapItem     = nullptr;
-    m_Caller          = Caller;
     m_Size            = Size;
     m_pImage          = nullptr;
     m_pProcessedImage = nullptr;
@@ -246,7 +245,7 @@ void AddingImage::Find()
 
 void AddingImage::ImageSelected()
 {
-    sLoadingInfo LoadingInfo;
+    sLoadingImageInfo LoadingInfo;
 
     LoadingInfo.Offset.setX(ui->horizontalScrollBar->value() / 100);
     LoadingInfo.Offset.setY(ui->verticalScrollBar->value()   / 100);

@@ -25,19 +25,14 @@
 
 // ************************************************************************************************
 
-AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* parent) :
+AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::AddingAudio)
 {
     this->setModal(true);
     ui->setupUi(this);
-   // setStyleSheet("background-image: url(:/Images/Marble.jpg);");
     setSizeGripEnabled(false);
     m_currentDir.setPath(Path);
-    m_Caller          = Caller;
-//    m_Size            = Size;
-//    m_pImage          = nullptr;
-//    m_pProcessedImage = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(Path);
@@ -45,15 +40,15 @@ AddingAudio::AddingAudio(eCaller Caller, QString Path, QSize Size, QWidget* pare
     ui->ComboBoxDirectory->blockSignals(false);
 
     ui->comboBoxAudioMode->blockSignals(true);
-    ui->comboBoxAudioMode->setCurrentIndex(0); /// ???
+    ui->comboBoxAudioMode->setCurrentIndex(0); /// ???  set to correct enum
     ui->comboBoxAudioMode->blockSignals(false);
 
-    ui->comboBoxSamplingRate->setCurrentIndex(SCALE_FIT);
+    ui->comboBoxSamplingRate->setCurrentIndex(0); /// ???  set to correct enum
 
     this->connect( ui->pushButtonAdd, SIGNAL(Clicked()),
                   this, SLOT(on_pushButtonAdd_clicked()));
 
-    this->connect( ui->pushButtonClose, SIGNAL(Clicked()),
+   this->connect( ui->pushButtonClose, SIGNAL(Clicked()),
                   this, SLOT(on_pushButtonClose_clicked()));
 
     //ui->LabelNote->setVisible(false);
@@ -87,7 +82,7 @@ void AddingAudio::on_pushButtonAdd_clicked()
 
 void AddingAudio::on_pushButtonClose_clicked()
 {
-   // CloseAddAudio();
+    CloseAddAudio();
 }
 
 // ************************************************************************************************
@@ -123,6 +118,7 @@ void AddingAudio::on_TableFilesFound_currentCellChanged(int currentRow, int curr
     Q_UNUSED(currentColumn);
     Q_UNUSED(previousRow);
     Q_UNUSED(previousColumn);
+
     if(currentRow >= 0)
     {
         LoadingAudio(currentRow, AUTO_FORMAT);
@@ -160,7 +156,7 @@ void AddingAudio::Find()
 
     ResetLoadGUI();
 
-    filters << "*.mp3" << "*.wav" << "*.flac";
+    filters << "*.mp3" << "*.wav" << "*.aac" << "*.ogg" << "*.flac" << "*.aaif";
     m_currentDir.setNameFilters(filters);
 
     files = m_currentDir.entryList(filters, QDir::Files | QDir::NoSymLinks);
@@ -201,14 +197,12 @@ void AddingAudio::Find()
 
 void AddingAudio::AudioSelected()
 {
-    sLoadingInfo LoadingInfo;
+    sLoadingAudioInfo LoadingInfo;
 
     LoadingInfo.DataSize        = m_TotalCount;                          // Size of the raw data
-    //LoadingInfo.Size            = m_pProcessedImage->size();             // Dimension of the image (width & height)
-    //LoadingInfo.PixelFormat     = (ui->comboBoxPixelFormat->currentIndex() == FORMAT_RGB565) ? QImage::Format_RGB16 : QImage::Format_ARGB32;
     LoadingInfo.Filename        = m_Filename;
     LoadingInfo.PathAndFilename = m_PathAndFilename;
-    LoadingInfo.ScaleType       = (eScaler)ui->comboBoxSamplingRate->currentIndex();
+    //LoadingInfo.AudioType       = (eAudioRate)ui->comboBoxSamplingRate->currentIndex();
 
     emit AddAudio(LoadingInfo);
 }
@@ -248,14 +242,12 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
     m_Filename        = item->text();
     m_PathAndFilename = m_currentDir.absoluteFilePath(m_Filename);
 
-  //  if(m_pImage != nullptr)
+  //  if(m_pAudio != nullptr)
   //  {
-  //      delete m_pImage;
-  //      m_pImage = nullptr;
+  //      delete m_pAudio;
+  //      m_pAudio = nullptr;
   //  }
-
-  //  m_pImage = new QImage();
-   // m_pImage->load(m_PathAndFilename);     // loasd ausio instead
+ // m_pAudio->load(m_PathAndFilename);
 
     // Information that do not change if setting change
     ui->LabelFilename->setText(item->text());

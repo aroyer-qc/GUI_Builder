@@ -23,7 +23,8 @@
 #include "ui_mainwindow.h"
 #include "AddingAudio.h"
 #include "Utility.h"
-
+#include <qmediaplayer>
+#include <QAudioOutput>
 
 // ************************************************************************************************
 // *
@@ -33,11 +34,22 @@
 
 void MainWindow::on_ButtonAddAudio_clicked()
 {
+
+    QMediaPlayer* player = new QMediaPlayer;
+    QAudioOutput* audioOutput = new QAudioOutput;
+    player->setAudioOutput(audioOutput);
+    // ...
+    player->setSource(QUrl::fromLocalFile("C:/Users/Alain Royer/Music/80's/B52's - Love Shack.mp3"));
+    audioOutput->setVolume(50);
+    player->play();
+
+    //player->metaData()
+
     QString Path;
 
     Path   = m_currentDir.absolutePath();
-    m_pLoadAudio = new AddingAudio(CALLER_AUDIO, Path, m_DisplaySize);
-    connect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingInfo)), this, SLOT(AddAudio(sLoadingInfo)));
+    m_pLoadAudio = new AddingAudio(Path, m_DisplaySize);
+    connect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
     connect(m_pLoadAudio, SIGNAL(CloseAddAudio(void)), this, SLOT(CloseAddAudio(void)));
     m_pLoadAudio->show();
 }
@@ -46,7 +58,7 @@ void MainWindow::on_ButtonAddAudio_clicked()
 
 void MainWindow::CloseAddAudio()
 {
-    disconnect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingInfo)), this, SLOT(AddAudio(sLoadingInfo)));
+    disconnect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
     disconnect(m_pLoadAudio, SIGNAL(CloseAddAudio(void)), this, SLOT(CloseAddAudio(void)));
     delete m_pLoadAudio;
 }
@@ -245,16 +257,8 @@ void MainWindow::on_TableAudio_itemChanged(QTableWidgetItem *item)
 }
 
 // ************************************************************************************************
-/*
-void MainWindow::on_ImageCheckerBoardSlider_sliderMoved(int position)
-{
-    ui->graphicsViewImage->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
-    CheckerPattern(&m_SceneImage);
-}
-*/
-// ************************************************************************************************
 
-void MainWindow::AddAudio(sLoadingInfo LoadingInfo)
+void MainWindow::AddAudio(sLoadingAudioInfo LoadingInfo)
 {
     //QRgb        Pixel;
     uint16_t    ItemCount;
@@ -273,22 +277,19 @@ void MainWindow::AddAudio(sLoadingInfo LoadingInfo)
     setSkinHasUnsavedData(true);
 
     // Correct to maximum of display
-    LoadingInfo.Size.setWidth( (LoadingInfo.Size.width()  > m_DisplaySize.width())  ? m_DisplaySize.width()  : LoadingInfo.Size.width());
-    LoadingInfo.Size.setHeight((LoadingInfo.Size.height() > m_DisplaySize.height()) ? m_DisplaySize.height() : LoadingInfo.Size.height());
+   // LoadingInfo.Size.setWidth( (LoadingInfo.Size.width()  > m_DisplaySize.width())  ? m_DisplaySize.width()  : LoadingInfo.Size.width());
+   // LoadingInfo.Size.setHeight((LoadingInfo.Size.height() > m_DisplaySize.height()) ? m_DisplaySize.height() : LoadingInfo.Size.height());
 
     // Create image entry
     AudioInfo.ID           = ID.getCode();
     //ImageInfo.Description  = "-";
     AudioInfo.Filename     = LoadingInfo.Filename;
-    AudioInfo.Size         = LoadingInfo.Size;
+    //AudioInfo.Size         = LoadingInfo.Size;
     AudioInfo.DataSize     = LoadingInfo.DataSize;
     //AudioInfo.PixelFormat  = LoadingInfo.PixelFormat;
     AudioInfo.RawIndex     = m_RawImage.size();
 
   //  Audio.load(LoadingInfo.PathAndFilename);                                                        // Load Audio
-    //ScaleToRequirement(&Image, &ProcessedImage, &LoadingInfo.Size, LoadingInfo.ScaleType);          // Scale to user selection
-    //Image = ProcessedImage;
-    //ProcessedImage = Image.convertToFormat(LoadingInfo.PixelFormat);                                // change pixel format
 
     // Add this image entry structure in vector
     m_AudioInfo.append(AudioInfo);
@@ -302,33 +303,6 @@ void MainWindow::AddAudio(sLoadingInfo LoadingInfo)
                              ID.getCodeText(),
                              tr("%1 kB").arg(int((LoadingInfo.DataSize + 1023) / 1024)));
 
-    for(int y = 0; y < LoadingInfo.Size.height(); y++)
-    {
-        for(int x = 0; x < LoadingInfo.Size.width(); x++)
-        {
-            /*
-            Pixel = ProcessedImage.pixel(x + LoadingInfo.Offset.x() , y + LoadingInfo.Offset.y());
-
-            if(LoadingInfo.PixelFormat == QImage::Format_RGB16)
-            {
-                uint16_t Color;
-
-                Color  = (uint16_t)((Pixel >> 3) & 0x3F);
-                Color |= (uint16_t)(((Pixel >> 19) & 0x1F) << 11);
-                Color |= (uint16_t)(((Pixel >> 10)  & 0x3F)  << 5);
-                m_RawImage.append((uint8_t)(Color >> 8));
-                m_RawImage.append((uint8_t)Color);
-            }
-            else
-            {
-                m_RawImage.append((uint8_t)(Pixel >> 24));
-                m_RawImage.append((uint8_t)(Pixel >> 16));
-                m_RawImage.append((uint8_t)(Pixel >> 8));
-                m_RawImage.append((uint8_t)Pixel);
-            }
-            */
-        }
-    }
 
     UpdateAudioGUI(m_AudioInfo.size() - 1);
 }
@@ -457,33 +431,6 @@ void MainWindow::UpdateAudioGUI(int row)
 
         int Count = m_AudioInfo[row].RawIndex;
 
-        for(int y = 0; y < m_AudioInfo[row].Size.height(); y++)
-        {
-            for(int x = 0; x < m_AudioInfo[row].Size.width(); x++)
-            {
-                /*
-                QRgb Color;
-
-                if(m_ImageInfo[row].PixelFormat == QImage::Format_RGB16)
-                {
-                    Color  = ((QRgb)(m_RawImage[Count]   & 0xF8) << 16);
-                    Color |= ((QRgb)(m_RawImage[Count++] & 0x07) << 13);
-                    Color |= ((QRgb)(m_RawImage[Count]   & 0xE0) << 5);
-                    Color |= ((QRgb)(m_RawImage[Count++] & 0x1F) << 3);
-                    Color |= 0xFF000000;
-                }
-                else
-                {
-                    Color  = m_RawImage[Count++] << 24;
-                    Color |= m_RawImage[Count++] << 16;
-                    Color |= m_RawImage[Count++] << 8;
-                    Color |= m_RawImage[Count++];
-                }
-
-                Image.setPixel(x, y, Color);
-*/
-            }
-        }
 
      //   QGraphicsPixmapItem *PixmapItem = m_SceneImage.addPixmap(QPixmap::fromImage(Image));                // Add the image on top of the checker pattern
       //  QPoint Point = CenterPoint(m_ImageInfo[row].Size, m_DisplaySize);                                   // Calculate Center position for the image
