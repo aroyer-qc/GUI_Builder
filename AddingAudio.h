@@ -65,6 +65,7 @@ class AddingAudio : public QDialog
         QString                 m_Filename;
         QString                 m_PathAndFilename;
         QDir                    m_currentDir;
+        //QAudioOutput*           m_pAudio;
         int                     m_FileFound;
         size_t                  m_TotalCount;
 };

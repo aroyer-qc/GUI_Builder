@@ -31,7 +31,6 @@ AddingImage::AddingImage(QString Path, QSize Size, QWidget* parent) :
 {
     this->setModal(true);
     ui->setupUi(this);
-    //setStyleSheet("background-image: url(:/Images/Marble.jpg);");
     setSizeGripEnabled(false);
     m_currentDir.setPath(Path);
     m_pPixmapItem     = nullptr;
@@ -57,10 +56,8 @@ AddingImage::AddingImage(QString Path, QSize Size, QWidget* parent) :
     ui->verticalScrollBar->setSingleStep  (0);
 
     ui->LabelNote->setVisible(false);
-
     ResizeForm();
     ResetLoadGUI();
-
     Find();
 }
 
@@ -88,7 +85,7 @@ void AddingImage::on_pushButtonAdd_clicked()
 
 void AddingImage::on_pushButtonClose_clicked()
 {
-    CloseAddImage();
+    emit CloseAddImage();
 }
 
 // ************************************************************************************************
@@ -124,6 +121,7 @@ void AddingImage::on_TableFilesFound_currentCellChanged(int currentRow, int curr
     Q_UNUSED(currentColumn);
     Q_UNUSED(previousRow);
     Q_UNUSED(previousColumn);
+
     if(currentRow >= 0)
     {
         LoadingImage(currentRow, AUTO_FORMAT);

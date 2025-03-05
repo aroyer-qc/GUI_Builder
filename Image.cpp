@@ -202,45 +202,45 @@ void MainWindow::on_TableImage_itemChanged(QTableWidgetItem *item)
     if((Row + 1) < ui->TableImage->rowCount())
     {
 
-    CellData = ui->TableImage->item(Row, Column)->text();
+        CellData = ui->TableImage->item(Row, Column)->text();
 
-    if(Column == 1)
-    {
-        // Get type from ComboBox
-        eWidgetType Type = getWidgetTypeFromText(CellData);
-        ID_Code ID(Type, 0);
-        int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());
-        ID.setNumber(FreeID);
-
-        if(m_ImageInfo[Row].ID != ID.getCode())
+        if(Column == 1)
         {
-            // Clear old code
-            ID_Code OldID(m_ImageInfo[Row].ID);
-            clearStateID_Code(m_pInUseCode, OldID);
+            // Get type from ComboBox
+            eWidgetType Type = getWidgetTypeFromText(CellData);
+            ID_Code ID(Type, 0);
+            int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());
+            ID.setNumber(FreeID);
 
-            // Set new code
-            m_ImageInfo[Row].ID = ID.getCode();
-            setStateID_Code(m_pInUseCode, ID);
+            if(m_ImageInfo[Row].ID != ID.getCode())
+            {
+                // Clear old code
+                ID_Code OldID(m_ImageInfo[Row].ID);
+                clearStateID_Code(m_pInUseCode, OldID);
 
-            QTableWidgetItem *CodeID_Item  = new QTableWidgetItem(ID.getCodeText());
-            CodeID_Item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-            ui->TableImage->setItem(Row, 2, CodeID_Item);
-            setSkinHasUnsavedData(true);
+                // Set new code
+                m_ImageInfo[Row].ID = ID.getCode();
+                setStateID_Code(m_pInUseCode, ID);
+
+                QTableWidgetItem *CodeID_Item  = new QTableWidgetItem(ID.getCodeText());
+                CodeID_Item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+                ui->TableImage->setItem(Row, 2, CodeID_Item);
+                setSkinHasUnsavedData(true);
+            }
+        }
+
+        if(Column == 2)
+        {
+            ID_Code ID(CellData);
+
+            if(m_ImageInfo[Row].ID != ID.getCode())
+            {
+                setStateID_Code(m_pInUseCode, ID.getCode());
+                m_ImageInfo[Row].ID = ID.getCode();
+                setSkinHasUnsavedData(true);
+            }
         }
     }
-
-    if(Column == 2)
-    {
-        ID_Code ID(CellData);
-
-        if(m_ImageInfo[Row].ID != ID.getCode())
-        {
-            setStateID_Code(m_pInUseCode, ID.getCode());
-            m_ImageInfo[Row].ID = ID.getCode();
-            setSkinHasUnsavedData(true);
-        }
-    }
-}
 }
 
 // ************************************************************************************************

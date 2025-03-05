@@ -23,8 +23,10 @@
 #include "ui_mainwindow.h"
 #include "AddingAudio.h"
 #include "Utility.h"
-#include <qmediaplayer>
+#include "qmediaplayer.h"
+//#include <QMediaMetaData>
 #include <QAudioOutput>
+#include <QAudioDecoder>
 
 // ************************************************************************************************
 // *
@@ -34,6 +36,9 @@
 
 void MainWindow::on_ButtonAddAudio_clicked()
 {
+    QAudioDecoder decoder;          //Create a QAudioDecoder object to get the all audi info
+    decoder.setSource(QUrl::fromLocalFile("C:/Users/Alain Royer/Music/80's/B52's - Love Shack.mp3"));
+    decoder.start();                       // Start decoding
 
     QMediaPlayer* player = new QMediaPlayer;
     QAudioOutput* audioOutput = new QAudioOutput;
@@ -43,14 +48,46 @@ void MainWindow::on_ButtonAddAudio_clicked()
     audioOutput->setVolume(50);
     player->play();
 
-    //player->metaData()
+
+    // Connect to the bufferReady signal to get the audio information
+    QObject::connect(&decoder, &QAudioDecoder::bufferReady, [&]() {
+        QAudioBuffer buffer = decoder.read();
+        if (buffer.isValid()) {
+            qDebug() << "Sample Rate:" << buffer.format().sampleRate() << "Hz";
+            qDebug() << "Channel Count:" << buffer.format().channelCount();
+            qDebug() << "Sample Size:" << buffer.format().bytesPerSample();
+            //qDebug() << "Codec:" << decoder.metaObject(QMediaMetaData::AudioCodec().toString());
+            qDebug() << "Sample Format:" <<  buffer.format().sampleFormat();
+
+
+            int durationInSecond = player->duration() / 1000;
+            qDebug() << "Duration:" << QTime(0, 0).addSecs(durationInSecond).toString("HH:mm:ss");
+        }
+    });
+
+    // Connect to the finished signal to quit the event loop
+    QEventLoop loop;
+    QObject::connect(&decoder, &QAudioDecoder::finished, &loop, &QEventLoop::quit);
+
+    // Start decoding
+    decoder.start();
+
+    // Start the event loop to process signals
+    loop.exec();
+
+
+
+
+
+
+
 
     QString Path;
 
     Path   = m_currentDir.absolutePath();
     m_pLoadAudio = new AddingAudio(Path, m_DisplaySize);
     connect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
-    connect(m_pLoadAudio, SIGNAL(CloseAddAudio(void)), this, SLOT(CloseAddAudio(void)));
+    connect(m_pLoadAudio, SIGNAL(CloseAddAudio()), this, SLOT(CloseAddAudio()));
     m_pLoadAudio->show();
 }
 
@@ -59,7 +96,7 @@ void MainWindow::on_ButtonAddAudio_clicked()
 void MainWindow::CloseAddAudio()
 {
     disconnect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
-    disconnect(m_pLoadAudio, SIGNAL(CloseAddAudio(void)), this, SLOT(CloseAddAudio(void)));
+    disconnect(m_pLoadAudio, SIGNAL(CloseAddAudio()), this, SLOT(CloseAddAudio()));
     delete m_pLoadAudio;
 }
 
@@ -260,36 +297,30 @@ void MainWindow::on_TableAudio_itemChanged(QTableWidgetItem *item)
 
 void MainWindow::AddAudio(sLoadingAudioInfo LoadingInfo)
 {
-    //QRgb        Pixel;
     uint16_t    ItemCount;
     sAudioInfo  AudioInfo;
    // QAudio      Audio
-    //QImage      ProcessedImage;
 
     // reload Path, if it was change by LoadImage class
     m_currentDir.setPath(GetPathFromXML());
 
-    ID_Code ID(TYPE_IMAGE, 0);
+    ID_Code ID(TYPE_AUDIO, 0);
     int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());
     ID.setNumber(FreeID);
 
     m_SkinSize += LoadingInfo.DataSize;
     setSkinHasUnsavedData(true);
 
-    // Correct to maximum of display
-   // LoadingInfo.Size.setWidth( (LoadingInfo.Size.width()  > m_DisplaySize.width())  ? m_DisplaySize.width()  : LoadingInfo.Size.width());
-   // LoadingInfo.Size.setHeight((LoadingInfo.Size.height() > m_DisplaySize.height()) ? m_DisplaySize.height() : LoadingInfo.Size.height());
-
-    // Create image entry
+    // Create audio entry
     AudioInfo.ID           = ID.getCode();
     //ImageInfo.Description  = "-";
     AudioInfo.Filename     = LoadingInfo.Filename;
     //AudioInfo.Size         = LoadingInfo.Size;
     AudioInfo.DataSize     = LoadingInfo.DataSize;
     //AudioInfo.PixelFormat  = LoadingInfo.PixelFormat;
-    AudioInfo.RawIndex     = m_RawImage.size();
+   AudioInfo.RawIndex     = m_RawImage.size();
 
-  //  Audio.load(LoadingInfo.PathAndFilename);                                                        // Load Audio
+   // Audio.load(LoadingInfo.PathAndFilename);                                                        // Load Audio
 
     // Add this image entry structure in vector
     m_AudioInfo.append(AudioInfo);
@@ -439,46 +470,6 @@ void MainWindow::UpdateAudioGUI(int row)
     UpdateStatusBar();
 }
 
-// ************************************************************************************************
-/*
-void MainWindow::AdjustTabImage(QSize Offset, QRect ViewRect)
-{
-    // Resize Vertical Line
-    setWidgetSize(ui->line_V_Image,              -1,                    Offset.height() + 226);
-
-    // Resize Horizontal Line
-    setWidgetSize(ui->line_H_Image,              Offset.width() + 20,   -1);
-
-    // Reposition Horizontal Line
-    setWidgetXY(ui->line_H_Image,                -1,                    Offset.height() + 40);
-
-    // Reposition Label
-    setWidgetXY(ui->LabelStaticImageInfo,        -1,                    Offset.height() + 60);
-    setWidgetXY(ui->LabelStaticFilenameImage,    -1,                    Offset.height() + 90);
-    setWidgetXY(ui->LabelFilenameImage,          -1,                    Offset.height() + 120);
-    setWidgetXY(ui->LabelStaticSizeImage,        -1,                    Offset.height() + 150);
-    setWidgetXY(ui->LabelSizeImage,              -1,                    Offset.height() + 150);
-    setWidgetXY(ui->LabelStaticPixelFormatImage, -1,                    Offset.height() + 180);
-    setWidgetXY(ui->LabelPixelFormatImage,       -1,                    Offset.height() + 180);
-    setWidgetXY(ui->LabelStaticRawDataSizeImage, -1,                    Offset.height() + 210);
-    setWidgetXY(ui->LabelRawDataSizeImage,       -1,                    Offset.height() + 210);
-
-    // Reposition Button
-    setWidgetXY(ui->ButtonAddImage,              -1,                    Offset.height() + 200);
-    setWidgetXY(ui->ButtonRemoveImage,           -1,                    Offset.height() + 200);
-    setWidgetXY(ui->ButtonUpImage,               -1,                    Offset.height() + 200);
-    setWidgetXY(ui->ButtonDownImage,             -1,                    Offset.height() + 200);
-
-    // Resize Table
-    setWidgetSize(ui->TableImage,                -1,                    Offset.height() + 170);
-
-    //Resize GraphicsView
-   // ui->graphicsViewImage->setGeometry(ViewRect);
-   // ui->graphicsViewImage->setSceneRect(0, 0, ViewRect.width(), ViewRect.height());
-
-    Find();
-}
-*/
 // ************************************************************************************************
 
 void MainWindow::InsertNewRowInTableAudio(int row, QString File, QString CodeType, QString CodeID, QString Size)

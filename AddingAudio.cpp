@@ -52,9 +52,7 @@ AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
                   this, SLOT(on_pushButtonClose_clicked()));
 
     //ui->LabelNote->setVisible(false);
-
     ResetLoadGUI();
-
     Find();
 }
 
@@ -82,7 +80,7 @@ void AddingAudio::on_pushButtonAdd_clicked()
 
 void AddingAudio::on_pushButtonClose_clicked()
 {
-    CloseAddAudio();
+    emit CloseAddAudio();
 }
 
 // ************************************************************************************************
@@ -227,7 +225,7 @@ void AddingAudio::ReloadingAudio()
     int row = ui->TableFilesFound->currentRow();
     if(row >= 0)
     {
-    //    LoadingAudio(row, RELOAD_AUDIO);
+        //LoadingAudio(row, RELOAD_AUDIO);
     }
 }
 
@@ -251,7 +249,7 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
 
     // Information that do not change if setting change
     ui->LabelFilename->setText(item->text());
- //   ui->LabelSize->setText(PrintSize(m_pAudio->size()));
+   // ui->LabelSize->setText(PrintSize(m_pAudio->size()));
 
     if(Resizer == AUTO_FORMAT)
     {

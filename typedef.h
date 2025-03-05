@@ -115,6 +115,7 @@ typedef enum WidgetType_e
     TYPE_GLYPH,
     TYPE_ICON,
     TYPE_IMAGE,
+    TYPE_AUDIO,
     TYPE_AUDIO_WAV,
     TYPE_AUDIO_MP3,
     TYPE_AUDIO_FLAC,
