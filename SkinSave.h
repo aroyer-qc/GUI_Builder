@@ -168,8 +168,6 @@
 
 #define RAW_DATA_OFFSET             0x0000003C
 
-typedef
-
 
 class SkinSave : public QThread
 {
@@ -188,49 +186,76 @@ class SkinSave : public QThread
 
     private:
 
-        void            CompressAllFont         (QVector<uint8_t>* pCompxData);
-        void            CompressAllImage        (QVector<uint8_t>* pCompxData);
-        bool            SaveFontInfo            (QVector<uint8_t>* pCompxData);
-        bool            SaveImageInfo           (QVector<uint8_t>* pCompxData);
+        void            SaveFontInfo            (QVector<uint8_t>* pFileRawData);
+        void            SaveImageInfo           (QVector<uint8_t>* pFileRawData);
+        void            SaveAudioInfo           (QVector<uint8_t>* pFileRawData);
+      //void            SaveLabelInfo           (QVector<uint8_t>* pFileRawData);
+      //void            SaveLabelListInfo       (QVector<uint8_t>* pFileRawData);
+        void            SaveAllImage            (QVector<uint8_t>* pFileRawData);
+        void            SaveAllFont             (QVector<uint8_t>* pFileRawData);
+        void            SaveAllAudio            (QVector<uint8_t>* pFileRawData);
+      //void            SaveAllLabel            (QVector<uint8_t>* pFileRawData);
+      //void            SaveAllLabelList        (QVector<uint8_t>* pFileRawData);
+        
+        void            SaveEachCharFont        (QVector<uint8_t>* pFileRawData, uint8_t Char);
+
         void            CreateXML               (QString Path);
-        void            ExtractFontInfo         (QVector<uint8_t>* pCompxData, uint8_t Char);
-        void            CompressFont            (QVector<uint8_t>* pCompxData, uint8_t Char);
+        void            ExtractFontInfo         (QVector<uint8_t>* pFileRawData, uint8_t Char);
         QString         GetFontFile             (const QString& fontName);
         sFontMetaData   ReadFontMetadata        (QString fontFile);
         QString         getFontFilePath         (const QString& fontFamily);
+        void            ChangeEndianness        (int Offset);
 
-        int*                    m_pSkinType;
-        QSize*                  m_pSkinSize;
-        eEndianess*             m_pEndian;
-        QVector<uint8_t>*       m_pRawData;
-        QString                 m_SkinPathAndFileName;
-        int                     m_PreviousBlockOfData;
-        int                     m_ThisBlockOfData;
+        int*                        m_pSkinType;
+        QSize*                      m_pSkinSize;
+        eEndianess*                 m_pEndian;
+        QString                     m_SkinPathAndFileName;
+        int                         m_PreviousBlockOfData;
+        int                         m_ThisBlockOfData;
 
-        QVector<sImageInfo>*    m_pImageInfo;
-        int                     m_ImageCount;
-        uint32_t                m_OffsetImageHeader;
+        // Image
+        QVector<sImageInfo>*        m_pImageInfo;
+        QVector<uint8_t>*           m_pRawImageData;
+        int                         m_ImageCount;
+        uint32_t                    m_OffsetImageHeader;
 
-        QVector<QFont>*         m_pFontInfo;
-        QVector<uint32_t>       m_FontSamplingSize;                         // get the size in bytes for the font sampling
-        QVector<uint8_t>*       m_pFontSamplingInfo;
-        QVector<uint32_t>       m_OffsetFontHeader;
-        QVector<uint32_t>       m_OffsetFontHeight;
-        int                     m_FontCount;
-        uint32_t                m_TotalCharCount;
-        uint32_t                m_InFontCharCount;
-        uint32_t                m_OffsetFontCharCountHeader;
-        uint8_t                 m_MaxX_FixedFont;
-        QVector<uint8_t>        m_MinX;
-        QVector<uint8_t>        m_MaxX;
-        QVector<uint8_t>        m_MinY;
-        QVector<uint8_t>        m_MaxY;
-        QVector<uint8_t>        m_Width;
-        QVector<int8_t>         m_LeftBearing;
-        QVector<int8_t>         m_RightBearing;
+        // Audio
+        QVector<sAudioInfo>*        m_pAudioInfo;
+        QVector<uint8_t>*           m_pRawAudioData;
+        int                         m_AudioCount;
 
-        const QFont*            m_pFont;
-        QFontMetrics*           m_pFontMetric;
+        // Font
+        QVector<QFont>*             m_pFontInfo;
+        QVector<uint32_t>           m_FontSamplingSize;                         // get the size in bytes for the font sampling
+        QVector<uint8_t>*           m_pFontSamplingInfo;
+        QVector<uint32_t>           m_OffsetFontHeader;
+        QVector<uint32_t>           m_OffsetFontHeight;
+        int                         m_FontCount;
+        uint32_t                    m_TotalCharCount;
+        uint32_t                    m_InFontCharCount;
+        uint32_t                    m_OffsetFontCharCountHeader;
+        uint8_t                     m_MaxX_FixedFont;
+        QVector<uint8_t>            m_MinX;
+        QVector<uint8_t>            m_MaxX;
+        QVector<uint8_t>            m_MinY;
+        QVector<uint8_t>            m_MaxY;
+        QVector<uint8_t>            m_Width;
+        QVector<int8_t>             m_LeftBearing;
+        QVector<int8_t>             m_RightBearing;
+        const QFont*                m_pFont;
+        QFontMetrics*               m_pFontMetric;
+
+    #if 0
+        // Label
+        QVector<sLabelInfo>*        m_pLabelInfo;
+        QVector<uint8_t>*           m_pRawLabelData;
+        int                         m_LabelCount;
+
+        // Label
+        QVector<sLabelListInfo>*    m_pLabelListInfo;
+        QVector<uint8_t>*           m_pRawLabelListData;
+        int                         m_LabelListCount;
+    #endif
 };
 
 #endif // SKIN_SAVE_H

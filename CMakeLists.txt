@@ -34,6 +34,7 @@ set(PROJECT_SOURCES
         AddingImage.h
         AddingImage.ui
         Audio.cpp
+        Configuration.cpp
         ComboBoxDelegate.cpp
         ComboBoxDelegate.h
         compression.cpp
@@ -52,12 +53,6 @@ set(PROJECT_SOURCES
         progress.ui
         qxmlputget.cpp
         qxmlputget.h
-        setEndianess.cpp
-        setEndianess.h
-        setEndianess.ui
-        setsize.cpp
-        setsize.h
-        setsize.ui
         Simulator.cpp
         SkinOpen.cpp
         SkinOpen.h
@@ -77,7 +72,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         SkinRessource.qrc
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        setEndianess.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GUI_Builder APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

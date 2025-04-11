@@ -85,7 +85,7 @@ void AddingImage::on_pushButtonAdd_clicked()
 
 void AddingImage::on_pushButtonClose_clicked()
 {
-    emit CloseAddImage();
+   /* emit*/ CloseAddImage();
 }
 
 // ************************************************************************************************

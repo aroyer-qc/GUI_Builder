@@ -50,18 +50,29 @@ class SkinOpen : public QThread
 
         eEndianess*             m_pEndian;
         int*                    m_pSkinType;
-        QVector<uint8_t>*       m_pRawData;
-        QVector<sImageInfo>*    m_pImageInfo;
         QString                 m_SkinPathAndFileName;
-
-        QVector<QFont>*         m_pFontInfo;
-        QVector<uint8_t>*       m_pFontSamplingInfo;
-
         int                     m_NextBlockOfData;
 
+        // Image
+        QVector<uint8_t>*       m_pRawImageData;
+        QVector<sImageInfo>*    m_pImageInfo;
         uint16_t                m_ImageCount;
         int                     m_OffsetImageCount;
         int                     m_OffsetImageHeader;
+
+        // Audio
+        QVector<uint8_t>*       m_pRawAudioData;
+        QVector<sAudioInfo>*    m_pAudioInfo;
+
+        // Font
+        QVector<QFont>*         m_pFontInfo;
+        QVector<uint8_t>*       m_pFontSamplingInfo;
+
+        // Lqbel
+            // TODO
 };
+
+
+
 
 #endif // SKIN_OPEN_H

@@ -740,12 +740,17 @@ void ID_Code::codeToText()
 void ID_Code::codeToElement()
 {
     // Find type
-    if((m_CodeText.at(0) == QChar('B')) && (m_CodeText.at(1) == QChar('K'))) m_Type = TYPE_BACKGROUND;
+    if((m_CodeText.at(0) == QChar('B')) && (m_CodeText.at(1) == QChar('K'))) m_Type = TYPE_BACKGROUND; // don't know if we follow that thinking
     if((m_CodeText.at(0) == QChar('B')) && (m_CodeText.at(1) == QChar('T'))) m_Type = TYPE_BUTTON;
     if((m_CodeText.at(0) == QChar('F')) && (m_CodeText.at(1) == QChar('T'))) m_Type = TYPE_FONT;
     if((m_CodeText.at(0) == QChar('G')) && (m_CodeText.at(1) == QChar('L'))) m_Type = TYPE_GLYPH;
     if((m_CodeText.at(0) == QChar('I')) && (m_CodeText.at(1) == QChar('C'))) m_Type = TYPE_ICON;
     if((m_CodeText.at(0) == QChar('I')) && (m_CodeText.at(1) == QChar('M'))) m_Type = TYPE_IMAGE;
+    if((m_CodeText.at(0) == QChar('A')) && (m_CodeText.at(1) == QChar('U'))) m_Type = TYPE_AUDIO;
+    if((m_CodeText.at(0) == QChar('W')) && (m_CodeText.at(1) == QChar('V'))) m_Type = TYPE_AUDIO_WAV;
+    if((m_CodeText.at(0) == QChar('M')) && (m_CodeText.at(1) == QChar('3'))) m_Type = TYPE_AUDIO_MP3;
+    if((m_CodeText.at(0) == QChar('F')) && (m_CodeText.at(1) == QChar('C'))) m_Type = TYPE_AUDIO_FLAC;
+    if((m_CodeText.at(0) == QChar('R')) && (m_CodeText.at(1) == QChar('W'))) m_Type = TYPE_AUDIO_RAW;
 
     // Find Number
     m_Number  = ((m_Code >> 12) & 0x0F) * 1000;
@@ -769,6 +774,11 @@ void ID_Code::elementToText()
     if(m_Type == TYPE_GLYPH)      m_Prefix = "GL";
     if(m_Type == TYPE_ICON)       m_Prefix = "IC";
     if(m_Type == TYPE_IMAGE)      m_Prefix = "IM";
+    if(m_Type == TYPE_AUDIO)      m_Prefix = "AU";
+    if(m_Type == TYPE_AUDIO_WAV)  m_Prefix = "WV";
+    if(m_Type == TYPE_AUDIO_MP3)  m_Prefix = "M3";
+    if(m_Type == TYPE_AUDIO_FLAC) m_Prefix = "FC";
+    if(m_Type == TYPE_AUDIO_RAW)  m_Prefix = "RW";
 
     m_CodeText = m_Prefix;
     m_CodeText.append(QString("%1").arg(m_Number, 4, 10, QChar('0')));

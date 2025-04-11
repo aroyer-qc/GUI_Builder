@@ -172,14 +172,7 @@ border-color: lightgray;
 border-style: solid;
 /*border-radius: 1px;*/
 }
-
-
-QSlider::handle:horizontal {
-background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
-border-width: 2px;
-border-color: #778EB8;
-border-style: solid;
-}</string>
+</string>
   </property>
   <widget class="QComboBox" name="ComboBoxDirectory">
    <property name="geometry">
@@ -228,13 +221,13 @@ border-style: solid;
     <number>-1</number>
    </property>
    <property name="horizontalScrollBarPolicy">
-    <enum>Qt::ScrollBarAlwaysOff</enum>
+    <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
    </property>
    <property name="selectionMode">
-    <enum>QAbstractItemView::SingleSelection</enum>
+    <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
    </property>
    <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
+    <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
    </property>
    <property name="sortingEnabled">
     <bool>false</bool>
@@ -555,17 +548,20 @@ border-style: solid;
      <x>800</x>
      <y>70</y>
      <width>321</width>
-     <height>27</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <property name="text">
     <string>Empty</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="LabelStaticSamplingRate">
@@ -692,7 +688,7 @@ border-style: solid;
     </rect>
    </property>
    <property name="orientation">
-    <enum>Qt::Vertical</enum>
+    <enum>Qt::Orientation::Vertical</enum>
    </property>
   </widget>
   <widget class="Line" name="line_H_Load">
@@ -705,7 +701,7 @@ border-style: solid;
     </rect>
    </property>
    <property name="orientation">
-    <enum>Qt::Horizontal</enum>
+    <enum>Qt::Orientation::Horizontal</enum>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonAdd">
@@ -751,24 +747,11 @@ border-style: solid;
      <normaloff>:/graphic/remove20.png</normaloff>:/graphic/remove20.png</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pushButtonPlay">
    <property name="geometry">
     <rect>
-     <x>690</x>
-     <y>350</y>
-     <width>80</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>10 Sec.</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>860</x>
-     <y>390</y>
+     <x>740</x>
+     <y>290</y>
      <width>48</width>
      <height>48</height>
     </rect>
@@ -777,42 +760,332 @@ border-style: solid;
     <string>Play</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>990</x>
-     <y>350</y>
-     <width>80</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>10 Sec.</string>
-   </property>
-  </widget>
   <widget class="QSlider" name="horizontalSlider">
    <property name="geometry">
     <rect>
      <x>789</x>
-     <y>339</y>
-     <width>181</width>
+     <y>360</y>
+     <width>241</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+QSlider {
+border: 3px solid black;
+border-radius: 5px;
+padding: 2px;
+margin: 0px;
+ }
+
+QSlider::handle:horizontal {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
+border-width: 12px;
+border-color: #778EB8;
+border-style: solid;
+margin: 14px;
+}</string>
    </property>
    <property name="orientation">
-    <enum>Qt::Horizontal</enum>
+    <enum>Qt::Orientation::Horizontal</enum>
    </property>
   </widget>
-  <widget class="QLCDNumber" name="lcdNumber">
+  <widget class="QPushButton" name="pushButtonStop">
    <property name="geometry">
     <rect>
-     <x>830</x>
+     <x>800</x>
      <y>290</y>
-     <width>101</width>
-     <height>41</height>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
   </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeHour100">
+   <property name="geometry">
+    <rect>
+     <x>870</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonPause">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>290</y>
+     <width>48</width>
+     <height>48</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeHour10">
+   <property name="geometry">
+    <rect>
+     <x>896</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeHour1">
+   <property name="geometry">
+    <rect>
+     <x>922</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelStaticAudioPlayDot1">
+   <property name="geometry">
+    <rect>
+     <x>950</x>
+     <y>290</y>
+     <width>10</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelStaticAudioPlayDot2">
+   <property name="geometry">
+    <rect>
+     <x>1020</x>
+     <y>290</y>
+     <width>10</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeMinute10">
+   <property name="geometry">
+    <rect>
+     <x>964</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeMinute1">
+   <property name="geometry">
+    <rect>
+     <x>990</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeSecond10">
+   <property name="geometry">
+    <rect>
+     <x>1034</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="LabelAudioPlayTimeSecond1">
+   <property name="geometry">
+    <rect>
+     <x>1060</x>
+     <y>290</y>
+     <width>24</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+</string>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <zorder>pushButtonPlay</zorder>
+  <zorder>pushButtonStop</zorder>
+  <zorder>horizontalSlider</zorder>
+  <zorder>LabelAudioPlayTimeHour100</zorder>
+  <zorder>ComboBoxDirectory</zorder>
+  <zorder>TableFilesFound</zorder>
+  <zorder>ButtonBrowse</zorder>
+  <zorder>LabelStaticSelect</zorder>
+  <zorder>LabelFilesFound</zorder>
+  <zorder>comboBoxAudioMode</zorder>
+  <zorder>LabelStaticAudioMode</zorder>
+  <zorder>LabelStaticConvertSamplingRate</zorder>
+  <zorder>comboBoxSamplingRate</zorder>
+  <zorder>LabelSamplingRate</zorder>
+  <zorder>LabelStaticSize</zorder>
+  <zorder>LabelStaticFilename</zorder>
+  <zorder>LabelFilename</zorder>
+  <zorder>LabelStaticSamplingRate</zorder>
+  <zorder>LabelSize</zorder>
+  <zorder>LabelStaticDuration</zorder>
+  <zorder>LabelDuration</zorder>
+  <zorder>LabelStaticDataSize</zorder>
+  <zorder>LabelDataSize</zorder>
+  <zorder>line_V_Load</zorder>
+  <zorder>line_H_Load</zorder>
+  <zorder>pushButtonAdd</zorder>
+  <zorder>pushButtonClose</zorder>
+  <zorder>pushButtonPause</zorder>
+  <zorder>LabelAudioPlayTimeHour10</zorder>
+  <zorder>LabelAudioPlayTimeHour1</zorder>
+  <zorder>LabelStaticAudioPlayDot1</zorder>
+  <zorder>LabelStaticAudioPlayDot2</zorder>
+  <zorder>LabelAudioPlayTimeMinute10</zorder>
+  <zorder>LabelAudioPlayTimeMinute1</zorder>
+  <zorder>LabelAudioPlayTimeSecond10</zorder>
+  <zorder>LabelAudioPlayTimeSecond1</zorder>
  </widget>
  <resources>
   <include location="SkinRessource.qrc"/>

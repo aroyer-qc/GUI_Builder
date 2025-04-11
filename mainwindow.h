@@ -66,26 +66,29 @@ class MainWindow : public QMainWindow
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
 
-        QVector<uint8_t>*       getRawDataPtr()                         { return &m_RawImage; }
+        // Image
+        QVector<uint8_t>*       getRawImageDataPtr()                    { return &m_RawImage; }
         QVector<sImageInfo>*    getImageInfoPtr()                       { return &m_ImageInfo; }
-        QVector<QFont>*         getFontInfoPtr()                        { return &m_Font; }
+        
+        // Audio
+        QVector<uint8_t>*       getRawAudioDataPtr()                    { return &m_RawAudio; }
         QVector<sAudioInfo>*    getAudioInfoPtr()                       { return &m_AudioInfo; }
+        
+        // Font
+        QVector<QFont>*         getFontInfoPtr()                        { return &m_Font; }
         QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
+
+        // Non specific global function
         eEndianess*             getEndianPtr()                          { return &m_Endian; }
         int*                    getSkinTypePtr()                        { return &m_SkinType; }
         QSize*                  getSkinSizePtr()                        { return &m_DisplaySize; }
         static QScreen*         getPrimaryScreen()                      { return m_pPrimary; }
-
         static void             setPrimaryScreen(QScreen* pScreen)      { m_pPrimary = pScreen; }
-
 
     signals:
 
     public slots:
 
-        //void CodeLabel(eCaller Caller, int Item, QString CodeLabel);
-        void SetSizeDisplay(QSize Size);
-        void SetEndianess(eEndianess Endian);
 
         // Public slot for file operation
         void on_OpenDone();
@@ -151,19 +154,34 @@ class MainWindow : public QMainWindow
         void on_horizontalScrollBarConverter_valueChanged(int value);
         void on_verticalScrollBarConverter_valueChanged(int value);
 
+        // Slot for Configurator tab
+        void on_checkBoxLoadable_checkStateChanged(int state);
+        void on_checkBoxBinary_checkStateChanged(int state);
+        void on_checkBoxBigEndian_checkStateChanged(int state);
+        void on_checkBoxLittleEndian_checkStateChanged(int state);
+        void on_radioButton_84x48_clicked();
+        void on_radioButton_96x64_clicked();
+        void on_radioButton_128x128_clicked();
+        void on_radioButton_240x320_clicked();
+        void on_radioButton_320x200_clicked();
+        void on_radioButton_320x240_clicked();
+        void on_radioButton_640x480_clicked();
+        void on_radioButton_480x272_clicked();
+        void on_radioButton_800x480_clicked();
+        void on_radioButton_800x600_clicked();
+        void on_radioButton_CustomSize_clicked();
+        
         // Menu action
         void on_actionNew_Project_triggered();
         void on_actionOpen_Skin_triggered();
         void on_actionSave_Skin_triggered();
         void on_actionSave_Skin_As_triggered();
         void on_SaveBinaryButton_clicked();
-        void on_actionSet_Display_Size_triggered();
         void on_comboBoxResize_currentIndexChanged(int index);
         void on_comboBoxPixelFormat_currentIndexChanged(int index);
 
         void on_actionExit_triggered();
-        void on_actionSet_Endianess_triggered();
-
+        
         void on_CheckerBoardSlider_sliderMoved(int position);
 
         void on_TabFunctionSelect_tabBarClicked(int index);
@@ -220,6 +238,14 @@ class MainWindow : public QMainWindow
         void     LoadImageConverter      (int row, eResizer Resizer);
         void     BinToFile               (QTextStream* pStream, QString pFileName);
 
+        // Function for configurator
+        void     InitConfigurator        ();
+        void     ResetAllRadioButton     ();
+        void     UpdateLineEdit          ();
+        void     CheckButton             ();
+        void     SetSizeDisplay          (QSize Size);
+        
+
         Ui::MainWindow*         ui;
         int                     m_SkinType;
         eEndianess              m_Endian;
@@ -262,11 +288,10 @@ class MainWindow : public QMainWindow
         int                     m_ProgressOpen;
         Progress*               m_pProgress;
 
-
         // Variable for Image Tab
-        QGraphicsScene          m_SceneImage;
         QVector<sImageInfo>     m_ImageInfo;                    // Array of image structure information
         QVector<uint8_t>        m_RawImage;                     // Raw image data
+        QGraphicsScene          m_SceneImage;
         ComboBoxDelegate*       m_pImageComboBoxDelegate;
         SpinBoxDelegate*        m_pImageSpinBoxDelegate;
 
@@ -284,6 +309,11 @@ class MainWindow : public QMainWindow
         ComboBoxDelegate*       m_pAudioComboBoxDelegate;
         SpinBoxDelegate*        m_pAudioSpinBoxDelegate;
 
+        // Variable for Label Tab
+      //QVector<sLabelInfo>     m_LabelInfo;                    // Array of label structure information
+      //QVector<uint8_t>        m_RawLabel;                     // Raw label data
+
+
         // Variable for Converter Tab
         QGraphicsScene          m_SceneConverter;
         QGraphicsPixmapItem*    m_pPixmapItem;
@@ -296,6 +326,10 @@ class MainWindow : public QMainWindow
         QSize                   m_Scale;
         size_t                  m_TotalCount;
         size_t                  m_FileSize;
+
+        // Variable for Configurator Tab
+        QSize                   m_ConfigDisplaySize;
+
 };
 
 #endif // MAINWINDOW_H

@@ -117,15 +117,16 @@ SkinOpen::SkinOpen(QString SkinPathAndFileName, QObject* parent) : QThread(paren
     m_SkinPathAndFileName = SkinPathAndFileName;
 
     // Image
-    m_pRawData            = ((MainWindow*)parent)->getRawDataPtr();
+    m_pRawImageData       = ((MainWindow*)parent)->getRawImageDataPtr();
     m_pImageInfo          = ((MainWindow*)parent)->getImageInfoPtr();
+
+    // Audio
+    m_pRawAudioData       = ((MainWindow*)parent)->getRawAudioDataPtr();
+    m_pAudioInfo          = ((MainWindow*)parent)->getAudioInfoPtr();
 
     // Font
     m_pFontSamplingInfo   = ((MainWindow*)parent)->getFontSamplingInfoPtr();
     m_pFontInfo           = ((MainWindow*)parent)->getFontInfoPtr();
-
-    // Font
-    //m_pAudioInfo        = ((MainWindow*)parent)->getAudioInfoPtr();
 
     // Label and Label List
     //m_pLabelInfo        = ((MainWindow*)parent)->getLabelInfoPtr();
@@ -212,9 +213,9 @@ void SkinOpen::DeCompressAllImage(QVector<uint8_t>* pCompxData)
         CompressionMethod = pCompxData->at((Count * IMAGE_HEADER_SIZE) + 13 + m_OffsetImageHeader);
 
         // New Image data will start at this offset for this image in decompressed data
-        (*m_pImageInfo)[Count].RawIndex = m_pRawData->size();
+        (*m_pImageInfo)[Count].RawIndex = m_pRawImageData->size();
 
-        DeCompress(m_pRawData,
+        DeCompress(m_pRawImageData,
                    pCompxData,
                    m_pImageInfo->at(Count).CompressDataSize,
                    OffsetInCompressData,
@@ -229,14 +230,14 @@ void SkinOpen::DeCompressAllImage(QVector<uint8_t>* pCompxData)
             {
                 for(uint32_t Index = m_pImageInfo->at(Count).RawIndex; Index < EndIndex; Index += 2)
                 {
-                    ChangeEndianAt_uint16(m_pRawData, Index);
+                    ChangeEndianAt_uint16(m_pRawImageData, Index);
                 }
             }
             else
             {
                 for(uint32_t Index = m_pImageInfo->at(Count).RawIndex; Index < EndIndex; Index += 4)
                 {
-                    ChangeEndianAt_uint32(m_pRawData, Index);
+                    ChangeEndianAt_uint32(m_pRawImageData, Index);
                 }
             }
         }

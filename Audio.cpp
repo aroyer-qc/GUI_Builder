@@ -23,10 +23,9 @@
 #include "ui_mainwindow.h"
 #include "AddingAudio.h"
 #include "Utility.h"
-#include "qmediaplayer.h"
-//#include <QMediaMetaData>
-#include <QAudioOutput>
-#include <QAudioDecoder>
+//#include "qmediaplayer.h"
+//#include <QAudioOutput>
+//#include <QAudioDecoder>
 
 // ************************************************************************************************
 // *
@@ -36,52 +35,6 @@
 
 void MainWindow::on_ButtonAddAudio_clicked()
 {
-    QAudioDecoder decoder;          //Create a QAudioDecoder object to get the all audi info
-    decoder.setSource(QUrl::fromLocalFile("C:/Users/Alain Royer/Music/80's/B52's - Love Shack.mp3"));
-    decoder.start();                       // Start decoding
-
-    QMediaPlayer* player = new QMediaPlayer;
-    QAudioOutput* audioOutput = new QAudioOutput;
-    player->setAudioOutput(audioOutput);
-    // ...
-    player->setSource(QUrl::fromLocalFile("C:/Users/Alain Royer/Music/80's/B52's - Love Shack.mp3"));
-    audioOutput->setVolume(50);
-    player->play();
-
-
-    // Connect to the bufferReady signal to get the audio information
-    QObject::connect(&decoder, &QAudioDecoder::bufferReady, [&]() {
-        QAudioBuffer buffer = decoder.read();
-        if (buffer.isValid()) {
-            qDebug() << "Sample Rate:" << buffer.format().sampleRate() << "Hz";
-            qDebug() << "Channel Count:" << buffer.format().channelCount();
-            qDebug() << "Sample Size:" << buffer.format().bytesPerSample();
-            //qDebug() << "Codec:" << decoder.metaObject(QMediaMetaData::AudioCodec().toString());
-            qDebug() << "Sample Format:" <<  buffer.format().sampleFormat();
-
-
-            int durationInSecond = player->duration() / 1000;
-            qDebug() << "Duration:" << QTime(0, 0).addSecs(durationInSecond).toString("HH:mm:ss");
-        }
-    });
-
-    // Connect to the finished signal to quit the event loop
-    QEventLoop loop;
-    QObject::connect(&decoder, &QAudioDecoder::finished, &loop, &QEventLoop::quit);
-
-    // Start decoding
-    decoder.start();
-
-    // Start the event loop to process signals
-    loop.exec();
-
-
-
-
-
-
-
-
     QString Path;
 
     Path   = m_currentDir.absolutePath();
@@ -318,7 +271,7 @@ void MainWindow::AddAudio(sLoadingAudioInfo LoadingInfo)
     //AudioInfo.Size         = LoadingInfo.Size;
     AudioInfo.DataSize     = LoadingInfo.DataSize;
     //AudioInfo.PixelFormat  = LoadingInfo.PixelFormat;
-   AudioInfo.RawIndex     = m_RawImage.size();
+    AudioInfo.RawIndex     = m_RawAudio.size();
 
    // Audio.load(LoadingInfo.PathAndFilename);                                                        // Load Audio
 
@@ -467,6 +420,7 @@ void MainWindow::UpdateAudioGUI(int row)
       //  QPoint Point = CenterPoint(m_ImageInfo[row].Size, m_DisplaySize);                                   // Calculate Center position for the image
      //  PixmapItem->setPos(Point);                                                                          // Then set it
     }
+
     UpdateStatusBar();
 }
 

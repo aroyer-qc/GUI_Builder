@@ -24,6 +24,9 @@
 #include <QDialog>
 #include <QtWidgets>
 #include "typedef.h"
+#include "qmediaplayer.h"
+#include <QAudioOutput>
+#include <QAudioDecoder>
 
 namespace Ui {
 class AddingAudio;
@@ -47,27 +50,35 @@ class AddingAudio : public QDialog
         void on_ButtonBrowse_clicked();
         void on_pushButtonAdd_clicked();
         void on_pushButtonClose_clicked();
+        void on_pushButtonPlay_clicked();
         void on_ComboBoxDirectory_currentIndexChanged(int index);
         void on_TableFilesFound_cellClicked(int row, int column);
         void on_TableFilesFound_cellActivated(int row, int column);
         void on_TableFilesFound_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+        void on_ProcessBufferReady();
+        void on_pushButtonStop_clicked();
+        void on_pushButtonPause_clicked();
+        void on_PositionChanged(qint64 position);
 
-   private:
+    private:
 
         void Find();
         void AudioSelected();
         void ResetLoadGUI();
         void ReloadingAudio();
         void LoadingAudio(int Row, eResizer Resizer);
+        void setPlayTime(qint64 Time);
 
 
         Ui::AddingAudio*        ui;
-        QString                 m_Filename;
-        QString                 m_PathAndFilename;
         QDir                    m_currentDir;
-        //QAudioOutput*           m_pAudio;
         int                     m_FileFound;
         size_t                  m_TotalCount;
+        
+        sLoadingAudioInfo       m_LoadingAudioInfo;
+        QAudioDecoder           m_Decoder;
+        QMediaPlayer*           m_pPlayer;
+        QAudioOutput*           m_pAudioOutput;
 };
 
 #endif // ADDING_AUDIO_H

@@ -34,6 +34,10 @@ AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
     setSizeGripEnabled(false);
     m_currentDir.setPath(Path);
 
+    m_pPlayer = new QMediaPlayer;
+    m_pAudioOutput = new QAudioOutput;
+    m_pPlayer->setAudioOutput(m_pAudioOutput);
+    
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(Path);
     UpdateComboBox(ui->ComboBoxDirectory);
@@ -43,15 +47,30 @@ AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
     ui->comboBoxAudioMode->setCurrentIndex(0); /// ???  set to correct enum
     ui->comboBoxAudioMode->blockSignals(false);
 
+    ui->pushButtonPlay->setStyleSheet("background-color: lightgray; border-color: darkgray;");
+    ui->pushButtonStop->setStyleSheet("background-color: lightgray; border-color: darkgray;");
+    ui->pushButtonPause->hide();
+
     ui->comboBoxSamplingRate->setCurrentIndex(0); /// ???  set to correct enum
 
-    this->connect( ui->pushButtonAdd, SIGNAL(Clicked()),
+    this->connect(ui->pushButtonAdd, SIGNAL(Clicked()),
                   this, SLOT(on_pushButtonAdd_clicked()));
 
-   this->connect( ui->pushButtonClose, SIGNAL(Clicked()),
+    this->connect(ui->pushButtonClose, SIGNAL(Clicked()),
                   this, SLOT(on_pushButtonClose_clicked()));
 
-    //ui->LabelNote->setVisible(false);
+    this->connect(ui->pushButtonClose, SIGNAL(Clicked()),
+                  this, SLOT(on_pushButtonClose_clicked()));
+
+    // Connecting the signal to the slot
+    this->connect(m_pPlayer, SIGNAL(positionChanged(qint64)),
+                  this, SLOT(on_PositionChanged(qint64)));
+
+
+    this->connect(&m_Decoder, &QAudioDecoder::bufferReady, this, &AddingAudio::on_ProcessBufferReady);
+
+     this->setAttribute(Qt::WA_DeleteOnClose);
+
     ResetLoadGUI();
     Find();
 }
@@ -60,8 +79,9 @@ AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
 
 AddingAudio::~AddingAudio()
 {
-//    if(m_pAudio          != nullptr)       delete m_pAudio;
-//    if(m_pProcessedAudio != nullptr)       delete m_pProcessedAudio;
+    m_pPlayer->stop();
+    delete m_pPlayer;
+    delete m_pAudioOutput;
 
     delete ui;
 }
@@ -119,6 +139,11 @@ void AddingAudio::on_TableFilesFound_currentCellChanged(int currentRow, int curr
 
     if(currentRow >= 0)
     {
+        m_pPlayer->stop();
+        ui->pushButtonPlay->setStyleSheet("background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);border-color: #778EB8;");
+        ui->pushButtonPlay->show();
+        ui->pushButtonPause->hide();
+        ui->pushButtonStop->setStyleSheet("background-color: lightgray; border-color: darkgray;");
         LoadingAudio(currentRow, AUTO_FORMAT);
     }
 }
@@ -139,6 +164,24 @@ void AddingAudio::on_TableFilesFound_cellActivated(int row, int column)
     Q_UNUSED(row);
     Q_UNUSED(column);
     AudioSelected();
+}
+
+// ************************************************************************************************
+
+void AddingAudio::on_ProcessBufferReady()           // Slot to handle bufferReady signal
+{
+    QAudioBuffer buffer = m_Decoder.read();
+    if (buffer.isValid())
+    {
+        m_LoadingAudioInfo.DataSize = 0;
+        m_LoadingAudioInfo.SampleRate = buffer.format().sampleRate();
+        m_LoadingAudioInfo.ChannelCount = buffer.format().channelCount();
+        m_LoadingAudioInfo.BytesPerSample = buffer.format().bytesPerSample();
+        m_LoadingAudioInfo.DurationInSecond = m_pPlayer->duration() / 1000;
+        m_LoadingAudioInfo.SampleFormat = buffer.format().sampleFormat();
+
+        // Additional processing if required...
+    }
 }
 
 // ************************************************************************************************
@@ -188,6 +231,8 @@ void AddingAudio::Find()
     {
         ui->LabelFilesFound->setText(tr("0 file found"));
     }
+
+    setPlayTime(0);
 }
 
 
@@ -195,14 +240,11 @@ void AddingAudio::Find()
 
 void AddingAudio::AudioSelected()
 {
-    sLoadingAudioInfo LoadingInfo;
 
-    LoadingInfo.DataSize        = m_TotalCount;                          // Size of the raw data
-    LoadingInfo.Filename        = m_Filename;
-    LoadingInfo.PathAndFilename = m_PathAndFilename;
-    //LoadingInfo.AudioType       = (eAudioRate)ui->comboBoxSamplingRate->currentIndex();
+    //m_Player->play(); need to be in button play
 
-    emit AddAudio(LoadingInfo);
+
+    emit AddAudio(m_LoadingAudioInfo);
 }
 
 // ************************************************************************************************
@@ -237,43 +279,147 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
 
     ui->pushButtonAdd->setEnabled(true);
     item = ui->TableFilesFound->item(row, 0);
-    m_Filename        = item->text();
-    m_PathAndFilename = m_currentDir.absoluteFilePath(m_Filename);
+    m_LoadingAudioInfo.Filename = item->text();
+    m_LoadingAudioInfo.PathAndFilename = m_currentDir.absoluteFilePath(m_LoadingAudioInfo.Filename);
 
-  //  if(m_pAudio != nullptr)
-  //  {
-  //      delete m_pAudio;
-  //      m_pAudio = nullptr;
-  //  }
- // m_pAudio->load(m_PathAndFilename);
+    // Set the audio source and start decoding
+    m_Decoder.setSource(QUrl::fromLocalFile(m_LoadingAudioInfo.PathAndFilename));
+    m_Decoder.start();  // Starts decoding
 
-    // Information that do not change if setting change
-    ui->LabelFilename->setText(item->text());
-   // ui->LabelSize->setText(PrintSize(m_pAudio->size()));
+    m_pPlayer->setSource(QUrl::fromLocalFile(m_LoadingAudioInfo.PathAndFilename));
+    m_pAudioOutput->setVolume(50);
 
-    if(Resizer == AUTO_FORMAT)
-    {
-    //    m_PixelFormat = AutoSelectConversion(ui->comboBoxPixelFormat, m_pImage->format());
-    }
+    // Synchronous waiting for decoding
+    QEventLoop loop;
+    this->connect(&m_Decoder, &QAudioDecoder::bufferReady, &loop, &QEventLoop::quit);
+    loop.exec();
 
-    //pResizedImage = new QImage();
-
-    //if(m_pProcessedImage != nullptr)
-   // {
-    //    delete m_pProcessedImage;
-     //   m_pProcessedImage = nullptr;
-   // }
-   // m_pProcessedImage = new QImage();
-   // *m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormat);
-   // delete pResizedImage;
-
-    //m_TotalCount  = m_pProcessedImage->byteCount() / (m_pProcessedImage->width() * m_pProcessedImage->height());    // Adjust byte count to image size in viewport if it is the case
-    //m_TotalCount *= (Size.width() * Size.height());
-
-//    ui->LabelPixelFormat->setText(GetFormat(m_pImage->format()));
-//    ui->LabelDataSize->setText(QString("%1 Bytes").arg(m_TotalCount));                                              // Print updated value in information
-  //  ui->LabelScaleSize->setText(PrintSize(Size));                                                                   // Display viewport size
-    }
+    // Update UI with audio information
+    ui->LabelFilename->setText(m_LoadingAudioInfo.Filename);
+    ui->LabelSamplingRate->setText(QString("%1 Hz").arg(m_LoadingAudioInfo.SampleRate));
+    ui->LabelDuration->setText(QTime(0, 0).addSecs(m_LoadingAudioInfo.DurationInSecond).toString("HH:mm:ss"));
+}
 
 // ************************************************************************************************
+
+void AddingAudio::setPlayTime(qint64 Time)
+{
+    uint32_t Hours;
+    uint32_t Minutes;
+    uint32_t Seconds;
+    QString TimeStr;
+    QChar TempChar;
+    int Count = 0;
+
+    Seconds = Time % 60;
+    Minutes = (Time / 60) % 60;
+    Hours   = Time / 3600;
+
+    TimeStr = QString("%3:%2:%1").arg(Seconds, 2, 10, QLatin1Char('0'))
+                                 .arg(Minutes, 2, 10, QLatin1Char('0'))
+                                 .arg(Hours, 3, 10, QLatin1Char('0'));
+
+    TempChar = TimeStr.at(0);
+    if(TempChar == '0')
+    {
+        TempChar = ' ';
+        Count++;
+    }
+    ui->LabelAudioPlayTimeHour100->setText(TempChar);
+
+    TempChar = TimeStr.at(1);
+    if(TempChar == '0')
+    {
+        TempChar = ' ';
+        Count++;
+    }
+    ui->LabelAudioPlayTimeHour10->setText(TempChar);
+
+    TempChar = TimeStr.at(2);
+    if(TempChar == '0')
+    {
+        TempChar = ' ';
+        Count++;
+    }
+    ui->LabelAudioPlayTimeHour1->setText(TempChar);
+
+    if(Count == 3)
+    {
+        ui->LabelStaticAudioPlayDot1->hide();
+    }
+    else
+    {
+        ui->LabelStaticAudioPlayDot1->show();
+    }
+
+    TempChar = TimeStr.at(4);
+    if(TempChar == '0')
+    {
+        TempChar = ' ';
+        Count++;
+    }
+    ui->LabelAudioPlayTimeMinute10->setText(TempChar);
+
+    ui->LabelAudioPlayTimeMinute1->setText(TimeStr.at(5));
+    ui->LabelAudioPlayTimeSecond10->setText(TimeStr.at(7));
+    ui->LabelAudioPlayTimeSecond1->setText(TimeStr.at(8));
+}
+
+// ************************************************************************************************
+
+void AddingAudio::on_pushButtonPlay_clicked()
+{
+    m_pPlayer->play();
+    ui->pushButtonPlay->hide();
+    ui->pushButtonPause->show();
+    ui->pushButtonStop->setStyleSheet("background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);border-color: #778EB8;");
+}
+
+// ************************************************************************************************
+
+void AddingAudio::on_pushButtonStop_clicked()
+{
+    m_pPlayer->stop();
+    ui->pushButtonPlay->show();
+    ui->pushButtonPause->hide();
+    ui->pushButtonStop->setStyleSheet("background-color: lightgray;border-color: darkgray;");
+    setPlayTime(0);
+}
+
+
+void AddingAudio::on_pushButtonPause_clicked()
+{
+    m_pPlayer->pause();
+    ui->pushButtonPause->hide();
+    ui->pushButtonPlay->show();
+}
+
+void AddingAudio::on_PositionChanged(qint64 position)
+{
+    static qint64 LastValue = 0;
+
+    position /= 1000;
+
+    if(position != LastValue)
+    {
+        LastValue = position;
+        setPlayTime(position);
+    }
+}
+
+
+
+//ui->pushButtonPlay->setStyleSheet("background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);border-color: #778EB8;");
+//ui->pushButtonPause->hide();
+//ui->pushButtonStop->setStyleSheet("lightgray;border-color: darkgray;")
+ //m_pAudioOutput->setVolume(50);
+// background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
+//border-color: #778EB8;
+
+
+//# Set playback position (e.g., to 5000 milliseconds or 5 seconds)
+//media_player.setPosition(5000);
+
+//elapsed_time = media_player.position();
+//printf("Elapsed time: {elapsed_time} ms");
 

@@ -218,10 +218,10 @@ border-style: solid;
      <string notr="true"/>
     </property>
     <property name="tabShape">
-     <enum>QTabWidget::Triangular</enum>
+     <enum>QTabWidget::TabShape::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>4</number>
     </property>
     <property name="iconSize">
      <size>
@@ -243,10 +243,10 @@ border-style: solid;
        </rect>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="backgroundBrush">
        <brush brushstyle="NoBrush">
@@ -294,10 +294,10 @@ border-style: solid;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -354,7 +354,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticFilenameImage">
@@ -598,7 +598,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QSlider" name="ImageCheckerBoardSlider">
@@ -617,7 +617,7 @@ border-style: solid;
        <number>200</number>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
     </widget>
@@ -650,10 +650,10 @@ border-style: solid;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -809,7 +809,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="Line" name="line_H_Font">
@@ -822,7 +822,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticFontInfo">
@@ -932,7 +932,7 @@ border-style: solid;
        <string>Normal, Italic</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
       </property>
       <property name="wordWrap">
        <bool>false</bool>
@@ -1025,7 +1025,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxExtraSymbolFont">
@@ -1110,10 +1110,10 @@ border-color: black;
 border-width: 2px;</string>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxFixed">
@@ -1279,10 +1279,10 @@ border-width: 2px;</string>
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -1347,7 +1347,7 @@ border-width: 2px;</string>
        <rect>
         <x>760</x>
         <y>410</y>
-        <width>491</width>
+        <width>121</width>
         <height>20</height>
        </rect>
       </property>
@@ -1378,7 +1378,7 @@ border-width: 2px;</string>
        <string>Audio info:</string>
       </property>
      </widget>
-     <widget class="Line" name="line_V_Image_2">
+     <widget class="Line" name="line_V_Audio">
       <property name="geometry">
        <rect>
         <x>710</x>
@@ -1388,7 +1388,7 @@ border-width: 2px;</string>
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticSizeAudio">
@@ -1404,11 +1404,34 @@ border-width: 2px;</string>
        <string>Raw data size:</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QLabel" name="LabelAudioPlayTime">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>250</y>
+        <x>901</x>
+        <y>190</y>
+        <width>171</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: bold italic 36pt &quot;DS-Digital&quot;;
+color: black</string>
+      </property>
+      <property name="text">
+       <string>00:00:00</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonPlay">
+      <property name="geometry">
+       <rect>
+        <x>821</x>
+        <y>190</y>
         <width>48</width>
         <height>48</height>
        </rect>
@@ -1417,53 +1440,30 @@ border-width: 2px;</string>
        <string>Play</string>
       </property>
      </widget>
-     <widget class="QLCDNumber" name="lcdNumber">
+     <widget class="QPushButton" name="pushButtonStop">
       <property name="geometry">
        <rect>
-        <x>990</x>
-        <y>150</y>
-        <width>101</width>
+        <x>821</x>
+        <y>190</y>
+        <width>48</width>
+        <height>48</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stop</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="horizontalSlider_2">
+      <property name="geometry">
+       <rect>
+        <x>820</x>
+        <y>260</y>
+        <width>251</width>
         <height>41</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QSlider" name="horizontalSlider">
-      <property name="geometry">
-       <rect>
-        <x>949</x>
-        <y>189</y>
-        <width>181</width>
-        <height>51</height>
-       </rect>
-      </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>850</x>
-        <y>210</y>
-        <width>80</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>10 Sec.</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="geometry">
-       <rect>
-        <x>1150</x>
-        <y>210</y>
-        <width>80</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>10 Sec.</string>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
     </widget>
@@ -1566,10 +1566,10 @@ border-width: 2px;</string>
        <string notr="true">background-color: lightgray;</string>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="backgroundBrush">
        <brush brushstyle="NoBrush">
@@ -1599,7 +1599,7 @@ border-width: 2px;</string>
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QTableWidget" name="TableFilesFound">
@@ -1633,10 +1633,10 @@ font-size: 12px;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -1927,7 +1927,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QScrollBar" name="horizontalScrollBarConverter">
@@ -1946,7 +1946,7 @@ font-size: 12px;
        <bool>true</bool>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QScrollBar" name="verticalScrollBarConverter">
@@ -1959,7 +1959,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelScaleSize">
@@ -2272,7 +2272,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticCheckerColor">
@@ -2310,7 +2310,329 @@ font-size: 12px;
        <number>200</number>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Configuration">
+     <attribute name="title">
+      <string>Configuration</string>
+     </attribute>
+     <widget class="QLineEdit" name="MemoryOffset">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>160</y>
+        <width>251</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxBinary">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>100</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Binary Configuration</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxLoadable">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>70</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Loadable Skin</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticMemoryLocation">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>160</y>
+        <width>121</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+      <property name="text">
+       <string>Memory Location:</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxLittleEndian">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>80</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Little Endian</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxBigEndian">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>140</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Big Endian</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticEndianness">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>40</y>
+        <width>121</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+      <property name="text">
+       <string>Endianness:</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_320x200">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>470</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>320 x 200</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_CustomHeight">
+      <property name="geometry">
+       <rect>
+        <x>1020</x>
+        <y>400</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>260</y>
+        <width>281</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Display Size</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_800x600">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>470</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>800 x 600</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_128x128">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>390</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>128 x 128</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_320x240">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>310</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>320 x 240</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_96x64">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>350</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>96 x 64</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_CustomSize">
+      <property name="geometry">
+       <rect>
+        <x>960</x>
+        <y>310</y>
+        <width>151</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Custom size</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_480x272">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>350</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>480 x 272</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_640x480">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>390</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>640 x 480</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_84x48">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>310</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>84 x 48</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_Height">
+      <property name="geometry">
+       <rect>
+        <x>960</x>
+        <y>400</y>
+        <width>51</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Height:</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_240x320">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>430</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>240 x 320</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_CustomWidth">
+      <property name="geometry">
+       <rect>
+        <x>1020</x>
+        <y>350</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_800x480">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>430</y>
+        <width>101</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>800 x 480</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelWidth">
+      <property name="geometry">
+       <rect>
+        <x>960</x>
+        <y>350</y>
+        <width>51</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Width:</string>
       </property>
      </widget>
     </widget>
@@ -2322,7 +2644,7 @@ font-size: 12px;
      <x>0</x>
      <y>0</y>
      <width>1281</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">

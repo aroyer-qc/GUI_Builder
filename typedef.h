@@ -22,6 +22,7 @@
 #define __TYPEDEF_H__
 
 #include <QImage>
+#include <QAudioFormat>
 #include <stdint.h>
 
 #define MINIMUM_PREVIEW_WIDTH   480
@@ -50,6 +51,19 @@
 
 #define SKIN_TYPE_LOADABLE      0
 #define SKIN_TYPE_BINARY        1
+
+#define BINARY_OFFSET_IMG_STRUCT_POINTER    0x00000000
+#define BINARY_OFFSET_IMG_COUNT             0x00000004
+#define BINARY_OFFSET_FNT_STRUCT_POINTER    0x00000006
+#define BINARY_OFFSET_FNT_COUNT             0x0000000A
+#define BINARY_OFFSET_AUD_STRUCT_POINTER    0x0000000C
+#define BINARY_OFFSET_AUD_COUNT             0x00000010
+#define BINARY_OFFSET_LBL_STRUCT_POINTER    0x00000012
+#define BINARY_OFFSET_LBL_COUNT             0x00000016
+#define BINARY_OFFSET_LST_STRUCT_POINTER    0x00000018
+#define BINARY_OFFSET_LST_COUNT             0x0000001C
+
+
 
 
 typedef QSize QOffset;
@@ -120,6 +134,7 @@ typedef enum WidgetType_e
     TYPE_AUDIO_MP3,
     TYPE_AUDIO_FLAC,
     TYPE_AUDIO_RAW,
+    NUMBER_OF_WIDGET_TYPE,
 } eWidgetType;
 
 #pragma pack (push)
@@ -190,9 +205,14 @@ typedef struct LoadingImageInfo_s
 
 typedef struct LoadingAudioInfo_s
 {
-    QString         PathAndFilename;
-    QString         Filename;
-    size_t          DataSize;
+    QString                     PathAndFilename;
+    QString                     Filename;
+    size_t                      DataSize;
+    int                         SampleRate;
+    int                         ChannelCount;
+    int                         BytesPerSample;
+    int                         DurationInSecond;
+    QAudioFormat::SampleFormat  SampleFormat;
 } sLoadingAudioInfo;
 
 typedef struct Encoding_s
@@ -209,3 +229,21 @@ typedef struct FontMetadata_s
 } sFontMetaData;
 
 #endif
+
+// FOR Binary file
+
+/*
+typedef struct BoxSize_s
+{
+    uint16_t       Width;
+    uint16_t       Height;
+} sBoxSize;
+
+typedef struct DiginiImageInfo_s
+{
+    void*          pPointer;
+    BoxSize_s      Size;
+    PixelFormat_e  PixelFormat;
+
+} sDiginiImageInfo;
+*/
