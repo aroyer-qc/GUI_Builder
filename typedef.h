@@ -64,8 +64,6 @@
 #define BINARY_OFFSET_LST_COUNT             0x0000001C
 
 
-
-
 typedef QSize QOffset;
 
 typedef enum Endianess_e

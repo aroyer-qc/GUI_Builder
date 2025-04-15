@@ -32,7 +32,7 @@
 
 void MainWindow::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_currentDir.absolutePath());
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
 
     if (!directory.isEmpty())
     {
@@ -49,8 +49,8 @@ void MainWindow::on_ButtonBrowse_clicked()
 void MainWindow::on_ComboBoxDirectory_currentIndexChanged(int index)
 {
     Q_UNUSED(index);
-    m_currentDir = QDir(ui->ComboBoxDirectory->currentText());
-    SavePathToXML(m_currentDir.absolutePath());
+    m_CurrentDir = QDir(ui->ComboBoxDirectory->currentText());
+    SetConfigToXML();
     Find();
 }
 
@@ -99,7 +99,7 @@ void MainWindow::on_ButtonConvert_clicked()
 void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
 {
     QTableWidgetItem* item = ui->TableFilesFound->item(row, 0);
-    QString FileName = m_currentDir.absoluteFilePath(item->text());
+    QString FileName = m_CurrentDir.absoluteFilePath(item->text());
     QFileInfo FileInfo(FileName);
     QString BaseName = FileInfo.baseName();                     // Get the file name without extension
     QString Temp;
@@ -289,7 +289,7 @@ void MainWindow::InitConverter()
     m_pProcessedImage = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
-    ui->ComboBoxDirectory->setCurrentText(m_currentDir.absolutePath());
+    ui->ComboBoxDirectory->setCurrentText(m_CurrentDir.absolutePath());
     UpdateComboBox(ui->ComboBoxDirectory);
     ui->ComboBoxDirectory->blockSignals(false);
     Find();
@@ -335,9 +335,9 @@ void MainWindow::Find()
     ResetConverterGUI();
 
     filters << "*.png" << "*.bmp" << "*.jpg";
-    m_currentDir.setNameFilters(filters);
+    m_CurrentDir.setNameFilters(filters);
 
-    files = m_currentDir.entryList(filters, QDir::Files | QDir::NoSymLinks);
+    files = m_CurrentDir.entryList(filters, QDir::Files | QDir::NoSymLinks);
 
     m_FileFound = files.size();
     m_SceneConverter.clear();
@@ -345,7 +345,7 @@ void MainWindow::Find()
     ui->TableFilesFound->blockSignals(true);
     for(int i = 0; i < m_FileFound; ++i)
     {
-        QFile file(m_currentDir.absoluteFilePath(files[i]));
+        QFile file(m_CurrentDir.absoluteFilePath(files[i]));
         qint64 size = QFileInfo(file).size();
 
         QTableWidgetItem *fileNameItem = new QTableWidgetItem(files[i]);
@@ -392,7 +392,7 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     ui->ButtonConvert->setEnabled(true);
     item = ui->TableFilesFound->item(row, 0);
     Filename        = item->text();
-    PathAndFilename = m_currentDir.absoluteFilePath(Filename);
+    PathAndFilename = m_CurrentDir.absoluteFilePath(Filename);
     m_FileSize      = QFileInfo(PathAndFilename).size();
 
     if(m_pImage != nullptr)

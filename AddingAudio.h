@@ -42,8 +42,9 @@ class AddingAudio : public QDialog
 
     signals:
 
-        void AddAudio(sLoadingAudioInfo LoadingInfo);                // Signal for Audio file
-        void CloseAddAudio();                                   // signal to Main app to close this form
+        void AddAudio(sLoadingAudioInfo LoadingInfo);           // Signal for Audio file
+        void CloseAddAudio();                                   // Signal to Main app to close this form
+        void SaveConfig(QString Path);                          // Signal to main app to update directory into config file
 
     private slots:
 
@@ -71,7 +72,8 @@ class AddingAudio : public QDialog
 
 
         Ui::AddingAudio*        ui;
-        QDir                    m_currentDir;
+        QDir                    m_CurrentDir;
+        QDir                    m_PreviousDir;
         int                     m_FileFound;
         size_t                  m_TotalCount;
         

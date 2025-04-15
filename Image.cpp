@@ -34,10 +34,11 @@ void MainWindow::on_ButtonAddImage_clicked()
 {
     QString Path;
 
-    Path   = m_currentDir.absolutePath();
+    Path   = m_ImageDir.absolutePath();
     m_pLoadImage = new AddingImage(Path, m_DisplaySize);
     connect(m_pLoadImage, SIGNAL(AddImage(sLoadingImageInfo)), this, SLOT(AddImage(sLoadingImageInfo)));
     connect(m_pLoadImage, SIGNAL(CloseAddImage()), this, SLOT(CloseAddImage()));
+    connect(m_pLoadImage, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathImage(QString)));
     m_pLoadImage->show();
 }
 
@@ -47,6 +48,7 @@ void MainWindow::CloseAddImage()
 {
     disconnect(m_pLoadImage, SIGNAL(AddImage(sLoadingImageInfo)), this, SLOT(AddImage(sLoadingImageInfo)));
     disconnect(m_pLoadImage, SIGNAL(CloseAddImage()), this, SLOT(CloseAddImage()));
+    disconnect(m_pLoadImage, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathImage(QString)));
     delete m_pLoadImage;
 }
 
@@ -262,7 +264,7 @@ void MainWindow::AddImage(sLoadingImageInfo LoadingInfo)
     QImage      ProcessedImage;
 
     // reload Path, if it was change by LoadImage class
-    m_currentDir.setPath(GetPathFromXML());
+//    m_currentDir.setPath(GetPathFromXML(); we need to set a dir for image
 
     ID_Code ID(TYPE_IMAGE, 0);
     int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());

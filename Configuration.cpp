@@ -209,6 +209,7 @@ void MainWindow::InitConfigurator()
 {
     m_Endian = BIG_ENDIAN;
     m_SkinType = SKIN_TYPE_BINARY;
+    m_ConfigDisplaySize = m_DisplaySize;
 
     ui->checkBoxBinary->setChecked(true);
     ui->checkBoxLoadable->setChecked(false);
@@ -222,7 +223,6 @@ void MainWindow::InitConfigurator()
 
     ui->lineEdit_CustomWidth->setValidator(new QIntValidator(0, 2048, this));
     ui->lineEdit_CustomHeight->setValidator(new QIntValidator(0, 2048, this));
-    m_ConfigDisplaySize = m_DisplaySize;
     CheckButton();
 }
 
@@ -284,7 +284,7 @@ void MainWindow::SetSizeDisplay(QSize Size)
     {
         SaveSkinAndClearData();
         m_DisplaySize = m_ConfigDisplaySize;
-        SaveDisplaySizeToXML(m_ConfigDisplaySize);
+        SetConfigToXML();
     }
 
     // All dynamic resize will follow setting from original designer value of 'graphicsViewImage'

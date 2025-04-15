@@ -40,7 +40,8 @@ class AddingImage : public QDialog
     signals:
 
         void AddImage(sLoadingImageInfo LoadingInfo);           // Signal for Image file
-        void CloseAddImage();                                   // signal to Main app to close this form
+        void CloseAddImage();                                   // Signal to Main app to close this form
+        void SaveConfig(QString Path);                          // Signal to main app to update directory into config file
 
     private slots:
 
@@ -74,7 +75,8 @@ class AddingImage : public QDialog
         QGraphicsScene          m_Scene;
         QString                 m_Filename;
         QString                 m_PathAndFilename;
-        QDir                    m_currentDir;
+        QDir                    m_CurrentDir;
+        QDir                    m_PreviousDir;
         int                     m_FileFound;
         size_t                  m_TotalCount;
         QImage*                 m_pImage;

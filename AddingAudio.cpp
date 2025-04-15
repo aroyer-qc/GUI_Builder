@@ -32,8 +32,8 @@ AddingAudio::AddingAudio(QString Path, QSize Size, QWidget* parent) :
     this->setModal(true);
     ui->setupUi(this);
     setSizeGripEnabled(false);
-    m_currentDir.setPath(Path);
-
+    m_CurrentDir.setPath(Path);
+    m_PreviousDir.setPath(Path);
     m_pPlayer = new QMediaPlayer;
     m_pAudioOutput = new QAudioOutput;
     m_pPlayer->setAudioOutput(m_pAudioOutput);
@@ -100,6 +100,12 @@ void AddingAudio::on_pushButtonAdd_clicked()
 
 void AddingAudio::on_pushButtonClose_clicked()
 {
+
+    if(m_CurrentDir != m_PreviousDir)
+    {
+        emit SaveConfig(m_CurrentDir.absolutePath());
+    }
+
     emit CloseAddAudio();
 }
 
@@ -107,7 +113,7 @@ void AddingAudio::on_pushButtonClose_clicked()
 
 void AddingAudio::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Audio Files"), m_currentDir.absolutePath());
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Audio Files"), m_CurrentDir.absolutePath());
 
     if (!directory.isEmpty())
     {
@@ -124,8 +130,7 @@ void AddingAudio::on_ButtonBrowse_clicked()
 void AddingAudio::on_ComboBoxDirectory_currentIndexChanged(int index)
 {
     Q_UNUSED(index);
-    m_currentDir = QDir(ui->ComboBoxDirectory->currentText());
-    SavePathToXML(m_currentDir.absolutePath());
+    m_CurrentDir = QDir(ui->ComboBoxDirectory->currentText());
     Find();
 }
 
@@ -198,16 +203,16 @@ void AddingAudio::Find()
     ResetLoadGUI();
 
     filters << "*.mp3" << "*.wav" << "*.aac" << "*.ogg" << "*.flac" << "*.aaif";
-    m_currentDir.setNameFilters(filters);
+    m_CurrentDir.setNameFilters(filters);
 
-    files = m_currentDir.entryList(filters, QDir::Files | QDir::NoSymLinks);
+    files = m_CurrentDir.entryList(filters, QDir::Files | QDir::NoSymLinks);
 
     m_FileFound = files.size();
 
     ui->TableFilesFound->blockSignals(true);
     for(int i = 0; i < m_FileFound; ++i)
     {
-        QFile file(m_currentDir.absoluteFilePath(files[i]));
+        QFile file(m_CurrentDir.absoluteFilePath(files[i]));
         qint64 size = QFileInfo(file).size();
 
         QTableWidgetItem *fileNameItem = new QTableWidgetItem(files[i]);
@@ -242,8 +247,6 @@ void AddingAudio::AudioSelected()
 {
 
     //m_Player->play(); need to be in button play
-
-
     emit AddAudio(m_LoadingAudioInfo);
 }
 
@@ -280,7 +283,7 @@ void AddingAudio::LoadingAudio(int row, eResizer Resizer)
     ui->pushButtonAdd->setEnabled(true);
     item = ui->TableFilesFound->item(row, 0);
     m_LoadingAudioInfo.Filename = item->text();
-    m_LoadingAudioInfo.PathAndFilename = m_currentDir.absoluteFilePath(m_LoadingAudioInfo.Filename);
+    m_LoadingAudioInfo.PathAndFilename = m_CurrentDir.absoluteFilePath(m_LoadingAudioInfo.Filename);
 
     // Set the audio source and start decoding
     m_Decoder.setSource(QUrl::fromLocalFile(m_LoadingAudioInfo.PathAndFilename));

@@ -37,10 +37,12 @@ void MainWindow::on_ButtonAddAudio_clicked()
 {
     QString Path;
 
-    Path   = m_currentDir.absolutePath();
+    Path   = m_AudioDir.absolutePath();
     m_pLoadAudio = new AddingAudio(Path, m_DisplaySize);
     connect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
     connect(m_pLoadAudio, SIGNAL(CloseAddAudio()), this, SLOT(CloseAddAudio()));
+    connect(m_pLoadAudio, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathAudio(QString)));
+
     m_pLoadAudio->show();
 }
 
@@ -50,6 +52,7 @@ void MainWindow::CloseAddAudio()
 {
     disconnect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
     disconnect(m_pLoadAudio, SIGNAL(CloseAddAudio()), this, SLOT(CloseAddAudio()));
+    disconnect(m_pLoadAudio, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathAudio(QString)));
     delete m_pLoadAudio;
 }
 
@@ -255,7 +258,7 @@ void MainWindow::AddAudio(sLoadingAudioInfo LoadingInfo)
    // QAudio      Audio
 
     // reload Path, if it was change by LoadImage class
-    m_currentDir.setPath(GetPathFromXML());
+   // m_currentDir.setPath(GetPathFromXML());  We nedd to set a path for Audio
 
     ID_Code ID(TYPE_AUDIO, 0);
     int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());

@@ -23,7 +23,8 @@
 #include "Utility.h"
 #include <QRegExp>
 #include <QRegularExpressionValidator>
-
+#include <QDir>
+#include <QFileInfo>
 
 QScreen* MainWindow::m_pPrimary;
 
@@ -79,21 +80,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_TabRect  = ui->TabFunctionSelect->geometry();
     m_ViewRect = ui->graphicsViewImage->geometry();                             // Get QRect from forms designer, as base value
 
-    m_SkinDir.setPath(GetSkinPathFromXML());
-    m_currentDir.setPath(GetPathFromXML());
-    m_DisplaySize = GetDisplaySizeFromXML();
-
     m_pStatusLabel = new QLabel();
     ui->statusBar->addWidget(m_pStatusLabel);
 
     ClearAllData();                                                             // Make sure all data are cleared
-    SetSizeDisplay(m_DisplaySize);
-
+    GetConfigFromXML();
     InitImage();
     InitFont();
     InitConverter();
     InitConfigurator();
-
+//    SetSizeDisplay(m_DisplaySize);
 }
 
 // ************************************************************************************************
@@ -124,13 +120,22 @@ void MainWindow::ClearAllData()
 
     m_SpecialNote.clear();      // Make sure there is no special note to add to Status bar.
     m_SkinType = SKIN_TYPE_BINARY;
-    m_Endian = BIG_ENDIAN;
+    m_Endian = LITTLE_ENDIAN;
     m_SkinSize = 0;
     m_SkinName = "none";
     m_IsSkinSaveAs = true;
     m_IsSkinHasUnsavedData = false;
     m_IsWarningDisplayed = true;
-    
+    m_DisplaySize.setWidth(480);
+    m_DisplaySize.setHeight(272);
+    m_MemoryOffset = 0;
+
+    m_SkinDir.setPath(".");
+    m_CurrentDir.setPath(".");
+    m_ImageDir.setPath(".");
+    m_AudioDir.setPath(".");
+
+
     // Image
     m_ImageInfo.clear();        // Remove all image info structure
     m_RawImage.clear();         // Remove all raw image data
@@ -140,9 +145,13 @@ void MainWindow::ClearAllData()
     m_RawAudio.clear();         // Remove all raw image data
     
     // Label
-    //m_LabelInfo.clear();       // Remove all Label
-    //m_RawLabel.clear();        // Remove all Label
-    
+    //m_LabelInfo.clear();      // Remove all Label
+    //m_RawLabel.clear();       // Remove all Label
+
+    // Label
+    //m_LabelListInfo.clear();  // Remove all Label
+    //m_RawLabelist.clear();    // Remove all Label
+
     // Font
     m_Font.clear();             // Remove all font info structure
     m_SamplingFont.clear();     // Remove all Sampling info structure
@@ -159,7 +168,8 @@ void MainWindow::ResetAllSkinTab()
 {
     InitImage();            // Reset tab Image
     InitAudio();            // Reset tab Audio
-  //InitLabel();            // Reset tab Label
+    //InitLabel();            // Reset tab Label
+    //InitLabelist();         // Reset tab Label list
     InitFont();
 }
 
@@ -217,5 +227,128 @@ void MainWindow::on_TabFunctionSelect_tabBarClicked(int index)
     {
         UpdateStatusBar();
     }
+}
+
+// ************************************************************************************************
+
+void MainWindow::UpdateWidget()
+{
+    ui->MemoryOffset->setText(QString::asprintf("0x%08X", m_MemoryOffset));
+}
+
+// ************************************************************************************************
+// *
+// *  XML support function
+// *
+// ************************************************************************************************
+
+void MainWindow::GetConfigFromXML()
+{
+    QString UserDir;
+    QString NewDirPath;
+    QString Path;
+    QXmlGet xmlGet;
+    QDir Directory;
+
+    UserDir = QDir::homePath();                         // This automatically gets the user's home directory
+    NewDirPath = UserDir + "/GUI_Builder";              // Specify the new directory name
+
+    // Use QFileInfo to check if the directory exists
+    QFileInfo DirInfo(NewDirPath);
+
+    if((DirInfo.exists() == false) || (DirInfo.isDir() == false))
+    {
+        Directory.mkdir(NewDirPath);
+    }
+
+    m_CurrentDir.setPath(NewDirPath);
+
+    if(xmlGet.load(m_CurrentDir.absolutePath() + "/GB_Config.xml") == true)
+    {
+        if(xmlGet.find("SkinPath"))
+        {
+            Path = xmlGet.getString();
+            m_SkinDir.setPath(Path);
+        }
+
+        if(xmlGet.find("ImagePath"))
+        {
+            Path = xmlGet.getString();
+            m_ImageDir.setPath(Path);
+        }
+
+        if(xmlGet.find("AudioPath"))
+        {
+            Path = xmlGet.getString();
+            m_AudioDir.setPath(Path);
+        }
+
+        if(xmlGet.findNext("SizeDisplay"))
+        {
+            xmlGet.descend();
+            if (xmlGet.find("width"))   m_DisplaySize.setWidth(xmlGet.getInt());
+            if (xmlGet.find("height"))  m_DisplaySize.setHeight(xmlGet.getInt());
+        }
+
+        if(xmlGet.find("SkinType"))
+        {
+            QString SkinName = xmlGet.getString();
+            if(SkinName == "Loadable") m_SkinType = SKIN_TYPE_LOADABLE;
+            else                       m_SkinType = SKIN_TYPE_BINARY;
+        }
+
+        if(xmlGet.find("MemoryOffset"))
+        {
+            QString Offset = xmlGet.getString();
+            m_MemoryOffset = static_cast<uint32_t>(Offset.toUInt(nullptr, 16));
+        }
+
+        if(xmlGet.find("Endian"))
+        {
+            QString EndianName = xmlGet.getString();
+            if(EndianName == "BigEndian") m_Endian = BIG_ENDIAN;
+            else                          m_Endian = LITTLE_ENDIAN;     // include nullptr, so it's default
+        }
+    }
+    else
+    {
+        SetConfigToXML();
+    }
+
+    UpdateWidget();
+}
+
+// ************************************************************************************************
+
+void MainWindow::SetConfigToXML()
+{
+    QXmlPut xmlPut("GUI_Builder");
+    xmlPut.putString("SkinPath", m_SkinDir.absolutePath());
+    xmlPut.putString("ImagePath", m_ImageDir.absolutePath());
+    xmlPut.putString("AudioPath", m_AudioDir.absolutePath());
+    xmlPut.putString("Endian", (m_Endian == LITTLE_ENDIAN) ? "LittleEndian" : "BigEndian");
+    xmlPut.putString("SkinType", (m_SkinType == SKIN_TYPE_LOADABLE) ? "Loadable" : "Binary");
+    xmlPut.descend("SizeDisplay");
+    xmlPut.putInt("width", m_DisplaySize.width());
+    xmlPut.putInt("height", m_DisplaySize.height());
+    xmlPut.rise();
+    xmlPut.putString("MemoryOffset", QString::asprintf("0x%08X", m_MemoryOffset));
+    xmlPut.save(m_CurrentDir.absolutePath() + "/GB_Config.xml");
+}
+
+// ************************************************************************************************
+
+void MainWindow::on_SetNewPathImage(QString Path)
+{
+    m_ImageDir.setPath(Path);
+    SetConfigToXML();
+}
+
+// ************************************************************************************************
+
+    void MainWindow::on_SetNewPathAudio(QString Path)
+{
+    m_AudioDir.setPath(Path);
+    SetConfigToXML();
 }
 

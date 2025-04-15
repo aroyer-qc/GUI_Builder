@@ -30,6 +30,7 @@
 #include "progress.h"
 #include "ComboBoxDelegate.h"
 #include "SpinBoxDelegate.h"
+#include "qxmlputget.h"
 
 const int BytesPerPixel[19] =
     {
@@ -179,19 +180,24 @@ class MainWindow : public QMainWindow
         void on_SaveBinaryButton_clicked();
         void on_comboBoxResize_currentIndexChanged(int index);
         void on_comboBoxPixelFormat_currentIndexChanged(int index);
-
         void on_actionExit_triggered();
-        
         void on_CheckerBoardSlider_sliderMoved(int position);
-
         void on_TabFunctionSelect_tabBarClicked(int index);
+
+        void on_SetNewPathImage(QString Path);
+        void on_SetNewPathAudio(QString Path);
 
     private:
 
         void     ClearAllData            ();
         void     ResetAllSkinTab         ();
         void     UpdateStatusBar         ();
+        void     UpdateWidget            ();
         void     closeEvent              (QCloseEvent *bar);
+
+        // Config in XML File
+        void     GetConfigFromXML        ();
+        void     SetConfigToXML          ();
 
         // Function for file operation
         void     Open                    (QString File);
@@ -249,6 +255,7 @@ class MainWindow : public QMainWindow
         Ui::MainWindow*         ui;
         int                     m_SkinType;
         eEndianess              m_Endian;
+        uint32_t                m_MemoryOffset;
         static QScreen*         m_pPrimary;
 
         QMediaPlayer*           m_Player;
@@ -272,7 +279,7 @@ class MainWindow : public QMainWindow
         //sLoadingInfo            m_LoadingInfo;
 
         // File operation
-        QDir                    m_currentDir;
+        QDir                    m_CurrentDir;
         QDir                    m_SkinDir;
         AddingImage*            m_pLoadImage;
         AddingAudio*            m_pLoadAudio;
@@ -289,6 +296,7 @@ class MainWindow : public QMainWindow
         Progress*               m_pProgress;
 
         // Variable for Image Tab
+        QDir                    m_ImageDir;
         QVector<sImageInfo>     m_ImageInfo;                    // Array of image structure information
         QVector<uint8_t>        m_RawImage;                     // Raw image data
         QGraphicsScene          m_SceneImage;
@@ -304,6 +312,7 @@ class MainWindow : public QMainWindow
         bool                    m_IsAllFontValide;
 
         // Variable for Audio Tab
+        QDir                    m_AudioDir;
         QVector<sAudioInfo>     m_AudioInfo;                    // Array of audio structure information
         QVector<uint8_t>        m_RawAudio;                     // Raw audio data
         ComboBoxDelegate*       m_pAudioComboBoxDelegate;

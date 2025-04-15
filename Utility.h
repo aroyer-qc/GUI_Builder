@@ -74,17 +74,6 @@ void                    ScaleToFit                          (QImage* pImage, QIm
 void                    ScaleToWidth                        (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 void                    ScaleToHeight                       (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 
-// ---------- XML Support Function ----------
-
-void                    SavePathToXML                       (QString Path);
-QString                 GetPathFromXML                      ();
-void                    SaveSkinPathToXML                   (QString Path);
-QString                 GetSkinPathFromXML                  ();
-void                    SaveDisplaySizeToXML                (QSize Size);
-QSize                   GetDisplaySizeFromXML               ();
-void                    SaveEndianToXML                     (eEndianess Endian);
-eEndianess              GetEndianFromXML                    ();
-
 // ---------- class for ID_Code ----------
 
 class ID_Code
