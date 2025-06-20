@@ -248,7 +248,7 @@ void AddingImage::Find()
 
 void AddingImage::ImageSelected()
 {
-    sLoadingImageInfo LoadingInfo;
+    LoadingImageInfo_t LoadingInfo;
 
     LoadingInfo.Offset.setX(ui->horizontalScrollBar->value() / 100);
     LoadingInfo.Offset.setY(ui->verticalScrollBar->value()   / 100);
@@ -257,7 +257,7 @@ void AddingImage::ImageSelected()
     LoadingInfo.PixelFormat     = (ui->comboBoxPixelFormat->currentIndex() == FORMAT_RGB565) ? QImage::Format_RGB16 : QImage::Format_ARGB32;
     LoadingInfo.Filename        = m_Filename;
     LoadingInfo.PathAndFilename = m_PathAndFilename;
-    LoadingInfo.ScaleType       = (eScaler)ui->comboBoxResize->currentIndex();
+    LoadingInfo.ScaleType       = (Scale_e)ui->comboBoxResize->currentIndex();
 
     emit AddImage(LoadingInfo);
 }
@@ -306,7 +306,7 @@ void AddingImage::ReloadingImage()
 
 // ************************************************************************************************
 
-void AddingImage::LoadingImage(int row, eResizer Resizer)
+void AddingImage::LoadingImage(int row, Resizer_e Resizer)
 {
     QTableWidgetItem *item;
 
@@ -341,7 +341,7 @@ void AddingImage::LoadingImage(int row, eResizer Resizer)
     ClearScene();
 
     pResizedImage = new QImage();
-    ScaleToRequirement(m_pImage, pResizedImage, &m_Size, (eScaler)ui->comboBoxResize->currentIndex());
+    ScaleToRequirement(m_pImage, pResizedImage, &m_Size, (Scale_e)ui->comboBoxResize->currentIndex());
 
     if(m_pProcessedImage != nullptr)
     {

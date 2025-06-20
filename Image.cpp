@@ -35,7 +35,7 @@ void MainWindow::on_ButtonAddImage_clicked()
     QString Path;
 
     Path   = m_ImageDir.absolutePath();
-    m_pLoadImage = new AddingImage(Path, m_DisplaySize);
+    m_pLoadImage = new AddingImage(Path, m_SkinConfig.DisplaySize);
     connect(m_pLoadImage, SIGNAL(AddImage(sLoadingImageInfo)), this, SLOT(AddImage(sLoadingImageInfo)));
     connect(m_pLoadImage, SIGNAL(CloseAddImage()), this, SLOT(CloseAddImage()));
     connect(m_pLoadImage, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathImage(QString)));
@@ -104,7 +104,7 @@ void MainWindow::on_ButtonRemoveImage_clicked()
 
 void MainWindow::on_ButtonUpImage_clicked()
 {
-    sImageInfo ImageInfoCopy;
+    ImageInfo_t ImageInfoCopy;
     int row;
 
     // Get the selected row
@@ -130,7 +130,7 @@ void MainWindow::on_ButtonUpImage_clicked()
 
 void MainWindow::on_ButtonDownImage_clicked()
 {
-    sImageInfo ImageInfoCopy;
+    ImageInfo_t ImageInfoCopy;
     int Row;
     //int RowCount;
 
@@ -209,7 +209,7 @@ void MainWindow::on_TableImage_itemChanged(QTableWidgetItem *item)
         if(Column == 1)
         {
             // Get type from ComboBox
-            eWidgetType Type = getWidgetTypeFromText(CellData);
+            WidgetType_e Type = getWidgetTypeFromText(CellData);
             ID_Code ID(Type, 0);
             int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());
             ID.setNumber(FreeID);
@@ -255,11 +255,11 @@ void MainWindow::on_ImageCheckerBoardSlider_sliderMoved(int position)
 
 // ************************************************************************************************
 
-void MainWindow::AddImage(sLoadingImageInfo LoadingInfo)
+void MainWindow::AddImage(LoadingImageInfo_t LoadingInfo)
 {
     QRgb        Pixel;
     uint16_t    ItemCount;
-    sImageInfo  ImageInfo;
+    ImageInfo_t ImageInfo;
     QImage      Image;
     QImage      ProcessedImage;
 
@@ -274,8 +274,8 @@ void MainWindow::AddImage(sLoadingImageInfo LoadingInfo)
     setSkinHasUnsavedData(true);
 
     // Correct to maximum of display
-    LoadingInfo.Size.setWidth( (LoadingInfo.Size.width()  > m_DisplaySize.width())  ? m_DisplaySize.width()  : LoadingInfo.Size.width());
-    LoadingInfo.Size.setHeight((LoadingInfo.Size.height() > m_DisplaySize.height()) ? m_DisplaySize.height() : LoadingInfo.Size.height());
+    LoadingInfo.Size.setWidth( (LoadingInfo.Size.width()  > m_SkinConfig.DisplaySize.width())  ? m_SkinConfig.DisplaySize.width()  : LoadingInfo.Size.width());
+    LoadingInfo.Size.setHeight((LoadingInfo.Size.height() > m_SkinConfig.DisplaySize.height()) ? m_SkinConfig.DisplaySize.height() : LoadingInfo.Size.height());
 
     // Create image entry
     ImageInfo.ID           = ID.getCode();
@@ -384,7 +384,7 @@ void MainWindow::ResetImageGUI()
 void MainWindow::ClearSceneImage()
 {
     m_SceneImage.clear();
-    ui->graphicsViewImage->setSceneRect(0, 0, m_DisplaySize.width(), m_DisplaySize.height());
+    ui->graphicsViewImage->setSceneRect(0, 0, m_SkinConfig.DisplaySize.width(), m_SkinConfig.DisplaySize.height());
     CheckerPattern(&m_SceneImage);
     ui->graphicsViewImage->setScene(&m_SceneImage);
 }
@@ -486,7 +486,7 @@ void MainWindow::UpdateImageGUI(int row)
         }
 
         QGraphicsPixmapItem *PixmapItem = m_SceneImage.addPixmap(QPixmap::fromImage(Image));                // Add the image on top of the checker pattern
-        QPoint Point = CenterPoint(m_ImageInfo[row].Size, m_DisplaySize);                                   // Calculate Center position for the image
+        QPoint Point = CenterPoint(m_ImageInfo[row].Size, m_SkinConfig.DisplaySize);                        // Calculate Center position for the image
         PixmapItem->setPos(Point);                                                                          // Then set it
     }
 

@@ -14,7 +14,7 @@ set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/freetype/include/")
 set(FREETYPE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/freetype/freetype.lib")
 include_directories(${FREETYPE_INCLUDE_DIRS})
 find_library(FREETYPE_LIB freetype PATHS ${FREETYPE_LIBRARIES})
-find_package(REQUIRED COMPONENTS freetype)
+# find_package(REQUIRED COMPONENTS freetype)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Xml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Xml)
@@ -40,7 +40,7 @@ set(PROJECT_SOURCES
         compression.cpp
         compression.h
         Converter.cpp
-        editdefine.ui
+
         file.cpp
         Font.cpp
         Image.cpp

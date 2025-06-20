@@ -221,7 +221,7 @@ border-style: solid;
      <enum>QTabWidget::TabShape::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>5</number>
     </property>
     <property name="iconSize">
      <size>
@@ -1453,7 +1453,7 @@ color: black</string>
        <string>Stop</string>
       </property>
      </widget>
-     <widget class="QSlider" name="horizontalSlider_2">
+     <widget class="QSlider" name="HorizontalSliderAudioPos">
       <property name="geometry">
        <rect>
         <x>820</x>
@@ -2314,6 +2314,66 @@ font-size: 12px;
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="Label">
+     <attribute name="title">
+      <string>Label</string>
+     </attribute>
+     <widget class="QLabel" name="StaticLabelSection">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>230</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>TO DO Label </string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="LabelList">
+     <attribute name="title">
+      <string>Label List</string>
+     </attribute>
+     <widget class="QLabel" name="StaticLabelListSection">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>230</y>
+        <width>211</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>TO DO Label List</string>
+      </property>
+     </widget>
+    </widget>
     <widget class="QWidget" name="Configuration">
      <attribute name="title">
       <string>Configuration</string>
@@ -2321,8 +2381,8 @@ font-size: 12px;
      <widget class="QLineEdit" name="MemoryOffset">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>240</y>
+        <x>270</x>
+        <y>210</y>
         <width>251</width>
         <height>31</height>
        </rect>
@@ -2331,34 +2391,21 @@ font-size: 12px;
      <widget class="QCheckBox" name="checkBoxBinary">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>170</y>
-        <width>131</width>
+        <x>40</x>
+        <y>214</y>
+        <width>191</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>Binary Configuration</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBoxLoadable">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>140</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Loadable Skin</string>
+       <string>Generate Binary Configuration</string>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticMemoryLocation">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>210</y>
+        <x>270</x>
+        <y>180</y>
         <width>121</width>
         <height>27</height>
        </rect>
@@ -2380,8 +2427,8 @@ font-size: 12px;
      <widget class="QCheckBox" name="checkBoxLittleEndian">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>320</y>
+        <x>330</x>
+        <y>70</y>
         <width>91</width>
         <height>20</height>
        </rect>
@@ -2393,8 +2440,8 @@ font-size: 12px;
      <widget class="QCheckBox" name="checkBoxBigEndian">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>350</y>
+        <x>430</x>
+        <y>70</y>
         <width>91</width>
         <height>20</height>
        </rect>
@@ -2406,8 +2453,8 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticEndianness">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>280</y>
+        <x>330</x>
+        <y>30</y>
         <width>121</width>
         <height>27</height>
        </rect>
@@ -2648,8 +2695,8 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticSkinType">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>100</y>
+        <x>30</x>
+        <y>180</y>
         <width>121</width>
         <height>27</height>
        </rect>
@@ -2671,7 +2718,7 @@ font-size: 12px;
      <widget class="QLabel" name="LabelStaticSkinFilename">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>30</x>
         <y>30</y>
         <width>121</width>
         <height>27</height>
@@ -2694,11 +2741,370 @@ font-size: 12px;
      <widget class="QLineEdit" name="SkinFileName">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>30</x>
         <y>60</y>
         <width>251</width>
         <height>31</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonCancelConfig">
+      <property name="geometry">
+       <rect>
+        <x>1070</x>
+        <y>490</y>
+        <width>91</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+      <property name="icon">
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/remove20.png</normaloff>:/graphic/remove20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonApplyConfig">
+      <property name="geometry">
+       <rect>
+        <x>960</x>
+        <y>490</y>
+        <width>91</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Apply</string>
+      </property>
+      <property name="icon">
+       <iconset resource="SkinRessource.qrc">
+        <normaloff>:/graphic/apply20.png</normaloff>:/graphic/apply20.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticFontMAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>260</y>
+        <width>131</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Number of Font MAX</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticBinarySection">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>120</y>
+        <width>181</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Binary Section</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticFONT_MAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>280</y>
+        <width>211</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>8</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 8pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>- DBASE_MAX_SKIN_FONT_QTY in Digini</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticImageMAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>320</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Number of Image MAX</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticIMAGE_MAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>340</y>
+        <width>211</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>8</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 8pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>- DBASE_MAX_SKIN_IMAGE_QTY in Digini</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxFont">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>260</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt bold &quot;Arial Black&quot;;
+</string>
+      </property>
+      <property name="maximum">
+       <number>64</number>
+      </property>
+      <property name="value">
+       <number>32</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxImage">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>320</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt bold &quot;Arial Black&quot;;</string>
+      </property>
+      <property name="maximum">
+       <number>512</number>
+      </property>
+      <property name="value">
+       <number>256</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxAudio">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>380</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt bold &quot;Arial Black&quot;;</string>
+      </property>
+      <property name="value">
+       <number>64</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticAUDIO_MAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>400</y>
+        <width>211</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>8</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 8pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>- DBASE_MAX_SKIN_AUDIO_QTY in Digini</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticAudioMAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>380</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Number of Audio MAX</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxLabel">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>440</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: black;
+font: 20pt bold &quot;Arial Black&quot;;</string>
+      </property>
+      <property name="maximum">
+       <number>1024</number>
+      </property>
+      <property name="value">
+       <number>256</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticLABEL_MAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>460</y>
+        <width>211</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>8</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 8pt &quot;Segoe UI&quot;;</string>
+      </property>
+      <property name="text">
+       <string>- DBASE_MAX_SKIN_LABEL_QTY in Digini</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="LabelStaticLabelMAX">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>440</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Number of Label MAX</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="Tip_BinaryMode">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>128</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 20pt bold &quot;Arial Black&quot;;</string>
+      </property>
+      <property name="text">
+       <string>?</string>
       </property>
      </widget>
     </widget>

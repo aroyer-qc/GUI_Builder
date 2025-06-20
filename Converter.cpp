@@ -32,15 +32,30 @@
 
 void MainWindow::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
+    /*
+    QString SelectedDir;
 
-    if (!directory.isEmpty())
+    QFileDialog dialog(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
+    dialog.setStyleSheet(*m_ButtonStyle);
+    dialog.exec();
+
+    if (dialog.exec() == QDialog::Accepted) {
+        SelectedDir = dialog.selectedFiles().first();
+        qDebug() << "Selected directory:" << SelectedDir;
+    }
+*/
+    QString SelectedDir = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
+
+    if (!SelectedDir.isEmpty())
     {
-        if(ui->ComboBoxDirectory->findText(directory) == -1)
+        if(ui->ComboBoxDirectory->findText(SelectedDir) == -1)
         {
-            ui->ComboBoxDirectory->addItem(directory);
+            ui->ComboBoxDirectory->addItem(SelectedDir);
         }
-        ui->ComboBoxDirectory->setCurrentIndex(ui->ComboBoxDirectory->findText(directory));
+        ui->ComboBoxDirectory->setCurrentIndex(ui->ComboBoxDirectory->findText(SelectedDir));
     }
 }
 
@@ -318,7 +333,7 @@ void MainWindow::ResetConverterGUI()
 void MainWindow::ClearSceneConverter()
 {
     m_SceneConverter.clear();
-    ui->graphicsViewConverter->setSceneRect(0, 0, m_DisplaySize.width(), m_DisplaySize.height());
+    ui->graphicsViewConverter->setSceneRect(0, 0, m_SkinConfig.DisplaySize.width(), m_SkinConfig.DisplaySize.height());
     CheckerPattern(&m_SceneConverter);
     ui->graphicsViewConverter->setScene(&m_SceneConverter);
     int position = ui->CheckerBoardSlider->value();  // Update checker board to default value of ui slider
@@ -383,7 +398,7 @@ void MainWindow::ReloadImageConverter()
 
 // ************************************************************************************************
 
-void MainWindow::LoadImageConverter(int row, eResizer Resizer)
+void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
 {
     QTableWidgetItem *item;
     QString Filename;
@@ -423,7 +438,7 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     ClearSceneConverter();
 
     pResizedImage = new QImage();
-    ScaleToRequirement(m_pImage, pResizedImage, &m_DisplaySize, (eScaler)ui->comboBoxResize->currentIndex());
+    ScaleToRequirement(m_pImage, pResizedImage, &m_SkinConfig.DisplaySize, (Scale_e)ui->comboBoxResize->currentIndex());
 
     if(m_pProcessedImage != nullptr)
     {
@@ -436,8 +451,8 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     delete pResizedImage;
 
     // Set the size for the image info
-    m_Scale.setWidth((m_pProcessedImage->width()   > m_DisplaySize.width())  ? m_DisplaySize.width()  : m_pProcessedImage->width());
-    m_Scale.setHeight((m_pProcessedImage->height() > m_DisplaySize.height()) ? m_DisplaySize.height() : m_pProcessedImage->height());
+    m_Scale.setWidth((m_pProcessedImage->width()   > m_SkinConfig.DisplaySize.width())  ? m_SkinConfig.DisplaySize.width()  : m_pProcessedImage->width());
+    m_Scale.setHeight((m_pProcessedImage->height() > m_SkinConfig.DisplaySize.height()) ? m_SkinConfig.DisplaySize.height() : m_pProcessedImage->height());
 
     m_TotalCount  = m_pProcessedImage->sizeInBytes() / (m_pProcessedImage->width() * m_pProcessedImage->height());    // Adjust byte count to image size in viewport if it is the case
     m_TotalCount *= (m_Scale.width() * m_Scale.height());
@@ -468,11 +483,11 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     ui->LabelScaleSize->setStyleSheet(QString("color: black;"));
 
     // Set the size for the scene (minimum size is viewport)
-    Size.setWidth ((m_pProcessedImage->width()  < m_DisplaySize.width())  ? m_DisplaySize.width()  : m_pProcessedImage->width());
-    Size.setHeight((m_pProcessedImage->height() < m_DisplaySize.height()) ? m_DisplaySize.height() : m_pProcessedImage->height());
+    Size.setWidth ((m_pProcessedImage->width()  < m_SkinConfig.DisplaySize.width())  ? m_SkinConfig.DisplaySize.width()  : m_pProcessedImage->width());
+    Size.setHeight((m_pProcessedImage->height() < m_SkinConfig.DisplaySize.height()) ? m_SkinConfig.DisplaySize.height() : m_pProcessedImage->height());
 
-    if((Size.width()  > m_DisplaySize.width()) ||                                                                   // Display special note if image is bigger than viewport
-       (Size.height() > m_DisplaySize.height()))
+    if((Size.width()  > m_SkinConfig.DisplaySize.width()) ||                                                                   // Display special note if image is bigger than viewport
+       (Size.height() > m_SkinConfig.DisplaySize.height()))
     {
         ui->LabelNoteConverter->setVisible(true);
     }
@@ -485,8 +500,8 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
     ui->verticalScrollBarConverter->blockSignals(true);
     ui->horizontalScrollBarConverter->setValue(0);
     ui->verticalScrollBarConverter->setValue(0);
-    m_horizontalScrollRange = (m_pProcessedImage->size().width()  - m_DisplaySize.width())  * 100;
-    m_verticalScrollRange   = (m_pProcessedImage->size().height() - m_DisplaySize.height()) * 100;
+    m_horizontalScrollRange = (m_pProcessedImage->size().width()  - m_SkinConfig.DisplaySize.width())  * 100;
+    m_verticalScrollRange   = (m_pProcessedImage->size().height() - m_SkinConfig.DisplaySize.height()) * 100;
     ui->horizontalScrollBarConverter->setRange(0, m_horizontalScrollRange);
     ui->verticalScrollBarConverter->setRange  (0, m_verticalScrollRange);
     ui->horizontalScrollBarConverter->setSingleStep(m_horizontalScrollRange / 10);
@@ -496,7 +511,7 @@ void MainWindow::LoadImageConverter(int row, eResizer Resizer)
 
     // Added image to the scene
     m_pPixmapItem = m_SceneConverter.addPixmap(QPixmap::fromImage(*m_pProcessedImage));                            // Add the image on top of the checker pattern
-    Point = CenterPoint(m_pProcessedImage->size(), m_DisplaySize);
+    Point = CenterPoint(m_pProcessedImage->size(), m_SkinConfig.DisplaySize);
     m_pPixmapItem->setPos(Point);
 }
 

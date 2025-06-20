@@ -38,7 +38,7 @@ void MainWindow::on_ButtonAddAudio_clicked()
     QString Path;
 
     Path   = m_AudioDir.absolutePath();
-    m_pLoadAudio = new AddingAudio(Path, m_DisplaySize);
+    m_pLoadAudio = new AddingAudio(Path, m_SkinConfig.DisplaySize);
     connect(m_pLoadAudio, SIGNAL(AddAudio(sLoadingAudioInfo)), this, SLOT(AddAudio(sLoadingAudioInfo)));
     connect(m_pLoadAudio, SIGNAL(CloseAddAudio()), this, SLOT(CloseAddAudio()));
     connect(m_pLoadAudio, SIGNAL(SaveConfig(QString)), this, SLOT(on_SetNewPathAudio(QString)));
@@ -108,7 +108,7 @@ void MainWindow::on_ButtonRemoveAudio_clicked()
 
 void MainWindow::on_ButtonUpAudio_clicked()
 {
-    sAudioInfo AudioInfoCopy;
+    AudioInfo_t AudioInfoCopy;
     int row;
 
     // Get the selected row
@@ -134,7 +134,7 @@ void MainWindow::on_ButtonUpAudio_clicked()
 
 void MainWindow::on_ButtonDownAudio_clicked()
 {
-    sAudioInfo AudioInfoCopy;
+    AudioInfo_t AudioInfoCopy;
     int Row;
     //int RowCount;
 
@@ -213,7 +213,7 @@ void MainWindow::on_TableAudio_itemChanged(QTableWidgetItem *item)
         if(Column == 1)
         {
             // Get type from ComboBox
-            eWidgetType Type = getWidgetTypeFromText(CellData);
+            WidgetType_e Type = getWidgetTypeFromText(CellData);
             ID_Code ID(Type, 0);
             int FreeID = getNextFreeNumber_Up(m_pInUseCode, ID.getCode());
             ID.setNumber(FreeID);
@@ -251,10 +251,10 @@ void MainWindow::on_TableAudio_itemChanged(QTableWidgetItem *item)
 
 // ************************************************************************************************
 
-void MainWindow::AddAudio(sLoadingAudioInfo LoadingInfo)
+void MainWindow::AddAudio(LoadingAudioInfo_t LoadingInfo)
 {
     uint16_t    ItemCount;
-    sAudioInfo  AudioInfo;
+    AudioInfo_t AudioInfo;
    // QAudio      Audio
 
     // reload Path, if it was change by LoadImage class

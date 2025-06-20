@@ -39,7 +39,7 @@ class AddingImage : public QDialog
 
     signals:
 
-        void AddImage(sLoadingImageInfo LoadingInfo);           // Signal for Image file
+        void AddImage(LoadingImageInfo_t LoadingInfo);          // Signal for Image file
         void CloseAddImage();                                   // Signal to Main app to close this form
         void SaveConfig(QString Path);                          // Signal to main app to update directory into config file
 
@@ -66,7 +66,7 @@ class AddingImage : public QDialog
         void ClearScene();
         void ResetLoadGUI();
         void ReloadingImage();
-        void LoadingImage(int Row, eResizer Resizer);
+        void LoadingImage(int Row, Resizer_e Resizer);
         void ResizeForm();
         void ClearScrollBarValue();
 

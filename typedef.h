@@ -18,8 +18,7 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef __TYPEDEF_H__
-#define __TYPEDEF_H__
+#pragma once
 
 #include <QImage>
 #include <QAudioFormat>
@@ -49,9 +48,6 @@
 #define SAMPLING_BOX_X_SIZE     230
 #define SAMPLING_BOX_Y_SIZE     200
 
-#define SKIN_TYPE_LOADABLE      0
-#define SKIN_TYPE_BINARY        1
-
 #define BINARY_OFFSET_IMG_STRUCT_POINTER    0x00000000
 #define BINARY_OFFSET_IMG_COUNT             0x00000004
 #define BINARY_OFFSET_FNT_STRUCT_POINTER    0x00000006
@@ -66,27 +62,33 @@
 
 typedef QSize QOffset;
 
-typedef enum Endianess_e
+enum SkinBlockType_e
+{
+    SKIN_IMAGE,
+    SKIN_FONT,
+};
+
+enum Endianess_e
 {
     LITTLE_ENDIAN = 0,
     BIG_ENDIAN,
-} eEndianess;
+};
 
-typedef enum Resizer_e
+enum Resizer_e
 {
     RELOAD_FORMAT = 0,
     AUTO_FORMAT,
-} eResizer;
+};
 
-typedef enum Scale_e
+enum Scale_e
 {
     SCALE_NONE = 0,
     SCALE_FIT,
     SCALE_WIDTH,
     SCALE_HEIGHT,
-} eScaler;
+};
 
-typedef enum GFX_PixelFormat_e
+enum GFX_PixelFormat_e
 {
    ARGB8888,
    RGB888,
@@ -100,9 +102,9 @@ typedef enum GFX_PixelFormat_e
    A8,
    A4,
    DUMMY_PIXEL_FORMAT,
-} GFX_ePixelFormat;
+};
 
-typedef enum Compression_e
+enum Compression_e
 {
     COMPRESSION_NONE,
     RLE_4,                                  // 4 bits per pixel  (font, or grayscale)
@@ -117,9 +119,9 @@ typedef enum Compression_e
     LZW_15,                                 // Good for all
     LZW_16,                                 // Good for all
     JPEG,                                   // If the file is already in JPEG and smaller than other method
-} eCompression;
+};
 
-typedef enum WidgetType_e
+enum WidgetType_e
 {
     TYPE_BACKGROUND,
     TYPE_BUTTON,
@@ -133,11 +135,11 @@ typedef enum WidgetType_e
     TYPE_AUDIO_FLAC,
     TYPE_AUDIO_RAW,
     NUMBER_OF_WIDGET_TYPE,
-} eWidgetType;
+};
 
 #pragma pack (push)
 #pragma pack (1)
-typedef struct ImageInfo_s
+struct ImageInfo_t
 {
     uint32_t        ID;
     uint32_t        RawIndex;
@@ -147,22 +149,43 @@ typedef struct ImageInfo_s
     QImage::Format  PixelFormat;
     QString         Filename;
     QString         Description;
-} sImageInfo;
+};
 
-typedef struct AudioInfo_s
+// not definitive in TODO list
+struct AudioInfo_t
 {
     uint32_t        ID;
     uint32_t        RawIndex;
+    size_t          CompressDataSize;
     size_t          DataSize;
-    QSize           Size;
     time_t          Duration;
     QString         Filename;
     QString         Description;
-} sAudioInfo;
+};
+
+// not definitive in TODO list
+struct LabelInfo_t
+{
+    uint32_t        ID;
+    uint32_t        RawIndex;
+    size_t          CompressDataSize;
+    size_t          DataSize;
+    QString         Description;
+};
+
+// not definitive in TODO list
+struct LabelListInfo_t
+{
+    uint32_t        ID;
+    uint32_t        RawIndex;
+    size_t          CompressDataSize;
+    size_t          DataSize;
+    QString         Description;
+};
 #pragma pack (pop)
 
 // Struct for data in skin file.
-typedef struct SkinInfoData_s
+struct SkinInfoData_t
 {
         uint32_t        ID;
         uint32_t        DataSize;
@@ -188,20 +211,20 @@ typedef struct SkinInfoData_s
         };
     }u;
 #pragma pack (pop)
-} sSkinInfoData;
+};
 
-typedef struct LoadingImageInfo_s
+struct LoadingImageInfo_t
 {
     QString         PathAndFilename;
     QString         Filename;
     size_t          DataSize;
     QSize           Size;
     QPoint          Offset;
-    eScaler         ScaleType;
+    Scale_e         ScaleType;
     QImage::Format  PixelFormat;
-} sLoadingImageInfo;
+};
 
-typedef struct LoadingAudioInfo_s
+struct LoadingAudioInfo_t
 {
     QString                     PathAndFilename;
     QString                     Filename;
@@ -211,22 +234,33 @@ typedef struct LoadingAudioInfo_s
     int                         BytesPerSample;
     int                         DurationInSecond;
     QAudioFormat::SampleFormat  SampleFormat;
-} sLoadingAudioInfo;
+};
 
-typedef struct Encoding_s
+struct Encoding_t
 {
-    eCompression Type;
-    int          Size;
-} sEncoding;
+    Compression_e Type;
+    int           Size;
+};
 
-typedef struct FontMetadata_s
+struct FontMetaData_t
 {
-    QString      FileName;
-    QString      Manufacturer;
-    QString      Designer;
-} sFontMetaData;
+    QString FileName;
+    QString Manufacturer;
+    QString Designer;
+};
 
-#endif
+struct SkinConfig_t
+{
+    Endianess_e Endianess;
+    QSize       DisplaySize;
+    bool        UseBinary;
+    uint32_t    MemoryOffset;
+    int         ImageMax;    
+    int         FontMax;
+    int         AudioMax;    
+    int         LabelMax; 
+    int         LabelListMax; 
+};
 
 // FOR Binary file
 

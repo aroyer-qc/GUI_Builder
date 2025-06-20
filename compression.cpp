@@ -25,7 +25,7 @@
 
 uint8_t Compress(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset)
 {
-    eCompression        Compression;                // Compression that will be selected
+    Compression_e       Compression;                // Compression that will be selected
     int                 BestTotal;                  // Best total count reach from all selection
     QVector<uint8_t>    Data_RLE_4;                 // Compress data for each compression
     QVector<uint8_t>    Data_RLE_8;

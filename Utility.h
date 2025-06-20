@@ -46,7 +46,7 @@ void                    setStateID_Code                     (QVector<uint8_t>* p
 void                    clearStateID_Code                   (QVector<uint8_t>* pData, class ID_Code ID);
 int                     getNextFreeNumber_Up                (QVector<uint8_t>* pData, uint32_t ID_Code);
 int                     getNextFreeNumber_Down              (QVector<uint8_t>* pData, uint32_t ID_Code);
-eWidgetType             getWidgetTypeFromText               (QString ID_CodeText);
+WidgetType_e            getWidgetTypeFromText               (QString ID_CodeText);
 int                     getPointSizeFontFromText            (QString ID_CodeText);
 
 // ---------- Utility to add other type to uint8_t Vector ----------
@@ -69,7 +69,7 @@ void                    LoadImageFromFile                   (QImage* pImage, QSt
 
 // ---------- Scaling Image Support Function ----------
 
-void                    ScaleToRequirement                  (QImage* pImage, QImage* pProcessedImage, QSize* pSize, eScaler Scale);
+void                    ScaleToRequirement                  (QImage* pImage, QImage* pProcessedImage, QSize* pSize, Scale_e Scale);
 void                    ScaleToFit                          (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 void                    ScaleToWidth                        (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 void                    ScaleToHeight                       (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
@@ -82,29 +82,29 @@ class ID_Code
 
                     ID_Code         (uint32_t Code);
                     ID_Code         (QString CodeText);
-                    ID_Code         (eWidgetType Type, int Number);
+                    ID_Code         (WidgetType_e Type, int Number);
 
-                    QString     getCodeText     () {return m_CodeText;}
-                    QString     getPrefix       () {return m_Prefix;}
-                    uint32_t    getCode         () {return m_Code;}
-                    int         getNumber       () {return m_Number;}
-                    eWidgetType getType         () {return m_Type;}
-                    void        setNumber       (int Number);
-                    void        setCodeText     (QString CodeText);
+                    QString      getCodeText     () {return m_CodeText;}
+                    QString      getPrefix       () {return m_Prefix;}
+                    uint32_t     getCode         () {return m_Code;}
+                    int          getNumber       () {return m_Number;}
+                    WidgetType_e getType         () {return m_Type;}
+                    void         setNumber       (int Number);
+                    void         setCodeText     (QString CodeText);
 
                 private:
 
-                    void        textToCode      ();
-                    void        codeToText      ();
-                    void        codeToElement   ();
-                    void        elementToText   ();
+                    void         textToCode      ();
+                    void         codeToText      ();
+                    void         codeToElement   ();
+                    void         elementToText   ();
 
 
         QString         m_CodeText;
         QString         m_Prefix;
         uint32_t        m_Code;
         int             m_Number;
-        eWidgetType     m_Type;
+        WidgetType_e    m_Type;
 };
 
 

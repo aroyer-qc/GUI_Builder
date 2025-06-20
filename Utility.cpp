@@ -255,9 +255,9 @@ int getNextFreeNumber_Down(QVector<uint8_t>* pData, uint32_t Code)
 
 // ************************************************************************************************
 
-eWidgetType getWidgetTypeFromText(QString ID_CodeText)
+WidgetType_e getWidgetTypeFromText(QString ID_CodeText)
 {
-    eWidgetType Type;
+    WidgetType_e Type;
 
     if((ID_CodeText.at(0) == QChar('B')) && (ID_CodeText.at(1) == QChar('K'))) Type = TYPE_BACKGROUND;
     if((ID_CodeText.at(0) == QChar('B')) && (ID_CodeText.at(1) == QChar('T'))) Type = TYPE_BUTTON;
@@ -479,7 +479,7 @@ void ChangeEndianAt_uint32(QVector<uint8_t>* pData, int i)
 // *
 // ************************************************************************************************
 
-void ScaleToRequirement(QImage* pImage, QImage* pProcessedImage, QSize* pSize, eScaler Scale)
+void ScaleToRequirement(QImage* pImage, QImage* pProcessedImage, QSize* pSize, Scale_e Scale)
 {
     *pProcessedImage = *pImage;
 
@@ -549,7 +549,7 @@ ID_Code::ID_Code(QString CodeText)
 
 // ************************************************************************************************
 
-ID_Code::ID_Code(eWidgetType Type, int Number)
+ID_Code::ID_Code(WidgetType_e Type, int Number)
 {
     m_Type   = Type;
     m_Number = Number;

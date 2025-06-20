@@ -276,7 +276,7 @@ void AddingAudio::ReloadingAudio()
 
 // ************************************************************************************************
 
-void AddingAudio::LoadingAudio(int row, eResizer Resizer)
+void AddingAudio::LoadingAudio(int row, Resizer_e Resizer)
 {
     QTableWidgetItem *item;
 

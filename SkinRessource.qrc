@@ -34,5 +34,6 @@
         <file>graphic/Warning64.png</file>
         <file>graphic/RLE.png</file>
         <file>graphic/lzw.png</file>
+        <file>graphic/apply20.png</file>
     </qresource>
 </RCC>

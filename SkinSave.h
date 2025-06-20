@@ -121,52 +121,50 @@
 //
 //                   ______________________________________________  -----> 0x00000000
 //                  |                                              |________________________________
-//                  | Image Struct information pointer  (uint32_t) |                               |
-//                  |______________________________________________| -----> 0x00000004             |
+//                  |                                              |                               |
+//                  |______________________________________________| -----> 0x                     |
 //                  |                                              |                               | 
-//                  | Image count into Struct           (uint16_t) |                               |
-//                  |______________________________________________| -----> 0x00000006             |
+//                  |                                              |                               |
+//                  |______________________________________________| -----> 0x0                    |
 //                  |                                              |____________________________   |
-//                  | Font Struct information pointer   (uint32_t) |                            |  |
-//                  |______________________________________________| -----> 0x0000000A          |  |
 //                  |                                              |                            |  |
-//                  | Font count into Struct            (uint16_t) |                            |  |
-//                  |______________________________________________| -----> 0x0000000C          |  |
+//                  |______________________________________________| -----> 0x0                 |  |
+//                  |                                              |                            |  |
+//                  |                                              |                            |  |
+//                  |______________________________________________| -----> 0x0                 |  |
 //                  |                                              |__________________________  |  |
-//                  | Audio Struct information pointer  (uint32_t) |                         |  |  |
-//                  |______________________________________________| -----> 0x00000010       |  |  |
 //                  |                                              |                         |  |  |
-//                  | Audio count into Struct           (uint16_t) |                         |  |  |
-//                  |______________________________________________| -----> 0x00000012       |  |  |
+//                  |______________________________________________| -----> 0x0              |  |  |
+//                  |                                              |                         |  |  |
+//                  |                                              |                         |  |  |
+//                  |______________________________________________| -----> 0x0              |  |  |
 //                  |                                              |_______________________  |  |  |
-//                  | Label Struct information pointer  (uint32_t) |                      |  |  |  |
-//                  |______________________________________________| -----> 0x00000016    |  |  |  |
 //                  |                                              |                      |  |  |  |
-//                  | Label count into Struct           (uint16_t) |                      |  |  |  |
-//                  |______________________________________________| -----> 0x00000018    |  |  |  |
+//                  |______________________________________________| -----> 0x0           |  |  |  |
+//                  |                                              |                      |  |  |  |
+//                  |                                              |                      |  |  |  |
+//                  |______________________________________________| -----> 0x0           |  |  |  |
 //                  |                                              |___________________   |  |  |  |
-//                  | Reserved for Future used Struct  and count   |                   |  |  |  |  |
-//                  |______________________________________________| -----> 0x0000003C |  |  |  |  |
 //                  |                                              |                   |  |  |  |  |
-//                  | Raw data for all struct type                 |                   |  |  |  |  |
+//                  |______________________________________________| -----> 0x0        |  |  |  |  |
+//                  |                                              |                   |  |  |  |  |
+//                  |                                              |                   |  |  |  |  |
 //                  |______________________________________________|                   |  |  |  |  |
 //                  |                                              | /_________________| _| _| _| _|
-//                  | Image Struct information                     | \                 |  |  |  |
+//                  |                                              | \                 |  |  |  |
 //                  |______________________________________________|                   |  |  |  |
 //                  |                                              | /_________________| _| _| _|
-//                  | Font Struct information                      | \                 |  |  |
+//                  |                                              | \                 |  |  |
 //                  |______________________________________________|                   |  |  |
 //                  |                                              | /_________________| _| _|
-//                  | Audio Struct information  (TODO)             | \                 |  |
+//                  |                                              | \                 |  |
 //                  |______________________________________________|                   |  |
 //                  |                                              | /_________________| _|
-//                  | Label Struct information  (TODO)             | \                 |
+//                  |                                              | \                 |
 //                  |______________________________________________|                   |
 //                  |                                              | /_________________|
 //                  | ...                                          \ \
 //                  |______________________________________________| 
-
-#define RAW_DATA_OFFSET             0x0000003C
 
 
 class SkinSave : public QThread
@@ -202,25 +200,30 @@ class SkinSave : public QThread
         void            CreateXML               (QString Path);
         void            ExtractFontInfo         (QVector<uint8_t>* pFileRawData, uint8_t Char);
         QString         GetFontFile             (const QString& fontName);
-        sFontMetaData   ReadFontMetadata        (QString fontFile);
+        FontMetaData_t  ReadFontMetadata        (QString fontFile);
         QString         getFontFilePath         (const QString& fontFamily);
         void            ChangeEndianness        (int Offset);
+        
+        // Function to create the binary file
+        void            CreateBinary            (void);
+        void            GetImageInfo            (void);
+        size_t          Get_uint8_t             (QFile* pFile, uint8_t* pValue);
+        size_t          Get_uint16_t            (QFile* pFile, uint16_t* pValue);
+        size_t          Get_uint32_t            (QFile* pFile, uint32_t* pValue);
 
-        int*                        m_pSkinType;
-        QSize*                      m_pSkinSize;
-        eEndianess*                 m_pEndian;
+        SkinConfig_t*               m_pSkinConfig;
         QString                     m_SkinPathAndFileName;
         int                         m_PreviousBlockOfData;
         int                         m_ThisBlockOfData;
 
         // Image
-        QVector<sImageInfo>*        m_pImageInfo;
+        QVector<ImageInfo_t>*       m_pImageInfo;
         QVector<uint8_t>*           m_pRawImageData;
         int                         m_ImageCount;
         uint32_t                    m_OffsetImageHeader;
 
         // Audio
-        QVector<sAudioInfo>*        m_pAudioInfo;
+        QVector<AudioInfo_t>*       m_pAudioInfo;
         QVector<uint8_t>*           m_pRawAudioData;
         int                         m_AudioCount;
 
@@ -245,17 +248,19 @@ class SkinSave : public QThread
         const QFont*                m_pFont;
         QFontMetrics*               m_pFontMetric;
 
-    #if 0
         // Label
-        QVector<sLabelInfo>*        m_pLabelInfo;
+        QVector<LabelInfo_t>*       m_pLabelInfo;
         QVector<uint8_t>*           m_pRawLabelData;
         int                         m_LabelCount;
 
-        // Label
-        QVector<sLabelListInfo>*    m_pLabelListInfo;
+        // LabelList
+        QVector<LabelListInfo_t>*   m_pLabelListInfo;
         QVector<uint8_t>*           m_pRawLabelListData;
         int                         m_LabelListCount;
-    #endif
+    
+        // Variables for binary file creation
+        uint32_t*                   m_pDataSize;
+        uint8_t*                    m_pCompressionMethod;
 };
 
 #endif // SKIN_SAVE_H

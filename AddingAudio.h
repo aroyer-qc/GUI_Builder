@@ -42,7 +42,7 @@ class AddingAudio : public QDialog
 
     signals:
 
-        void AddAudio(sLoadingAudioInfo LoadingInfo);           // Signal for Audio file
+        void AddAudio(LoadingAudioInfo_t LoadingInfo);          // Signal for Audio file
         void CloseAddAudio();                                   // Signal to Main app to close this form
         void SaveConfig(QString Path);                          // Signal to main app to update directory into config file
 
@@ -67,7 +67,7 @@ class AddingAudio : public QDialog
         void AudioSelected();
         void ResetLoadGUI();
         void ReloadingAudio();
-        void LoadingAudio(int Row, eResizer Resizer);
+        void LoadingAudio(int Row, Resizer_e Resizer);
         void setPlayTime(qint64 Time);
 
 
@@ -77,7 +77,7 @@ class AddingAudio : public QDialog
         int                     m_FileFound;
         size_t                  m_TotalCount;
         
-        sLoadingAudioInfo       m_LoadingAudioInfo;
+        LoadingAudioInfo_t      m_LoadingAudioInfo;
         QAudioDecoder           m_Decoder;
         QMediaPlayer*           m_pPlayer;
         QAudioOutput*           m_pAudioOutput;

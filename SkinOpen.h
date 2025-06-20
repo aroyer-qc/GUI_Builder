@@ -48,31 +48,32 @@ class SkinOpen : public QThread
         void        ReadXML                 (QString Path);
 
 
-        eEndianess*             m_pEndian;
-        int*                    m_pSkinType;
-        QString                 m_SkinPathAndFileName;
-        int                     m_NextBlockOfData;
+        SkinConfig_t*               m_pSkinConfig;
+        QString                     m_SkinPathAndFileName;
+        int                         m_NextBlockOfData;
 
         // Image
-        QVector<uint8_t>*       m_pRawImageData;
-        QVector<sImageInfo>*    m_pImageInfo;
-        uint16_t                m_ImageCount;
-        int                     m_OffsetImageCount;
-        int                     m_OffsetImageHeader;
-
-        // Audio
-        QVector<uint8_t>*       m_pRawAudioData;
-        QVector<sAudioInfo>*    m_pAudioInfo;
+        QVector<ImageInfo_t>*       m_pImageInfo;
+        QVector<uint8_t>*           m_pRawImageData;
+        uint16_t                    m_ImageCount;
+        int                         m_OffsetImageCount;
+        int                         m_OffsetImageHeader;
 
         // Font
-        QVector<QFont>*         m_pFontInfo;
-        QVector<uint8_t>*       m_pFontSamplingInfo;
+        QVector<QFont>*             m_pFontInfo;
+        QVector<uint8_t>*           m_pFontSamplingInfo;
 
-        // Lqbel
-            // TODO
+        // Audio
+        QVector<AudioInfo_t>*       m_pAudioInfo;
+        QVector<uint8_t>*           m_pRawAudioData;
+
+        // Label
+        QVector<LabelInfo_t>*       m_pLabelInfo;
+        QVector<uint8_t>*           m_pRawLabelData;
+
+        // LabelList
+        QVector<LabelListInfo_t>*   m_pLabelListInfo;
+        QVector<uint8_t>*           m_pRawLabelListData;
 };
-
-
-
 
 #endif // SKIN_OPEN_H

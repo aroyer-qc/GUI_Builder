@@ -616,7 +616,7 @@ void MainWindow::InsertNewRowInTableFont(int row, QString Name, QString Size, QS
     if(QFont(Name).exactMatch() == false)
     {
         FontNameItem->setForeground(QColor(255,0,0));
-        m_IsAllFontValide = false;
+        m_IsAllFontValid = false;
     }
 
     FontSizeItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
@@ -734,7 +734,7 @@ void MainWindow::DisplayExample(int row)
 
 void MainWindow::checkValidFont()
 {
-    if(m_IsAllFontValide == false)
+    if(m_IsAllFontValid == false)
     {
         m_SpecialNote = "One or more font are not available on the system.";
         UpdateStatusBar();

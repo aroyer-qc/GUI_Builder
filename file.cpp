@@ -118,20 +118,17 @@ void MainWindow::on_actionSave_Skin_triggered()
 void MainWindow::on_actionSave_Skin_As_triggered()
 {
     QFileDialog fileDialog(this, tr("Save file as"), m_SkinDir.absolutePath() + "/untitled", tr("Skin file (*.skn)"));
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog.setOption(QFileDialog::DontUseNativeDialog, true);
     fileDialog.setStyleSheet("QPushButton {color: #DFD;background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97); border-width: 3px; border-color: #778EB8; border-style: solid; border-radius: 7; padding: 3px; font: bold \"Ubuntu\"; font-size: 12px; padding-left: 5px; padding-right: 5px; }");
 
     // Adjust the size of the QFileDialog window
     fileDialog.resize(800, 600);  // Set width to 800 and height to 600
-    fileDialog.setLabelText(QFileDialog::Accept, "Save Loadable Skin");
 
 
-    QListView *listView = fileDialog.findChild<QListView*>("listView");
-    if(listView)
-    {
-        listView->setMinimumSize(400, 300); // Adjust the minimum size of the list view pane
-    }
+//    QListView *listView = fileDialog.findChild<QListView*>("listView");
+//    if(listView)
+//    {
+//        listView->setMinimumSize(400, 300); // Adjust the minimum size of the list view pane
+//    }
 
     QTreeView *treeView = fileDialog.findChild<QTreeView*>("treeView");
     if(treeView)
@@ -147,39 +144,39 @@ void MainWindow::on_actionSave_Skin_As_triggered()
     }
 
     // Create a custom button for saving the skin
-    QPushButton *saveSkinButton = new QPushButton("Save Binary Skin", &fileDialog);
-    saveSkinButton->setToolTip("This set the project type and will save data skin file in binary skin format to be loaded into internal flash memory of the project.");
+    //QPushButton *saveSkinButton = new QPushButton("Save Binary Skin", &fileDialog);
+    //saveSkinButton->setToolTip("This set the project type and will save data skin file in binary skin format to be loaded into internal flash memory of the project.");
 
     // Locate the button box within the file dialog
-    QDialogButtonBox *buttonBox = fileDialog.findChild<QDialogButtonBox*>();
-    if (buttonBox)
-    {
+    //QDialogButtonBox *buttonBox = fileDialog.findChild<QDialogButtonBox*>();
+    //if (buttonBox)
+    //{
         // Change the label of the "Save" button
-        QAbstractButton *saveButton = buttonBox->button(QDialogButtonBox::Save);
-        if(saveButton)
-        {
-            saveButton->setText("Save Loadable Skin");
-            saveButton->setToolTip("This set the project type and will save data skin file in loadable skin format for medium like SD Card, USB Key, Etc...");
-        }
+    //    QAbstractButton *saveButton = buttonBox->button(QDialogButtonBox::Save);
+    //    if(saveButton)
+    //    {
+    //        saveButton->setText("Save Loadable Skin");
+    //        saveButton->setToolTip("This set the project type and will save data skin file in loadable skin format for medium like SD Card, USB Key, Etc...");
+    //    }
 
         // Add the custom button before the "Cancel" button
-        buttonBox->addButton(saveSkinButton, QDialogButtonBox::ActionRole);
+    //    buttonBox->addButton(saveSkinButton, QDialogButtonBox::ActionRole);
 
         // Move the button to the desired position
-        QAbstractButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
-        QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(buttonBox->layout());
-        if (layout && cancelButton)
-        {
-            layout->removeWidget(saveSkinButton);
-            int cancelIndex = layout->indexOf(cancelButton);
-            layout->insertWidget(cancelIndex, saveSkinButton);
-        }
+    //    QAbstractButton *cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
+    //    QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(buttonBox->layout());
+    //    if (layout && cancelButton)
+    //    {
+    //        layout->removeWidget(saveSkinButton);
+    //        int cancelIndex = layout->indexOf(cancelButton);
+    //        layout->insertWidget(cancelIndex, saveSkinButton);
+    //    }
 
         // Connect the custom button to a custom slot for saving the skin
-        connect(saveSkinButton, &QPushButton::clicked, this, &MainWindow::on_SaveBinaryButton_clicked);
+        //connect(saveSkinButton, &QPushButton::clicked, this, &MainWindow::on_SaveBinaryButton_clicked);
         // Connect the custom button to QDialog::accept slot
-        connect(saveSkinButton, &QPushButton::clicked, &fileDialog, &QDialog::accept);
-    }
+    //    connect(saveSkinButton, &QPushButton::clicked, &fileDialog, &QDialog::accept);
+    //}
 
     if (fileDialog.exec() == QDialog::Accepted)
     {
@@ -199,13 +196,13 @@ void MainWindow::on_actionSave_Skin_As_triggered()
         m_IsNeedCompleteFileOpen = true;  // Will trigger file open at the end saving
     }
 
-    delete saveSkinButton;
+    //delete saveSkinButton;
 }
 
-void MainWindow::on_SaveBinaryButton_clicked()
-{
-    m_SkinType = SKIN_TYPE_BINARY;
-}
+//void MainWindow::on_SaveBinaryButton_clicked()
+//{
+//    m_SkinUseBinary = true;
+//}
 
 // ************************************************************************************************
 // *

@@ -68,21 +68,28 @@ class MainWindow : public QMainWindow
         ~MainWindow();
 
         // Image
-        QVector<uint8_t>*       getRawImageDataPtr()                    { return &m_RawImage; }
-        QVector<sImageInfo>*    getImageInfoPtr()                       { return &m_ImageInfo; }
+        QVector<uint8_t>*           getRawImageDataPtr()                { return &m_RawImage; }
+        QVector<ImageInfo_t>*       getImageInfoPtr()                   { return &m_ImageInfo; }
         
         // Audio
-        QVector<uint8_t>*       getRawAudioDataPtr()                    { return &m_RawAudio; }
-        QVector<sAudioInfo>*    getAudioInfoPtr()                       { return &m_AudioInfo; }
-        
+        QVector<uint8_t>*           getRawAudioDataPtr()                { return &m_RawAudio; }
+        QVector<AudioInfo_t>*       getAudioInfoPtr()                   { return &m_AudioInfo; }
+
         // Font
-        QVector<QFont>*         getFontInfoPtr()                        { return &m_Font; }
-        QVector<uint8_t>*       getFontSamplingInfoPtr()                { return &m_SamplingFont; }
+        QVector<QFont>*             getFontInfoPtr()                    { return &m_Font; }
+        QVector<uint8_t>*           getFontSamplingInfoPtr()            { return &m_SamplingFont; }
+
+        // Label
+        QVector<uint8_t>*           getRawLabelDataPtr()                { return &m_RawLabel; }
+        QVector<LabelInfo_t>*       getLabelInfoPtr()                   { return &m_LabelInfo; }
+
+        // Label List
+        QVector<uint8_t>*           getRawLabelListDataPtr()            { return &m_RawLabelList; }
+        QVector<LabelListInfo_t>*   getLabelListInfoPtr()               { return &m_LabelListInfo; }
 
         // Non specific global function
-        eEndianess*             getEndianPtr()                          { return &m_Endian; }
-        int*                    getSkinTypePtr()                        { return &m_SkinType; }
-        QSize*                  getSkinSizePtr()                        { return &m_DisplaySize; }
+        SkinConfig_t*           GetSkinConfig()                         { return &m_SkinConfig; }
+        
         static QScreen*         getPrimaryScreen()                      { return m_pPrimary; }
         static void             setPrimaryScreen(QScreen* pScreen)      { m_pPrimary = pScreen; }
 
@@ -96,11 +103,11 @@ class MainWindow : public QMainWindow
         void on_SaveDone();
 
         // Public slot for Image
-        void AddImage(sLoadingImageInfo LoadingInfo);
+        void AddImage(LoadingImageInfo_t LoadingInfo);
         void CloseAddImage();
 
         // Public slot for Audio
-        void AddAudio(sLoadingAudioInfo LoadingInfo);
+        void AddAudio(LoadingAudioInfo_t LoadingInfo);
         void CloseAddAudio();
 
     private slots:
@@ -156,10 +163,9 @@ class MainWindow : public QMainWindow
         void on_verticalScrollBarConverter_valueChanged(int value);
 
         // Slot for Configurator tab
-        void on_checkBoxLoadable_checkStateChanged(int state);
-        void on_checkBoxBinary_checkStateChanged(int state);
-        void on_checkBoxBigEndian_checkStateChanged(int state);
-        void on_checkBoxLittleEndian_checkStateChanged(int state);
+        void on_checkBoxBinary_checkStateChanged(Qt::CheckState state);
+        void on_checkBoxBigEndian_checkStateChanged(Qt::CheckState state);
+        void on_checkBoxLittleEndian_checkStateChanged(Qt::CheckState state);
         void on_radioButton_84x48_clicked();
         void on_radioButton_96x64_clicked();
         void on_radioButton_128x128_clicked();
@@ -171,21 +177,25 @@ class MainWindow : public QMainWindow
         void on_radioButton_800x480_clicked();
         void on_radioButton_800x600_clicked();
         void on_radioButton_CustomSize_clicked();
-        
+        void on_SkinFileName_textEdited();
+        void on_MemoryOffset_textEdited();
+        void showBinaryHelpTip();
+
         // Menu action
         void on_actionNew_Project_triggered();
         void on_actionOpen_Skin_triggered();
         void on_actionSave_Skin_triggered();
         void on_actionSave_Skin_As_triggered();
-        void on_SaveBinaryButton_clicked();
+        //void on_SaveBinaryButton_clicked();
         void on_comboBoxResize_currentIndexChanged(int index);
         void on_comboBoxPixelFormat_currentIndexChanged(int index);
         void on_actionExit_triggered();
         void on_CheckerBoardSlider_sliderMoved(int position);
         void on_TabFunctionSelect_tabBarClicked(int index);
-
         void on_SetNewPathImage(QString Path);
         void on_SetNewPathAudio(QString Path);
+        void on_ButtonApplyConfig_clicked();
+        void on_ButtonCancelConfig_clicked();
 
     private:
 
@@ -241,103 +251,109 @@ class MainWindow : public QMainWindow
         void     AdjustTabConverter      (QSize Offset, QRect ViewRect);
         void     ClearScrollBarValue     ();
         void     ReloadImageConverter    ();
-        void     LoadImageConverter      (int row, eResizer Resizer);
+        void     LoadImageConverter      (int row, Resizer_e Resizer);
         void     BinToFile               (QTextStream* pStream, QString pFileName);
 
         // Function for configurator
         void     InitConfigurator        ();
+        void     UpdateConfigurator      ();
+        void     SetButtonState          (bool Active);
         void     ResetAllRadioButton     ();
         void     UpdateLineEdit          ();
-        void     CheckButton             ();
-        void     SetSizeDisplay          (QSize Size);
+        void     ConfigCheckButton       ();
+        void     SetSizeDisplay          ();
         
 
-        Ui::MainWindow*         ui;
-        int                     m_SkinType;
-        eEndianess              m_Endian;
-        uint32_t                m_MemoryOffset;
-        static QScreen*         m_pPrimary;
+        Ui::MainWindow*             ui;
+        static QScreen*             m_pPrimary;
 
-        QMediaPlayer*           m_Player;
+        QMediaPlayer*               m_Player;
 
         // Layout info
-        QSize                   m_DisplaySize;
-        QLabel*                 m_pStatusLabel;
-        QRect                   m_ViewRect;
-        QRect                   m_TabRect;
-        QRect                   m_MainRect;
-        QString                 m_SkinName;
-        int                     m_SkinSize;
-        QString                 m_SpecialNote;
+        QLabel*                     m_pStatusLabel;
+        QRect                       m_ViewRect;
+        QRect                       m_TabRect;
+        QRect                       m_MainRect;
+        QString                     m_SkinName;
+        int                         m_SkinSize;
+        QString                     m_SpecialNote;
 
-        QVector<uint8_t>*       m_pInUseCode;
+        QVector<uint8_t>*           m_pInUseCode;
 
         // Data of the Skin
-        //QVector<wchar_t>        m_RawLabel;                     // Raw label data
-        //QVector<uint32_t>       m_Widget;                       // remove all widget
-        //QVector<uint32_t>       m_WidgetIndex;                  // Quick index to recover Widget
-        //sLoadingInfo            m_LoadingInfo;
+        //QVector<wchar_t>          m_RawLabel;                     // Raw label data
+        //QVector<uint32_t>         m_Widget;                       // remove all widget
+        //QVector<uint32_t>         m_WidgetIndex;                  // Quick index to recover Widget
+        //sLoadingInfo              m_LoadingInfo;
 
         // File operation
-        QDir                    m_CurrentDir;
-        QDir                    m_SkinDir;
-        AddingImage*            m_pLoadImage;
-        AddingAudio*            m_pLoadAudio;
-        QThread*                m_pSkinSave;
-        QThread*                m_pSkinOpen;
-        bool                    m_IsSkinSaveAs;                 // Save As or Save
-        bool                    m_IsSkinHasUnsavedData;         // is there any unsaved data
-        bool                    m_IsWarningDisplayed;
-        bool                    m_IsNeedCompleteFileOpen;
-        bool                    m_IsNeedToClearDataAfterSave;
-        bool                    m_IsNeedToCloseAfterSave;
-        int                     m_ProgressSave;
-        int                     m_ProgressOpen;
-        Progress*               m_pProgress;
+        QDir                        m_CurrentDir;
+        QDir                        m_SkinDir;
+        AddingImage*                m_pLoadImage;
+        AddingAudio*                m_pLoadAudio;
+        QThread*                    m_pSkinSave;
+        QThread*                    m_pSkinOpen;
+        bool                        m_IsSkinSaveAs;                 // Save As or Save
+        bool                        m_IsSkinHasUnsavedData;         // is there any unsaved data
+        bool                        m_IsWarningDisplayed;
+        bool                        m_IsNeedCompleteFileOpen;
+        bool                        m_IsNeedToClearDataAfterSave;
+        bool                        m_IsNeedToCloseAfterSave;
+        int                         m_ProgressSave;
+        int                         m_ProgressOpen;
+        Progress*                   m_pProgress;
 
         // Variable for Image Tab
-        QDir                    m_ImageDir;
-        QVector<sImageInfo>     m_ImageInfo;                    // Array of image structure information
-        QVector<uint8_t>        m_RawImage;                     // Raw image data
-        QGraphicsScene          m_SceneImage;
-        ComboBoxDelegate*       m_pImageComboBoxDelegate;
-        SpinBoxDelegate*        m_pImageSpinBoxDelegate;
+        QDir                        m_ImageDir;
+        QVector<ImageInfo_t>        m_ImageInfo;                    // Array of image structure information
+        QVector<uint8_t>            m_RawImage;                     // Raw image data
+        QGraphicsScene              m_SceneImage;
+        ComboBoxDelegate*           m_pImageComboBoxDelegate;
+        SpinBoxDelegate*            m_pImageSpinBoxDelegate;
 
         // Variable for Font Tab
-        QGraphicsScene          m_SceneExample;
-        QGraphicsScene          m_SceneFont;
-        QVector<QFont>          m_Font;
-        QVector<uint8_t>        m_SamplingFont;
-        ComboBoxDelegate*       m_pFontComboBoxDelegate;
-        bool                    m_IsAllFontValide;
+        QGraphicsScene              m_SceneExample;
+        QGraphicsScene              m_SceneFont;
+        QVector<QFont>              m_Font;
+        QVector<uint8_t>            m_SamplingFont;
+        ComboBoxDelegate*           m_pFontComboBoxDelegate;
+        bool                        m_IsAllFontValid;
 
         // Variable for Audio Tab
-        QDir                    m_AudioDir;
-        QVector<sAudioInfo>     m_AudioInfo;                    // Array of audio structure information
-        QVector<uint8_t>        m_RawAudio;                     // Raw audio data
-        ComboBoxDelegate*       m_pAudioComboBoxDelegate;
-        SpinBoxDelegate*        m_pAudioSpinBoxDelegate;
+        QDir                        m_AudioDir;
+        QVector<AudioInfo_t>        m_AudioInfo;                    // Array of audio structure information
+        QVector<uint8_t>            m_RawAudio;                     // Raw audio data
+        ComboBoxDelegate*           m_pAudioComboBoxDelegate;
+        SpinBoxDelegate*            m_pAudioSpinBoxDelegate;
 
         // Variable for Label Tab
-      //QVector<sLabelInfo>     m_LabelInfo;                    // Array of label structure information
-      //QVector<uint8_t>        m_RawLabel;                     // Raw label data
+        QVector<LabelInfo_t>        m_LabelInfo;                    // Array of label structure information
+        QVector<uint8_t>            m_RawLabel;                     // Raw label data
+
+        // Variable for Label Tab
+        QVector<LabelListInfo_t>    m_LabelListInfo;                // Array of label list structure information
+        QVector<uint8_t>            m_RawLabelList;                 // Raw label List Pointer
 
 
         // Variable for Converter Tab
-        QGraphicsScene          m_SceneConverter;
-        QGraphicsPixmapItem*    m_pPixmapItem;
-        QImage::Format          m_PixelFormatConverter;
-        int                     m_verticalScrollRange;
-        int                     m_horizontalScrollRange;
-        int                     m_FileFound;
-        QImage*                 m_pImage;
-        QImage*                 m_pProcessedImage;
-        QSize                   m_Scale;
-        size_t                  m_TotalCount;
-        size_t                  m_FileSize;
+        QGraphicsScene              m_SceneConverter;
+        QGraphicsPixmapItem*        m_pPixmapItem;
+        QImage::Format              m_PixelFormatConverter;
+        int                         m_verticalScrollRange;
+        int                         m_horizontalScrollRange;
+        int                         m_FileFound;
+        QImage*                     m_pImage;
+        QImage*                     m_pProcessedImage;
+        QSize                       m_Scale;
+        size_t                      m_TotalCount;
+        size_t                      m_FileSize;
 
         // Variable for Configurator Tab
-        QSize                   m_ConfigDisplaySize;
+        SkinConfig_t                m_SkinConfig;
+        QSize                       m_TempDisplaySize;
+
+
+        const QString*              m_ButtonStyle;
 
 };
 

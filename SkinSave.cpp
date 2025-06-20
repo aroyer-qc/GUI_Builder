@@ -25,6 +25,7 @@
 #include "qxmlputget.h"
 //#include <iostream>
 #include <qfontdatabase.h>
+#include <QtEndian>
 
 #include <QDir>
 #include <ft2build.h>
@@ -85,24 +86,27 @@ SkinSave::SkinSave(QString SkinPathAndFileName, QObject* parent) : QThread(paren
 {
     m_SkinPathAndFileName = SkinPathAndFileName;
 
-    // Skin Type
-    m_pSkinType           = ((MainWindow*)parent)->getSkinTypePtr();            // SKIN_TYPE_BINARY or SKIN_TYPE_LOADABLE
-    m_pSkinSize           = ((MainWindow*)parent)->getSkinSizePtr();            // QSize  Width (X)  and Height (Y)
+    m_pSkinConfig         = ((MainWindow*)parent)->GetSkinConfig();
 
     // Image
     m_pRawImageData       = ((MainWindow*)parent)->getRawImageDataPtr();        // Get pointer on Image data
     m_pImageInfo          = ((MainWindow*)parent)->getImageInfoPtr();           // Get pointer on Image structure information
 
-    // Audio
-    m_pRawAudioData       = ((MainWindow*)parent)->getRawAudioDataPtr();        // Get pointer on Audio data
-    m_pAudioInfo          = ((MainWindow*)parent)->getAudioInfoPtr();           // Get pointer on Audio structure information
-
     // Font
     m_pFontSamplingInfo   = ((MainWindow*)parent)->getFontSamplingInfoPtr();    // Get Sampling information of font
     m_pFontInfo           = ((MainWindow*)parent)->getFontInfoPtr();
 
-    //Endian
-    m_pEndian              = ((MainWindow*)parent)->getEndianPtr();             // Get pointer on Endianess of the skin
+    // Audio
+    m_pRawAudioData       = ((MainWindow*)parent)->getRawAudioDataPtr();        // Get pointer on Audio data
+    m_pAudioInfo          = ((MainWindow*)parent)->getAudioInfoPtr();           // Get pointer on Audio structure information
+
+    // Label
+    m_pRawLabelData       = ((MainWindow*)parent)->getRawLabelDataPtr();        // Get pointer on Label data
+    m_pLabelInfo          = ((MainWindow*)parent)->getLabelInfoPtr();           // Get pointer on Label structure information
+
+   // Label List
+    m_pRawLabelListData   = ((MainWindow*)parent)->getRawLabelListDataPtr();    // Get pointer on Label List data
+    m_pLabelListInfo      = ((MainWindow*)parent)->getLabelListInfoPtr();       // Get pointer on Label List structure information
 }
 
 // ************************************************************************************************
@@ -132,83 +136,51 @@ void SkinSave::run(void)
     //m_LabelCount = m_pLabelInfo->count();
     //m_labelListCount = m_plabelListInfo->count();
 
-    if(m_pSkinType == SKIN_TYPE_LOADABLE)
+    File.setFileName(FileInfo.baseName() + ".skn");
+    File.open(QIODevice::WriteOnly);
+
+    if(m_ImageCount != 0)
     {
-        File.setFileName(FileInfo.baseName() + ".lsk");
-        File.open(QIODevice::WriteOnly);
+        SaveImageInfo(&FileRawData);                            // Save image info structure
+        SaveAllImage(&FileRawData);                             // Try each compression method, and save best for each image in file
+        m_PreviousBlockOfData = m_ThisBlockOfData;
+        m_ThisBlockOfData = FileRawData.size();
+    }
 
-        if(m_ImageCount != 0)
-        {
-            SaveImageInfo(&FileRawData);                            // Save image info structure            
-            SaveAllImage(&FileRawData);                             // Try each compression method, and save best for each image in file
-            m_PreviousBlockOfData = m_ThisBlockOfData;
-            m_ThisBlockOfData = FileRawData.size();
-        }
+    if(m_FontCount != 0)
+    {
+        SaveFontInfo(&FileRawData);                             // Save font info structure
+        SaveAllFont(&FileRawData);                              // Try each compression method, and save best for each image in file
+        m_PreviousBlockOfData = m_ThisBlockOfData;
+        m_ThisBlockOfData = FileRawData.size();
+    }
 
-        if(m_FontCount != 0)
-        {
-            SaveFontInfo(&FileRawData);                             // Save font info structure
-            SaveAllFont(&FileRawData);                              // Try each compression method, and save best for each image in file
-            m_PreviousBlockOfData = m_ThisBlockOfData;
-            m_ThisBlockOfData = FileRawData.size();
-        }
-
-        if(m_AudioCount != 0)
-        {
-            SaveAudioInfo(&FileRawData);                            // Save audio info structure
-            SaveAllAudio(&FileRawData);                             // Try each compression method, and save best for each audio in file
-            //CompressAllAudio(&FileRawData);                       // Try each compression method, and save best for each audio in file
-            m_PreviousBlockOfData = m_ThisBlockOfData;
-            m_ThisBlockOfData = FileRawData.size();
-        }
+    if(m_AudioCount != 0)
+    {
+        SaveAudioInfo(&FileRawData);                            // Save audio info structure
+        SaveAllAudio(&FileRawData);                             // Try each compression method, and save best for each audio in file
+        //CompressAllAudio(&FileRawData);                       // Try each compression method, and save best for each audio in file
+        m_PreviousBlockOfData = m_ThisBlockOfData;
+        m_ThisBlockOfData = FileRawData.size();
+    }
 
 #if 0
-        if(m_LabelCount != 0)
-        {
-            SaveLabelInfo(&FileRawData);                            // Save label info structure
-            SaveAllLabel(&FileRawData);                             // Try each compression method, and save best for all label in file
-            m_PreviousBlockOfData = m_ThisBlockOfData;
-            m_ThisBlockOfData = FileRawData.size();
-        }
-
-        if(m_LabelListCount != 0)
-        {
-            SaveLabelListInfo(&FileRawData);                        // Save label list info structure
-            SaveAllLabelListFont(&FileRawData);                     // Try each compression method, and save best for all label list in file
-            m_PreviousBlockOfData = m_ThisBlockOfData;
-            m_ThisBlockOfData = FileRawData.size();
-        }
-#endif
-    }
-    else // SKIN_TYPE_BINARY (order of operation are different. raw data must be save before info)
+    if(m_LabelCount != 0)
     {
-        File.setFileName(FileInfo.baseName() + ".bin");
-        File.open(QIODevice::WriteOnly);
-
-        // Reserve space in binary data for the next block of data
-        AppendReservedSpace(&FileRawData, RAW_DATA_OFFSET);                    // Reserved space information header of binary data.
-        
-        // Only All components count can be save on header at this point.
-        Replace_uint16(&FileRawData, BINARY_OFFSET_IMG_COUNT, m_ImageCount);
-        Replace_uint16(&FileRawData, BINARY_OFFSET_FNT_COUNT, m_FontCount);
-        Replace_uint16(&FileRawData, BINARY_OFFSET_AUD_COUNT, m_AudioCount);
-     // Replace_uint16(&FileRawData, BINARY_OFFSET_LBL_COUNT, m_LabelCount);
-     // Replace_uint16(&FileRawData, BINARY_OFFSET_LST_COUNT, m_LabelListCount);
-        
-        SaveAllImage(&FileRawData);
-        SaveAllFont(&FileRawData);
-        SaveAllAudio(&FileRawData);
-        //SaveAllLabel(&FileRawData);
-        //SaveAllLabelList(&FileRawData);
-        
-        // Get pointer for all struct and update the beginning of the file with the pointer
-        
-        SaveImageInfo(&FileRawData);                            // Save image info structure
-        SaveFontInfo(&FileRawData);                             // Save font info structure
-        SaveAudioInfo(&FileRawData);                            // Save audio info structure
-      //SaveLabelInfo(&FileRawData);                            // Save label info structure
-      //SaveLabelListInfo(&FileRawData);                        // Save label list info structure
+        SaveLabelInfo(&FileRawData);                            // Save label info structure
+        SaveAllLabel(&FileRawData);                             // Try each compression method, and save best for all label in file
+        m_PreviousBlockOfData = m_ThisBlockOfData;
+        m_ThisBlockOfData = FileRawData.size();
     }
+
+    if(m_LabelListCount != 0)
+    {
+        SaveLabelListInfo(&FileRawData);                        // Save label list info structure
+        SaveAllLabelListFont(&FileRawData);                     // Try each compression method, and save best for all label list in file
+        m_PreviousBlockOfData = m_ThisBlockOfData;
+        m_ThisBlockOfData = FileRawData.size();
+    }
+#endif
 
     // Save all data to skin file
     File.write((const char*)FileRawData.data(), FileRawData.size());
@@ -218,6 +190,11 @@ void SkinSave::run(void)
     CreateXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
     emit SaveProgress("", 100);
 
+    if(m_pSkinConfig->UseBinary == true)
+    {
+        CreateBinary();
+    }
+
     emit SaveDone();
     exec();
 }
@@ -226,7 +203,7 @@ void SkinSave::run(void)
 
 void SkinSave::SaveImageInfo(QVector<uint8_t>* pFileRawData)            // TODO modify to handle the Binary type
 {
-    GFX_ePixelFormat PixelFormat;
+    GFX_PixelFormat_e PixelFormat;
 
     if(m_ThisBlockOfData != 0)
     {
@@ -237,7 +214,7 @@ void SkinSave::SaveImageInfo(QVector<uint8_t>* pFileRawData)            // TODO 
     Append_uint32(pFileRawData, (uint32_t)0x00000000);
 
     // Put the type of data block (here Image)
-    Append_uint16(pFileRawData, (uint16_t)0x0000);
+    Append_uint16(pFileRawData, (uint16_t)SkinBlockType_e::SKIN_IMAGE);
 
     // Put image count in compressed data
     Append_uint16(pFileRawData, (uint16_t)m_ImageCount);
@@ -269,17 +246,17 @@ void SkinSave::SaveFontInfo(QVector<uint8_t>* pFileRawData)            // TODO m
         Replace_uint32(pFileRawData, m_PreviousBlockOfData, pFileRawData->size());
     }
 
-    Append_uint32(pFileRawData, (uint32_t)0x00000000);        // Reserve space in compressed data for the next block of data
-    Append_uint16(pFileRawData, (uint16_t)0x0001);            // Put type of data block (here Font)
-    Append_uint16(pFileRawData, (uint16_t)m_FontCount);       // Put font count in compressed data
+    Append_uint32(pFileRawData, (uint32_t)0x00000000);                  // Reserve space in compressed data for the next block of data
+    Append_uint16(pFileRawData, (uint16_t)SkinBlockType_e::SKIN_FONT);  // Put type of data block (here Font)
+    Append_uint16(pFileRawData, (uint16_t)m_FontCount);                 // Put font count in compressed data
 
-    m_TotalCharCount = 0;                                   // Reset value of the character count
+    m_TotalCharCount = 0;                                               // Reset value of the character count
 
     for(int Count = 0; Count < m_FontCount; Count++)
     {
-        m_OffsetFontHeight.append(pFileRawData->size());      // Kept offset so we can modifed then later
-        pFileRawData->append(0x00);                           // Reserve space for height for this font
-        pFileRawData->append(0x00);                           // Reserve space for interline for this font
+        m_OffsetFontHeight.append(pFileRawData->size());                // Kept offset so we can modifed then later
+        pFileRawData->append(0x00);                                     // Reserve space for height for this font
+        pFileRawData->append(0x00);                                     // Reserve space for interline for this font
     }
 
     for(int Count = 0; Count < m_FontCount; Count++)
@@ -290,11 +267,11 @@ void SkinSave::SaveFontInfo(QVector<uint8_t>* pFileRawData)            // TODO m
         m_pFontMetric = new QFontMetrics(*m_pFont);
 
         // Put font count in compressed data
-        Append_uint32(pFileRawData, Count);                   // For now we use count number as ID
+        Append_uint32(pFileRawData, Count);                             // For now we use count number as ID
 
         // Reserve space in compressed data for character count
-        m_OffsetFontCharCountHeader = pFileRawData->size();   // Keep offset for later
-        pFileRawData->append(0x00);                           // Value rewritten when count is knowned
+        m_OffsetFontCharCountHeader = pFileRawData->size();             // Keep offset for later
+        pFileRawData->append(0x00);                                     // Value rewritten when count is knowned
 
         // Sample all alpha character
         if((m_pFontSamplingInfo->at(Count) & SAMPLING_ALPHA) != 0)
@@ -374,45 +351,25 @@ void SkinSave::SaveAllImage(QVector<uint8_t>* pFileRawData)
     for(int Count = 0; Count < m_ImageCount; Count++)
     {
 
-        if(m_pSkinType == SKIN_TYPE_LOADABLE)
-        {
-            Size = pFileRawData->size();
-            Replace_uint32(pFileRawData, (Count * IMAGE_HEADER_SIZE) + 14 + m_OffsetImageHeader, Size);     // Write offset for this image data
-        }
-        
+        Size = pFileRawData->size();
+        Replace_uint32(pFileRawData, (Count * IMAGE_HEADER_SIZE) + 14 + m_OffsetImageHeader, Size);     // Write offset for this image data
         ChangeEndianness(Count);                            // Change Endianness of raw data before save in needed
 
-        if(m_pSkinType == SKIN_TYPE_LOADABLE)
-        {
-            // Write data for this image
-            CompressionMethod = Compress(pFileRawData,
-                                m_pRawImageData,
-                                m_pImageInfo->at(Count).DataSize,
-                                m_pImageInfo->at(Count).RawIndex);
-        }
-        else // (m_pSkinType == SKIN_TYPE_BINARY)
-        {
-            std::copy(m_pRawImageData->begin() + m_pImageInfo->at(Count).RawIndex, 
-                      m_pRawImageData->begin() + m_pImageInfo->at(Count).RawIndex + m_pImageInfo->at(Count).DataSize, 
-                      std::back_inserter(*pFileRawData));
-        }
+        // Write data for this image
+        CompressionMethod = Compress(pFileRawData,
+                            m_pRawImageData,
+                            m_pImageInfo->at(Count).DataSize,
+                            m_pImageInfo->at(Count).RawIndex);
 
         ChangeEndianness(Count);                            // Replace raw data into original state for more editing if it was needed
         
-        if(m_pSkinType == SKIN_TYPE_LOADABLE)
-        {
-            // Write compression method for this image
-            pFileRawData->replace((Count * IMAGE_HEADER_SIZE) + 13 + m_OffsetImageHeader, CompressionMethod);
+        // Write compression method for this image
+        pFileRawData->replace((Count * IMAGE_HEADER_SIZE) + 13 + m_OffsetImageHeader, CompressionMethod);
 
-            Size = pFileRawData->size() - Size;
+        Size = pFileRawData->size() - Size;
 
-            // Write raw compress datasize for this image
-            Replace_uint32(pFileRawData, (Count * IMAGE_HEADER_SIZE) + 4 + m_OffsetImageHeader, uint32_t(Size));
-        }
-        else // (m_pSkinType == SKIN_TYPE_BINARY)
-        {
-            // TODO if there is something to do
-        }
+        // Write raw compress datasize for this image
+        Replace_uint32(pFileRawData, (Count * IMAGE_HEADER_SIZE) + 4 + m_OffsetImageHeader, uint32_t(Size));
 
         Progress = (Count * 98) / m_ImageCount;
         emit SaveProgress("", Progress);
@@ -622,33 +579,16 @@ void SkinSave::SaveEachCharFont(QVector<uint8_t>* pFileRawData, uint8_t Char)
             uint8_t Data;
             
             Data = qGray(Image.pixel(x, y)); 
-            
-            if(m_pSkinType == SKIN_TYPE_LOADABLE)
-            {
-                InputData.append(Data);                                                 // Put data into temporary buffer for compression if true
-            }
-            else // (m_pSkinType == SKIN_TYPE_BINARY)
-            {
-                pFileRawData->append(Data);                                             // Put data directly into file data for binary if false
-            }
-            
+            InputData.append(Data);                                                 // Put data into temporary buffer for compression if true
             Count++;
         }
     }
 
     if(Count)
     {
-        if(m_pSkinType == SKIN_TYPE_LOADABLE)
-        {
-            Size = pFileRawData->size();
-            CompressionMethod = Compress(pFileRawData, &InputData, Count, 0);
-            Size = pFileRawData->size() - Size;
-        }
-        else
-        {
-            Size = Count;                                                               // For binary, there is no compression, so Size is the count
-        }
-        
+        Size = pFileRawData->size();
+        CompressionMethod = Compress(pFileRawData, &InputData, Count, 0);
+        Size = pFileRawData->size() - Size;
         
         // Write raw compress datasize for this image
         Replace_uint16(pFileRawData, OffsetFontHeader + 1, uint16_t(Size));
@@ -667,8 +607,8 @@ void SkinSave::SaveEachCharFont(QVector<uint8_t>* pFileRawData, uint8_t Char)
         pFileRawData->replace(OffsetFontHeader + 6,  (m_MaxY[m_TotalCharCount] - m_MinY[m_TotalCharCount]) + 1);
         pFileRawData->replace(OffsetFontHeader + 9, CompressionMethod);
     }
-    pFileRawData->replace(OffsetFontHeader + 7,  m_pFontMetric->horizontalAdvance(QChar(Char)));     // outside because space need width but has no data
 
+    pFileRawData->replace(OffsetFontHeader + 7,  m_pFontMetric->horizontalAdvance(QChar(Char)));     // outside because space need width but has no data
     m_TotalCharCount++;
 }
 
@@ -678,11 +618,19 @@ void SkinSave::CreateXML(QString Path)
 {
     QXmlPut xmlPut("Skin");
 
-    xmlPut.putString("Type", (*m_pSkinType == SKIN_TYPE_LOADABLE) ? "Loadable Skin" : "Binary Skin");
-    xmlPut.putInt("Width", m_pSkinSize->width());
-    xmlPut.putInt("Height", m_pSkinSize->height());
-    xmlPut.putString("Endian", (*m_pEndian == LITTLE_ENDIAN) ? "Little" : "Big");
+    xmlPut.putInt("Width", m_pSkinConfig->DisplaySize.width());
+    xmlPut.putInt("Height", m_pSkinConfig->DisplaySize.height());
+    xmlPut.putString("Endian", (m_pSkinConfig->Endianess == LITTLE_ENDIAN) ? "Little" : "Big");
     xmlPut.putInt("Size", 0);           // Size of the data in skin (raw uncompressed data)
+    xmlPut.descend("binary");
+    xmlPut.putString("Enable", (m_pSkinConfig->UseBinary == false) ? "No" : "Yes");
+    xmlPut.putInt("Memory Offset", m_pSkinConfig->MemoryOffset);
+    xmlPut.putInt("Image Max", m_pSkinConfig->ImageMax);
+    xmlPut.putInt("Font Max", m_pSkinConfig->FontMax);
+    xmlPut.putInt("Audio Max", m_pSkinConfig->AudioMax);
+    xmlPut.putInt("Label Max", m_pSkinConfig->LabelMax);
+    xmlPut.putInt("Label List Max", m_pSkinConfig->LabelListMax);
+    xmlPut.rise();
 
     //-------------------------------------------------------------------------
     // Image information
@@ -718,15 +666,16 @@ void SkinSave::CreateXML(QString Path)
         xmlPut.putInt("Offset", 0);
         xmlPut.putInt("Size", 0);
         xmlPut.putInt("Option", m_pFontSamplingInfo->at(i));
-        sFontMetaData MetaData = ReadFontMetadata(GetFontFile(m_pFontInfo->at(i).family()));
+        FontMetaData_t MetaData = ReadFontMetadata(GetFontFile(m_pFontInfo->at(i).family()));
         xmlPut.putString("Filename",MetaData.FileName);
         xmlPut.putString("Manufacturer", MetaData.Manufacturer);
         xmlPut.putString("Designer", MetaData.Designer);
         xmlPut.rise();
     }
 
-    #if 0 // do Audio
+    //-------------------------------------------------------------------------
     // Audio Information
+    #if 0 // do Audio
     xmlPut.descend("Audio");
     xmlPut.putInt("Count", m_AudioCount);
     xmlPut.putInt("Offset", 0);         // Offset of the audio data block in skin (raw uncompressed data)
@@ -743,8 +692,9 @@ void SkinSave::CreateXML(QString Path)
     xmlPut.rise();
     #endif
 
-    #if 0 // do Label
+    //-------------------------------------------------------------------------
     // Label Information
+    #if 0 // do Label
     xmlPut.descend("Label");
     xmlPut.putInt("Count", m_LabelCount);
     xmlPut.putInt("Offset", 0);         // Offset of the label data block in skin (raw uncompressed data)
@@ -758,6 +708,7 @@ void SkinSave::CreateXML(QString Path)
     }
     xmlPut.rise();
 
+    //-------------------------------------------------------------------------
     // Label List Information
     xmlPut.descend("Label list");
     xmlPut.putInt("Count", m_LabelListCount);
@@ -806,9 +757,9 @@ QString SkinSave::GetFontFile(const QString& fontName)
 
 // ************************************************************************************************
 
-sFontMetaData SkinSave::ReadFontMetadata(QString fontFile)
+FontMetaData_t SkinSave::ReadFontMetadata(QString fontFile)
 {
-    sFontMetaData MetaData = {0};
+    FontMetaData_t MetaData = {0};
     FT_Library library;
     FT_Face face;
 
@@ -909,7 +860,7 @@ QString SkinSave::getFontFilePath(const QString& fontFamily)
 void SkinSave::ChangeEndianness(int Offset)
 {
     // Applied change in endianess to raw data
-    if(*m_pEndian == LITTLE_ENDIAN)
+    if(m_pSkinConfig->Endianess == LITTLE_ENDIAN)
     {
         uint32_t EndIndex = m_pImageInfo->at(Offset).RawIndex + m_pImageInfo->at(Offset).DataSize;
 
@@ -929,3 +880,245 @@ void SkinSave::ChangeEndianness(int Offset)
         }
     }
 }
+
+// ************************************************************************************************
+
+void SkinSave::CreateBinary(void)
+{
+//    SystemState_e    State;
+    uint32_t         NextBlock = 0;
+    uint16_t         BlockTp;
+    SkinBlockType_e  BlockType;
+    size_t           ReadCount = 0;
+    size_t           TotalToLoad;
+    QFile            FileSource;
+    QFile            FileDestination;
+    QFileInfo        FileSourceInfo(m_SkinPathAndFileName);
+    QFileInfo        FileDestinationInfo(m_SkinPathAndFileName);
+
+    FileSource.setFileName(FileSourceInfo.baseName() + ".skn");
+    FileSource.open(QIODevice::ReadOnly);
+    FileDestination.setFileName(FileSourceInfo.baseName() + ".bin");
+    FileDestination.open(QIODevice::WriteOnly);
+
+    TotalToLoad = FileSource.size();
+
+    do
+    {
+        FileSource.seek(qint64(NextBlock));
+        ReadCount += Get_uint32_t(&FileSource, &NextBlock);
+        ReadCount += Get_uint16_t(&FileSource, &BlockTp);
+        BlockType = SkinBlockType_e(BlockTp);
+
+        switch(BlockType)
+        {
+            case SkinBlockType_e::SKIN_IMAGE:
+            {
+          //      m_pCompressionMethod = (uint8_t*)GRAFX_DECOMPRESS_METHOD_ADDRESS;
+          //      memset(m_pCompressionMethod, 0x00, sizeof(uint8_t) * DBASE_MAX_SKIN_IMAGE_QTY);
+          //      m_pDataSize          = (uint32_t*)GRAFX_DATA_SIZE_ADDRESS;
+          //      memset(m_pDataSize, 0x00, sizeof(uint32_t) * DBASE_MAX_SKIN_IMAGE_QTY);
+
+           //     if((State = Get_uint16_t(&m_ItemCount)) == SYS_READY)
+           //     {
+             //       if((State = GetImageInfo()) == SYS_READY)
+               //     {
+             //           State = DeCompressAllImage();
+            //        }
+           //     }
+
+            }
+            break;
+
+            case int(SkinBlockType_e::SKIN_FONT):
+            {
+           //     m_pCompressionMethod = (uint8_t*)GRAFX_DECOMPRESS_METHOD_ADDRESS;
+           //     memset(m_pCompressionMethod, 0x00, sizeof(uint8_t) * DBASE_MAX_SKIN_FONT_QTY * 256);
+
+          //      if((State = Get_uint16_t(&m_ItemCount)) == SYS_READY)
+            //    {
+              //      if((State = GetFontInfo()) == SYS_READY)
+                //    {
+                  //      State = DeCompressAllFont();
+                    //}
+               // }
+            }
+            break;
+        }
+    }
+    while(NextBlock != 0);
+
+    FileSource.close();
+    FileDestination.close();
+
+}
+
+// code in Digini to generate the data in ram.. so i will use this to build the binary to load into flash of project
+
+#if 0
+
+#if defined(KIT_735IG)
+  #define GRAFX_RAW_INPUT_DATA_ADDRESS                  0x700BF400      // 128K             
+  #define GRAFX_DECODE_ARRAY_ADDRESS                    0x700DF400      // 224K
+  #define GRAFX_APPEND_ARRAY_ADDRESS                    0x70117400      // 224K
+  #define GRAFX_PREFIX_ARRAY_ADDRESS                    0x7014F400      // 224K
+  #define GRAFX_DECOMPRESS_METHOD_ADDRESS               0x70187400      // 8K                   // this is where data is decompressed
+  #define GRAFX_DATA_SIZE_ADDRESS                       0x70189400      // 8K                   // to find out what it is
+#endif
+
+
+
+
+SystemState_e SKIN_myClassTask::Load(void)
+{
+  .  SystemState_e    State;
+  .  uint32_t         NextBlock = 0;
+  .  uint16_t         BlockTp;
+  .  SkinBlockType_e  BlockType;
+
+  .  m_ReadCount = 0;
+
+  .  // Register work area for logical drive
+  .  do
+  .  {
+  .      m_FResult = f_mount(m_pFS, m_pDrive, 1);
+  .      nOS_Sleep(10);
+  .  }
+  .  while(m_FResult != FR_OK);
+
+  .  // Open source file on the internal drive (SPI Flash)
+  .  m_FResult = f_open(m_pFile, m_Path, FA_OPEN_EXISTING | FA_READ);
+  .  if((m_FResult = f_stat(m_Path, m_pFileInfo)) != FR_OK) return SYS_FAIL;
+  .  m_TotalToLoad = f_size(m_pFile);
+
+  .  do
+  .  {
+  .      if((m_FResult = f_lseek(m_pFile, NextBlock)) != FR_OK) return SYS_FAIL; // Jump to next block (first is zero)
+
+  .      if((State = Get_uint32_t(&NextBlock)) != SYS_READY) return State;       // Get now the next block
+  .      if((State = Get_uint16_t(&BlockTp))   != SYS_READY) return State;       // Get the Block type
+  .      BlockType = SkinBlockType_e(BlockTp);
+
+  .      switch(BlockType)
+  .      {
+  .      case SKIN_IMAGE:
+  .      {
+            m_pCompressionMethod = (uint8_t*)GRAFX_DECOMPRESS_METHOD_ADDRESS;
+            memset(m_pCompressionMethod, 0x00, sizeof(uint8_t) * DBASE_MAX_SKIN_IMAGE_QTY);
+            m_pDataSize          = (uint32_t*)GRAFX_DATA_SIZE_ADDRESS;
+            memset(m_pDataSize, 0x00, sizeof(uint32_t) * DBASE_MAX_SKIN_IMAGE_QTY);
+
+            if((State = Get_uint16_t(&m_ItemCount)) == SYS_READY)
+            {
+                if((State = GetImageInfo()) == SYS_READY)
+                {
+                    State = DeCompressAllImage();
+                }
+            }
+
+  .          break;
+  .      }
+  .
+  .      case SKIN_FONT:
+  .      {
+            m_pCompressionMethod = (uint8_t*)GRAFX_DECOMPRESS_METHOD_ADDRESS;
+            memset(m_pCompressionMethod, 0x00, sizeof(uint8_t) * DBASE_MAX_SKIN_FONT_QTY * 256);
+
+            if((State = Get_uint16_t(&m_ItemCount)) == SYS_READY)
+            {
+                if((State = GetFontInfo()) == SYS_READY)
+                {
+                    State = DeCompressAllFont();
+                }
+            }
+
+  .          break;
+  .      }
+  .      }
+  .      //nOS_Yield();
+  .      nOS_Sleep(1);
+  .  }
+  .  while((NextBlock != 0) && (State == SYS_READY));
+
+  .  f_close(m_pFile);
+
+  .  // Unregister work area prior to discard it
+  .  f_mount(nullptr, m_pDrive, 0);
+
+  .  return State;
+}
+#endif
+
+// ************************************************************************************************
+
+void SkinSave::GetImageInfo(void)
+{
+    uint32_t      Dummy;
+    ImageInfo_t   ImageInfo;
+/*
+    // Read all image information
+    for(uint16_t i = 0; (i < m_ItemCount); i++)
+    {
+        Get_uint32_t(&Dummy);      // dummy read ID
+        Get_uint32_t(&m_pDataSize[i]);
+        Get_uint8_t((uint8_t*)&ImageInfo.PixelFormat);
+        Get_uint16_t(&ImageInfo.Size.Width);
+        Get_uint16_t(&ImageInfo.Size.Height);
+        Get_uint8_t(&m_pCompressionMethod[i]);
+        Get_uint32_t((uint32_t*)&ImageInfo.pPointer);      // use memory address pointer as temporary storage for in file index
+        
+        // write data to file at the right offset ---->   DB_Central.Set(&ImageInfo, GFX_IMAGE_INFO, i + (NUMBER_OF_STATIC_IMAGE + 1), 0);
+    }
+*/
+}
+
+// ************************************************************************************************
+
+size_t SkinSave::Get_uint8_t(QFile* pFile, uint8_t* pValue)
+{
+    return size_t(pFile->read((char*)pValue, qint64(sizeof(uint8_t))));
+}
+
+// ************************************************************************************************
+
+size_t SkinSave::Get_uint16_t(QFile* pFile, uint16_t* pValue)
+{
+    uint32_t ReadCount;
+
+    ReadCount = size_t(pFile->read((char*)pValue, qint64(sizeof(uint16_t))));
+
+    if(m_pSkinConfig->Endianess == BIG_ENDIAN)
+    {
+        uint16_t Value;
+
+        Value  = (*pValue >> 8) & 0x00FF;
+        Value |= (*pValue << 8) & 0xFF00;
+        *pValue = Value;
+    }
+
+    return ReadCount;
+}
+
+// ************************************************************************************************
+
+size_t SkinSave::Get_uint32_t(QFile* pFile, uint32_t* pValue)
+{
+    uint32_t ReadCount;
+
+    ReadCount = size_t(pFile->read((char*)pValue, qint64(sizeof(uint32_t))));
+
+    if(m_pSkinConfig->Endianess == BIG_ENDIAN)
+    {
+        uint32_t Value;
+
+        Value  = (*pValue >> 24) & 0x000000FF;
+        Value |= (*pValue >> 8)  & 0x0000FF00;
+        Value |= (*pValue << 8)  & 0x00FF0000;
+        Value |= (*pValue << 24) & 0xFF000000;
+        *pValue = Value;
+    }
+
+    return ReadCount;
+}
+
+// ************************************************************************************************

@@ -89,7 +89,12 @@ MainWindow::MainWindow(QWidget *parent) :
     InitFont();
     InitConverter();
     InitConfigurator();
-//    SetSizeDisplay(m_DisplaySize);
+    UpdateStatusBar();
+
+    m_ButtonStyle = new QString ("QPushButton { color: white;"
+                                               "background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6B82AC, stop:0.49 #566D97, stop:0.5 #445B85, stop:1 #566D97);"
+                                               "border-width: 2px; border-color: #778EB8; border-style: solid; border-radius: 7px; padding: 3px;"
+                                               "font: bold 12px 'Ubuntu'; padding-left: 5px; padding-right: 5px; }");
 }
 
 // ************************************************************************************************
@@ -119,16 +124,16 @@ void MainWindow::ClearAllData()
 {
 
     m_SpecialNote.clear();      // Make sure there is no special note to add to Status bar.
-    m_SkinType = SKIN_TYPE_BINARY;
-    m_Endian = LITTLE_ENDIAN;
+    m_SkinConfig.UseBinary = false;
+    m_SkinConfig.Endianess = LITTLE_ENDIAN;
     m_SkinSize = 0;
     m_SkinName = "none";
     m_IsSkinSaveAs = true;
     m_IsSkinHasUnsavedData = false;
     m_IsWarningDisplayed = true;
-    m_DisplaySize.setWidth(480);
-    m_DisplaySize.setHeight(272);
-    m_MemoryOffset = 0;
+    m_SkinConfig.DisplaySize.setWidth(480);
+    m_SkinConfig.DisplaySize.setHeight(272);
+    m_SkinConfig.MemoryOffset = 0;
 
     m_SkinDir.setPath(".");
     m_CurrentDir.setPath(".");
@@ -145,12 +150,12 @@ void MainWindow::ClearAllData()
     m_RawAudio.clear();         // Remove all raw image data
     
     // Label
-    //m_LabelInfo.clear();      // Remove all Label
-    //m_RawLabel.clear();       // Remove all Label
+    m_LabelInfo.clear();       // Remove all Label
+    m_RawLabel.clear();        // Remove all Label
 
     // Label
-    //m_LabelListInfo.clear();  // Remove all Label
-    //m_RawLabelist.clear();    // Remove all Label
+    m_LabelListInfo.clear();   // Remove all Label list
+    m_RawLabelList.clear();    // Remove all Label list
 
     // Font
     m_Font.clear();             // Remove all font info structure
@@ -177,11 +182,28 @@ void MainWindow::ResetAllSkinTab()
 
 void MainWindow::UpdateStatusBar()
 {
-    m_pStatusLabel->setText(QString("&nbsp;&nbsp; Status :&nbsp;&nbsp;%1&nbsp;&nbsp;&nbsp;&nbsp;%2 byte%3 &nbsp;&nbsp;&nbsp;&nbsp;<font color=\"red\">%4")
-                            .arg("Skin size :" + m_SkinName)
-                            .arg(m_SkinSize)
-                            .arg(((m_SkinSize > 1) ? 's' : ' '))
-                            .arg( m_SpecialNote.isEmpty() ? "" : "Note: " + m_SpecialNote));
+    m_pStatusLabel->setText(QString("&nbsp;&nbsp;Skin Name: %1&nbsp;&nbsp;&nbsp;&nbsp;File Type : %2&nbsp;&nbsp;&nbsp;&nbsp;Skin size : %3 byte%4&nbsp;&nbsp;&nbsp;&nbsp;Endianness : %5&nbsp;&nbsp;&nbsp;&nbsp;Memory Offset : %6<font color=\"red\">&nbsp;&nbsp;&nbsp;&nbsp;%7")
+                            .arg(m_SkinName)
+                            .arg((m_SkinConfig.UseBinary == true) ? "Binary" : "Loadable")
+                            .arg(QString::asprintf("%d", m_SkinSize))
+                            .arg(((m_SkinSize > 1) ? "s" : " "))
+                            .arg(((m_SkinConfig.Endianess == BIG_ENDIAN) ? "Big Endian" : "Little Endian"))
+                            .arg(QString::asprintf("0x%08X", m_SkinConfig.MemoryOffset))
+                            .arg(m_SpecialNote.isEmpty() ? "" : "Note: " + m_SpecialNote));
+}
+
+// ************************************************************************************************
+
+void MainWindow::UpdateWidget()
+{
+    // widget on configurator tab
+//    ui->MemoryOffset->setText(QString::asprintf("0x%08X", m_MemoryOffset));
+//    ui->SkinFileName->setText(m_SkinName);
+//    ConfigCheckButton();
+//    on_checkBoxBinary_checkStateChanged((m_SkinType == SKIN_TYPE_BINARY) ? Qt::Checked : Qt::Unchecked);    // Use slot to update widget (dirty) 
+//    on_checkBoxLittleEndian_checkStateChanged((m_Endian == LITTLE_ENDIAN) ? Qt::Checked : Qt::Unchecked);
+
+    UpdateConfigurator();
 }
 
 // ************************************************************************************************
@@ -190,8 +212,8 @@ void MainWindow::on_actionExit_triggered()
 {
     // Check if we have data to save before exiting
     // If we do, than exit will be delayed until it is done, then it will close
-
     m_IsNeedToCloseAfterSave = true;
+    
     if(SaveSkinAndClearData() == false)
     {
         this->close();
@@ -204,8 +226,8 @@ void MainWindow::closeEvent(QCloseEvent *bar)
 {
     // Check if we have data to save before exiting
     // If we do, than exit will be delayed until it is done, then it will close
-
     m_IsNeedToCloseAfterSave = true;
+
     if(SaveSkinAndClearData() == true)
     {
         bar->ignore();                          // Ignore request to close for now, done after saving
@@ -219,21 +241,24 @@ void MainWindow::on_TabFunctionSelect_tabBarClicked(int index)
     // Clear special note.
     m_SpecialNote.clear();
 
-    if(index == 1)  // Font tab
+    switch(index)
     {
-        checkValidFont();
-    }
-    else
-    {
-        UpdateStatusBar();
-    }
-}
+        case 1:  // Font tab
+        {
+            checkValidFont();
+        }
+        break;
 
-// ************************************************************************************************
+        case 4: // Configurator tab
+        {
+            UpdateConfigurator();
+        }
+        break;
 
-void MainWindow::UpdateWidget()
-{
-    ui->MemoryOffset->setText(QString::asprintf("0x%08X", m_MemoryOffset));
+        default: break;
+    }
+
+    UpdateStatusBar();
 }
 
 // ************************************************************************************************
@@ -286,28 +311,28 @@ void MainWindow::GetConfigFromXML()
         if(xmlGet.findNext("SizeDisplay"))
         {
             xmlGet.descend();
-            if (xmlGet.find("width"))   m_DisplaySize.setWidth(xmlGet.getInt());
-            if (xmlGet.find("height"))  m_DisplaySize.setHeight(xmlGet.getInt());
+            if (xmlGet.find("width"))   m_SkinConfig.DisplaySize.setWidth(xmlGet.getInt());
+            if (xmlGet.find("height"))  m_SkinConfig.DisplaySize.setHeight(xmlGet.getInt());
         }
 
-        if(xmlGet.find("SkinType"))
+        if(xmlGet.find("Binary"))
         {
             QString SkinName = xmlGet.getString();
-            if(SkinName == "Loadable") m_SkinType = SKIN_TYPE_LOADABLE;
-            else                       m_SkinType = SKIN_TYPE_BINARY;
+            if(SkinName == "Yes") m_SkinConfig.UseBinary = true;
+            else                  m_SkinConfig.UseBinary = false;
         }
 
         if(xmlGet.find("MemoryOffset"))
         {
             QString Offset = xmlGet.getString();
-            m_MemoryOffset = static_cast<uint32_t>(Offset.toUInt(nullptr, 16));
+            m_SkinConfig.MemoryOffset = static_cast<uint32_t>(Offset.toUInt(nullptr, 16));
         }
 
         if(xmlGet.find("Endian"))
         {
             QString EndianName = xmlGet.getString();
-            if(EndianName == "BigEndian") m_Endian = BIG_ENDIAN;
-            else                          m_Endian = LITTLE_ENDIAN;     // include nullptr, so it's default
+            if(EndianName == "BigEndian") m_SkinConfig.Endianess = BIG_ENDIAN;
+            else                          m_SkinConfig.Endianess = LITTLE_ENDIAN;     // include nullptr, so it's default
         }
     }
     else
@@ -315,6 +340,7 @@ void MainWindow::GetConfigFromXML()
         SetConfigToXML();
     }
 
+    UpdateStatusBar();
     UpdateWidget();
 }
 
@@ -326,13 +352,13 @@ void MainWindow::SetConfigToXML()
     xmlPut.putString("SkinPath", m_SkinDir.absolutePath());
     xmlPut.putString("ImagePath", m_ImageDir.absolutePath());
     xmlPut.putString("AudioPath", m_AudioDir.absolutePath());
-    xmlPut.putString("Endian", (m_Endian == LITTLE_ENDIAN) ? "LittleEndian" : "BigEndian");
-    xmlPut.putString("SkinType", (m_SkinType == SKIN_TYPE_LOADABLE) ? "Loadable" : "Binary");
+    xmlPut.putString("Endian", (m_SkinConfig.Endianess == LITTLE_ENDIAN) ? "LittleEndian" : "BigEndian");
+    xmlPut.putString("Binary", (m_SkinConfig.UseBinary == true) ? "Yes" : "No");
     xmlPut.descend("SizeDisplay");
-    xmlPut.putInt("width", m_DisplaySize.width());
-    xmlPut.putInt("height", m_DisplaySize.height());
+    xmlPut.putInt("width", m_SkinConfig.DisplaySize.width());
+    xmlPut.putInt("height", m_SkinConfig.DisplaySize.height());
     xmlPut.rise();
-    xmlPut.putString("MemoryOffset", QString::asprintf("0x%08X", m_MemoryOffset));
+    xmlPut.putString("MemoryOffset", QString::asprintf("0x%08X", m_SkinConfig.MemoryOffset));
     xmlPut.save(m_CurrentDir.absolutePath() + "/GB_Config.xml");
 }
 
@@ -346,7 +372,7 @@ void MainWindow::on_SetNewPathImage(QString Path)
 
 // ************************************************************************************************
 
-    void MainWindow::on_SetNewPathAudio(QString Path)
+void MainWindow::on_SetNewPathAudio(QString Path)
 {
     m_AudioDir.setPath(Path);
     SetConfigToXML();
