@@ -21,6 +21,14 @@
 #include "mainwindow.h"
 #include "Utility.h"
 
+
+// ************************************************************************************************
+
+const QString ButtonStyle = ("QPushButton { color: white;"
+                             "background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6B82AC, stop:0.49 #566D97, stop:0.5 #445B85, stop:1 #566D97);"
+                             "border-width: 2px; border-color: #778EB8; border-style: solid; border-radius: 7px; padding: 3px;"
+                             "font: bold 12px 'Ubuntu'; padding-left: 5px; padding-right: 5px; }");
+
 // ************************************************************************************************
 
 void UpdateComboBox(QComboBox *comboBox)
@@ -656,4 +664,58 @@ void ID_Code::elementToText()
 }
 
 // ************************************************************************************************
+
+QString getDirectoryFromDialog(QWidget* parent, const QString& title, const QString& initialDir)
+{
+    QFileDialog dialog(parent, title, initialDir);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.resize(800, 600);
+
+    // Customize window buttons and behavior
+    dialog.setLabelText(QFileDialog::Accept, QObject::tr("Select Folder"));
+    dialog.setLabelText(QFileDialog::Reject, QObject::tr("Cancel"));
+
+    // Execute the dialog setup early so widgets are created
+    dialog.setOption(QFileDialog::DontUseNativeDialog, true);  // Needed to access buttons on all platforms
+
+    // Add common user folders to the sidebar
+    QList<QUrl> sidebarUrls =
+    {
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)),
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)),
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)),
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::MusicLocation)),
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)),
+        QUrl::fromLocalFile("C:/") // Explicitly add root of C:\ drive
+    };
+
+    dialog.setSidebarUrls(sidebarUrls);
+
+     QDialogButtonBox* buttonBox = dialog.findChild<QDialogButtonBox*>();
+    if(buttonBox)
+    {
+        QList<QPushButton*> buttons = buttonBox->findChildren<QPushButton*>();
+
+        for(QPushButton* button : buttons)
+        {
+            button->setStyleSheet(ButtonStyle);
+        }
+    }
+
+    // Execute and return result
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QStringList selected = dialog.selectedFiles();
+        if (!selected.isEmpty())
+        {
+            return selected.first();
+        }
+    }
+    return QString();  // Return empty string if dialog canceled
+}
+
+// ************************************************************************************************
+
 

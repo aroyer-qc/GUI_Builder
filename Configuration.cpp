@@ -437,7 +437,7 @@ void MainWindow::showBinaryHelpTip()
 {
     QMessageBox msgBox;
     msgBox.setOption(QMessageBox::Option::DontUseNativeDialog);
-    msgBox.setStyleSheet("QLabel { color: black; font-weight: bold; }" + *m_ButtonStyle);
+    msgBox.setStyleSheet("QLabel { color: black; font-weight: bold; }" + ButtonStyle);
     msgBox.setText("All the parameter In the 'Binary Section' must match the config you are using into your Digini project.");
     msgBox.exec();
 }

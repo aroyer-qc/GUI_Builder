@@ -50,11 +50,13 @@ AddingImage::AddingImage(QString Path, QSize Size, QWidget* parent) :
     ui->comboBoxPixelFormat->blockSignals(false);
 
     ui->comboBoxResize->setCurrentIndex(SCALE_FIT);
-
     ui->horizontalScrollBar->setRange     (0, 0);
     ui->verticalScrollBar->setRange       (0, 0);
     ui->horizontalScrollBar->setSingleStep(0);
     ui->verticalScrollBar->setSingleStep  (0);
+
+    on_loadCheckerBoardSlider_sliderMoved(DEFAULT_CHECKER_VALUE);
+    ui->loadCheckerBoardSlider->setSliderPosition(DEFAULT_CHECKER_VALUE);
 
     ui->LabelNote->setVisible(false);
     ResizeForm();
@@ -98,7 +100,7 @@ void AddingImage::on_pushButtonClose_clicked()
 
 void AddingImage::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
+    QString directory = getDirectoryFromDialog(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
 
     if (!directory.isEmpty())
     {

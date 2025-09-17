@@ -25,6 +25,8 @@
 #include <QImage>
 #include "typedef.h"
 
+extern const QString ButtonStyle;
+
 void                    UpdateComboBox                      (QComboBox* comboBox);
 QString                 GetFormat                           (QImage::Format format);
 QPoint                  CenterPoint                         (QSize Size, QSize MaxSize);
@@ -73,6 +75,10 @@ void                    ScaleToRequirement                  (QImage* pImage, QIm
 void                    ScaleToFit                          (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 void                    ScaleToWidth                        (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
 void                    ScaleToHeight                       (QImage* pImage, QImage* pProcessedImage, QSize* pSize);
+
+// ---------- Custom Support Function ----------
+
+QString                 getDirectoryFromDialog              (QWidget* parent, const QString& title, const QString& initialDir);
 
 // ---------- class for ID_Code ----------
 

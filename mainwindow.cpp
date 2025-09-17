@@ -90,11 +90,6 @@ MainWindow::MainWindow(QWidget *parent) :
     InitConverter();
     InitConfigurator();
     UpdateStatusBar();
-
-    m_ButtonStyle = new QString ("QPushButton { color: white;"
-                                               "background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6B82AC, stop:0.49 #566D97, stop:0.5 #445B85, stop:1 #566D97);"
-                                               "border-width: 2px; border-color: #778EB8; border-style: solid; border-radius: 7px; padding: 3px;"
-                                               "font: bold 12px 'Ubuntu'; padding-left: 5px; padding-right: 5px; }");
 }
 
 // ************************************************************************************************
@@ -149,17 +144,21 @@ void MainWindow::ClearAllData()
     m_AudioInfo.clear();        // Remove all image info structure
     m_RawAudio.clear();         // Remove all raw image data
     
-    // Label
-    m_LabelInfo.clear();       // Remove all Label
-    m_RawLabel.clear();        // Remove all Label
-
-    // Label
-    m_LabelListInfo.clear();   // Remove all Label list
-    m_RawLabelList.clear();    // Remove all Label list
+    // Font
+    m_Font.clear();             // Remove all font info structure
+    m_SamplingFont.clear();     // Remove all Sampling info structure
 
     // Font
     m_Font.clear();             // Remove all font info structure
     m_SamplingFont.clear();     // Remove all Sampling info structure
+
+    // Label
+    m_LabelInfo.clear();       // Remove all Label info structure
+    m_RawLabel.clear();        // Remove all Label
+
+    // Label List
+    m_LabelListInfo.clear();   // Remove all Label list info structure
+    m_RawLabelList.clear();    // Remove all Label list
 
     //m_WidgetIndex.clear();    // remove all widget index
     //m_Widget.clear();         // remove all widget
@@ -173,9 +172,9 @@ void MainWindow::ResetAllSkinTab()
 {
     InitImage();            // Reset tab Image
     InitAudio();            // Reset tab Audio
+    InitFont();
     //InitLabel();            // Reset tab Label
     //InitLabelist();         // Reset tab Label list
-    InitFont();
 }
 
 // ************************************************************************************************

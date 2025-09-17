@@ -358,10 +358,10 @@ void MainWindow::InitImage()
     m_pImageComboBoxDelegate->addItems("IC - Icon");
     m_pImageComboBoxDelegate->addItems("IM - Image");
 
-    ResetImageGUI();
+    on_ImageCheckerBoardSlider_sliderMoved(DEFAULT_CHECKER_VALUE);
+    ui->ImageCheckerBoardSlider->setSliderPosition(DEFAULT_CHECKER_VALUE);
 
-    int position = ui->ImageCheckerBoardSlider->value();        // Update checker board to default value of ui slider
-    ui->graphicsViewImage->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
+    ResetImageGUI();
 }
 
 // ************************************************************************************************

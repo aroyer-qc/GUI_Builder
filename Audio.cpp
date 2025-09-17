@@ -344,19 +344,8 @@ void MainWindow::ResetAudioGUI()
    // ui->LabelPixelFormatAudio->setText("");
    // ui->LabelRawDataSizeAudio->setText("");
     ClearTable(ui->TableAudio);
-//    ClearSceneAudio();  // ???
 }
 
-// ************************************************************************************************
-/*
-void MainWindow::ClearSceneAudio()
-{
-    m_SceneAudio.clear();
-    ui->graphicsViewAImage->setSceneRect(0, 0, m_DisplaySize.width(), m_DisplaySize.height());
-    CheckerPattern(&m_SceneImage);
-    ui->graphicsViewImage->setScene(&m_SceneImage);
-}
-*/
 // ************************************************************************************************
 
 void MainWindow::UpdateAudioGUI(int row)

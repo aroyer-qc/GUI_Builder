@@ -113,7 +113,7 @@ void AddingAudio::on_pushButtonClose_clicked()
 
 void AddingAudio::on_ButtonBrowse_clicked()
 {
-    QString directory = QFileDialog::getExistingDirectory(this, tr("Find Audio Files"), m_CurrentDir.absolutePath());
+    QString directory = getDirectoryFromDialog(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
 
     if (!directory.isEmpty())
     {

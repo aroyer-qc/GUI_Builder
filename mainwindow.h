@@ -351,10 +351,6 @@ class MainWindow : public QMainWindow
         // Variable for Configurator Tab
         SkinConfig_t                m_SkinConfig;
         QSize                       m_TempDisplaySize;
-
-
-        const QString*              m_ButtonStyle;
-
 };
 
 #endif // MAINWINDOW_H

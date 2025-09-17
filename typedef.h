@@ -59,6 +59,7 @@
 #define BINARY_OFFSET_LST_STRUCT_POINTER    0x00000018
 #define BINARY_OFFSET_LST_COUNT             0x0000001C
 
+#define DEFAULT_CHECKER_VALUE               225
 
 typedef QSize QOffset;
 

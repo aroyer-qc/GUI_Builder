@@ -32,22 +32,7 @@
 
 void MainWindow::on_ButtonBrowse_clicked()
 {
-    /*
-    QString SelectedDir;
-
-    QFileDialog dialog(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
-    dialog.setOption(QFileDialog::DontUseNativeDialog);
-    dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOption(QFileDialog::ShowDirsOnly, true);
-    dialog.setStyleSheet(*m_ButtonStyle);
-    dialog.exec();
-
-    if (dialog.exec() == QDialog::Accepted) {
-        SelectedDir = dialog.selectedFiles().first();
-        qDebug() << "Selected directory:" << SelectedDir;
-    }
-*/
-    QString SelectedDir = QFileDialog::getExistingDirectory(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
+    QString SelectedDir = getDirectoryFromDialog(this, tr("Find Images Files"), m_CurrentDir.absolutePath());
 
     if (!SelectedDir.isEmpty())
     {
@@ -307,6 +292,10 @@ void MainWindow::InitConverter()
     ui->ComboBoxDirectory->setCurrentText(m_CurrentDir.absolutePath());
     UpdateComboBox(ui->ComboBoxDirectory);
     ui->ComboBoxDirectory->blockSignals(false);
+
+    on_CheckerBoardSlider_sliderMoved(DEFAULT_CHECKER_VALUE);
+    ui->CheckerBoardSlider->setSliderPosition(DEFAULT_CHECKER_VALUE);
+
     Find();
 }
 
