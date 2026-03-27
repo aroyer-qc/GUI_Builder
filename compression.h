@@ -24,8 +24,18 @@
 #include <QVector>
 #include "typedef.h"
 
+#define METHOD_TYPE_NONE            0
+#define METHOD_TYPE_RLE4            1
+#define METHOD_TYPE_RLE8            2
+#define METHOD_TYPE_RLE16           4
+#define METHOD_TYPE_RLE32           8
+#define METHOD_TYPE_RLE_CLUT        16
+#define METHOD_TYPE_RLE_ALL         31
+#define METHOD_TYPE_LZW             32
+#define METHOD_TYPE_ALL             63
+
 // Compression
-uint8_t Compress                (QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset);
+uint8_t Compress                (QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset, int MethodType = METHOD_TYPE_ALL);
 int     CRLE_4_Method           (QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset);
 int     CRLE_8_Method           (QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset);
 int     CRLE_16_Method          (QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset);

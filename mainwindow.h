@@ -246,7 +246,10 @@ class MainWindow : public QMainWindow
         void     InitConverter           ();
         void     ResetConverterGUI       ();
         void     ClearSceneConverter     ();
-        void     Extract                 (QTextStream* pStream, int Index);
+        int      Extract                 (QVector<uint8_t>* pOutData, int Index);
+        void     PrintArrayBody          (QTextStream& Stream, const QVector<uint8_t>& Data, int Index);
+        void     PrintStructBody         (QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String);
+
         void     Find                    ();
         void     AdjustTabConverter      (QSize Offset, QRect ViewRect);
         void     ClearScrollBarValue     ();

@@ -21,6 +21,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Utility.h"
+#include "compression.h"
 #include <QRegExp>
 
 
@@ -106,6 +107,10 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
     QString Format;
     int Index;
     qint8 BytePerPixel;
+    QVector<uint8_t> Data;
+    int ByteSize;
+    int Count;
+    //uint8_t CompressionMethod;
 
     Q_UNUSED(column);
 
@@ -142,56 +147,42 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
         Stream << "#include \"lib_compression.h\"\r\n\r\n";
 
         Index = ui->comboBoxPixelFormat->currentIndex();
+
         if(Index == FORMAT_RGB565)
         {
-            Temp = QString("%1").arg(m_TotalCount / 2);
-            Stream << "const uint16_t " << BaseName << "[" << Temp << "] =\r\n";
-            this->Extract(&Stream, Index);
+            Stream << "const uint16_t " << BaseName;
+            ByteSize = this->Extract(&Data, Index);
+            Count = ByteSize / 2;
+            Stream << "[" << Count << "] =\r\n";
+            PrintArrayBody(Stream, Data, Index);
         }
         else if(Index == FORMAT_ARGB8888)
         {
-            Temp = QString("%1").arg(m_TotalCount / 4);
-            Stream << "const uint32_t " << BaseName << "[" << Temp << "] =\r\n";
-            this->Extract(&Stream, Index);
-        }
-        else // if(Index == FORMAT_FILE_DATA)
-        {
-            Temp = QString("%1").arg(m_FileSize);
-            Stream << "const uint8_t " << BaseName << "[" << Temp << "] =\r\n";
-            this->BinToFile(&Stream, FileName);
-        }
+            Stream << "const uint32_t " << BaseName;
+            ByteSize = this->Extract(&Data, Index);
 
+            Count = ByteSize / 4;
+            Stream << "[" << Count << "] =\r\n";
+            PrintArrayBody(Stream, Data, Index);
+        }
 
         Stream << "extern const StaticImageInfo_t SII_" << BaseName << ";\r\n";
         Stream << "const StaticImageInfo_t SII_" << BaseName << " =\r\n";
         Stream << "{\r\n";
-        Temp.asprintf("%d", m_Scale.width());
-        Stream << "    " << Temp << ",\r\n";
-        Temp.asprintf("%d", m_Scale.height());
-        Stream << "    " << Temp << ",\r\n";
+        Temp = QString("%1").arg(m_Scale.width());
+        Stream << "    " << Temp.toUtf8() << ",\r\n";
+        Temp = QString("%1").arg(m_Scale.height());
+        Stream << "    " << Temp.toUtf8() << ",\r\n";
 
         if(Index == FORMAT_RGB565)
         {
-           Temp = QString("%1").arg(m_Scale.width() * 2);
-           Stream << "    " << Temp << ",\r\n";
-           Stream << "    16,\r\n";
-           Stream << "    (uint8_t*)" << BaseName << ",\r\n";
-           Temp = QString("%1").arg(m_TotalCount / 2);
-           Stream << "    " << Temp << ",\r\n";
-           Stream << "    RGB565,\r\n";
-           Stream << "    COMPX_COMPRESSION_NONE,\r\n};\r\n\r\n";
+            PrintStructBody(BaseName, Stream, Count, sizeof(uint16_t), QString("RGB565"));
         }
         else if(Index == FORMAT_ARGB8888)
         {
-           Temp = QString("%1").arg(m_Scale.width() * 4);
-           Stream << "    " << Temp << ",\r\n";
-           Stream << "    32,\r\n";
-           Stream << "    (uint8_t*)" << BaseName << ",\r\n";
-           Temp = QString("%1").arg(m_TotalCount / 4);
-           Stream << "    " << Temp << ",\r\n";
-           Stream << "    ARGB8888,\r\n";
-           Stream << "    COMPX_COMPRESSION_NONE,\r\n};\r\n\r\n";
+            PrintStructBody(BaseName, Stream, Count, sizeof(uint32_t), QString("ARGB8888"));
         }
+        
         else // FORMAT_FILE_DATA -> No Conversion
         {
            switch(m_pImage->format())
@@ -202,13 +193,13 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
            }
 
            Temp = QString("%1").arg(m_Scale.width() * BytePerPixel);
-           Stream << "    " << Temp << ",\r\n";
+           Stream << "    " << Temp.toUtf8() << ",\r\n";
            Temp = QString("%1").arg(8 * BytePerPixel);
-           Stream << "    " << Temp << ",\r\n";
+           Stream << "    " << Temp.toUtf8() << ",\r\n";
 
            Stream << "    (uint8_t*)" << BaseName << ",\r\n";
            Temp = QString("%1").arg(m_FileSize);
-           Stream << "    " << Temp << ",\r\n";
+           Stream << "    " << Temp.toUtf8() << ",\r\n";
            Stream << "    " << Format << ",\r\n";
            if((FileInfo.completeSuffix().toUpper() == QString("JPG").toUpper()) ||
               (FileInfo.completeSuffix().toUpper() == QString("JPEG").toUpper()))
@@ -226,6 +217,30 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
 
 
         File.close();
+    }
+}
+
+
+// ************************************************************************************************
+
+void MainWindow::PrintStructBody(QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String)
+{
+    QString Temp;
+
+    Temp = QString("%1").arg(m_Scale.width() * VarSize);
+    Stream << "    " << Temp.toUtf8() << ",\r\n";
+    Temp = QString("%1").arg(m_Scale.height());
+    Stream << "    " << Temp.toUtf8() << ",\r\n";
+    Stream << "    " << BaseName << ",\r\n";
+    Temp = QString("%1").arg(ArraySize);
+    Stream << "    " << Temp.toUtf8() << ",\r\n";
+    Stream << "    " << String << ",\r\n";
+    
+    switch(ui->ComboCompress->currentIndex())
+    {
+        case COMPRESSION_NONE:  Stream << "    COMPX_COMPRESSION_NONE,\r\n};\r\n\r\n";      break;
+        case RLE_16:            Stream << "    COMPX_RLE_16,\r\n};\r\n\r\n";                break;
+        case RLE_32:            Stream << "    COMPX_RLE_32,\r\n};\r\n\r\n";                break;
     }
 }
 
@@ -505,7 +520,7 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
 }
 
 // ************************************************************************************************
-
+/*
 void MainWindow::Extract(QTextStream* pStream, int Index)
 {
     QRgb Pixel;
@@ -560,6 +575,115 @@ void MainWindow::Extract(QTextStream* pStream, int Index)
 
     *pStream << "\r\n};\r\n\r\n\r\n";
 }
+*/
+
+int MainWindow::Extract(QVector<uint8_t>* pOutData, int Index)
+{
+    QRgb Pixel;
+    int X1, Y1, X2, Y2;
+
+    QVector<uint8_t> RawData;
+    pOutData->clear();
+
+    // 1. Determine extraction region
+    X1 = (ui->horizontalScrollBarConverter->value() / 100);
+    Y1 = (ui->verticalScrollBarConverter->value() / 100);
+    X2 = m_Scale.width()  + X1;
+    Y2 = m_Scale.height() + Y1;
+
+    // 2. Build RAW byte buffer
+    for(int y = Y1; y < Y2; y++)
+    {
+        for(int x = X1; x < X2; x++)
+        {
+            Pixel = m_pProcessedImage->pixel(x, y);
+
+            if(Index == FORMAT_RGB565)
+            {
+                uint16_t Value;
+                Value  = (uint16_t)((Pixel >> 3) & 0x3F);
+                Value |= (uint16_t)(((Pixel >> 19) & 0x1F) << 11);
+                Value |= (uint16_t)(((Pixel >> 10) & 0x3F) << 5);
+
+                RawData.append((uint8_t)(Value >> 8));
+                RawData.append((uint8_t)(Value & 0xFF));
+            }
+            else if(Index == FORMAT_ARGB8888)
+            {
+                RawData.append((uint8_t)((Pixel >> 24) & 0xFF));
+                RawData.append((uint8_t)((Pixel >> 16) & 0xFF));
+                RawData.append((uint8_t)((Pixel >> 8)  & 0xFF));
+                RawData.append((uint8_t)( Pixel        & 0xFF));
+            }
+        }
+    }
+
+    // 3. Select compression mode
+    int MethodType = METHOD_TYPE_ALL;
+    switch(ui->ComboCompress->currentIndex())
+    {
+        case 0: MethodType = METHOD_TYPE_NONE; break;
+        
+        case 1:
+        {
+            if      (Index == FORMAT_RGB565)   MethodType = METHOD_TYPE_RLE16;
+            else if (Index == FORMAT_ARGB8888) MethodType = METHOD_TYPE_RLE32;
+        }
+        break;
+        
+        case 2: MethodType = METHOD_TYPE_LZW;  break;
+    }
+
+    // Compress
+    Compress(pOutData, &RawData, RawData.size(), 0, MethodType);
+
+    return pOutData->size();   // return compressed byte count
+}
+
+// ************************************************************************************************
+void MainWindow::PrintArrayBody(QTextStream& Stream, const QVector<uint8_t>& Data, int Index)
+{
+    int elemSize = (Index == FORMAT_RGB565) ? 2 : 4;
+    int count    = Data.size() / elemSize;
+
+    Stream << "{\r\n    ";
+
+    int perLine = 0;
+
+    for(int i = 0; i < count; i++)
+    {
+        QString Temp;
+
+        if(elemSize == 2)
+        {
+            uint16_t v = ((uint16_t)Data[2*i] << 8) |
+                         ((uint16_t)Data[2*i+1]);
+            Temp = QString("%1").arg(v, 4, 16, QChar('0')).toUpper();
+        }
+        else
+        {
+            uint32_t v = ((uint32_t)Data[4*i]     << 24) |
+                         ((uint32_t)Data[4*i + 1] << 16) |
+                         ((uint32_t)Data[4*i + 2] << 8)  |
+                         ((uint32_t)Data[4*i + 3]);
+            Temp = QString("%1").arg(v, 8, 16, QChar('0')).toUpper();
+        }
+
+        Stream << "0x" << Temp;
+
+        if(i + 1 < count)
+            Stream << ", ";
+
+        perLine++;
+        if(perLine == 16)
+        {
+            perLine = 0;
+            Stream << "\r\n    ";
+        }
+    }
+
+    Stream << "\r\n};\r\n\r\n";
+}
 
 // ************************************************************************************************
 
@@ -577,6 +701,7 @@ void MainWindow::BinToFile(QTextStream* pStream, QString FileName)
 
     // Stream data to file
     QFile File(FileName);
+    
     if(File.open(QIODevice::ReadOnly))
     {
         Size = File.size();
@@ -652,7 +777,7 @@ void MainWindow::AdjustTabConverter(QSize Offset, QRect ViewRect)
     setWidgetXY(ui->LabelStaticResize,              Offset.width() + 480,                   Offset.height() + 167);
     setWidgetXY(ui->comboBoxResize,                 Offset.width() + 580,                   Offset.height() + 165);
     setWidgetXY(ui->LabelStaticCompress,            Offset.width() + 480,                   Offset.height() + 207);
-    setWidgetXY(ui->comboBoCompress,                Offset.width() + 580,                   Offset.height() + 205);
+    setWidgetXY(ui->ComboCompress,                  Offset.width() + 580,                   Offset.height() + 205);
 
     // Resize Table
     setWidgetSize(ui->TableFilesFound,              -1,                                     Offset.height() + 125);

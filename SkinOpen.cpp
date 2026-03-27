@@ -149,7 +149,8 @@ void SkinOpen::run(void)
 
     ReadXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
     File.setFileName(FileInfo.baseName() + (".skn"));
-    File.open(QIODevice::ReadOnly);
+    bool Result = File.open(QIODevice::ReadOnly);
+    Q_UNUSED(Result);
     File.seek(0);
     int Size = File.size();
     m_NextBlockOfData = 0;

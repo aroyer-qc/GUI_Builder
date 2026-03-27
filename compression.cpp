@@ -23,7 +23,7 @@
 
 // ************************************************************************************************
 
-uint8_t Compress(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset)
+uint8_t Compress(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int DataSize, int DataOffset, int MethodType)
 {
     Compression_e       Compression;                // Compression that will be selected
     int                 BestTotal;                  // Best total count reach from all selection
@@ -40,31 +40,64 @@ uint8_t Compress(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int D
     QVector<uint8_t>    Data_LZW_16;
     QVector<uint8_t>*   pData;
     lzw* pLZW_Method;
+    int TotalRLE_4 = INT_MAX;
+    int TotalRLE_8 = INT_MAX;
+    int TotalRLE_16 = INT_MAX;
+    int TotalRLE_32 = INT_MAX;
+    int TotalRLE_16_CLUT = INT_MAX;
+    int TotalRLE_32_CLUT = INT_MAX;
+    int TotalLZW_12 = INT_MAX;
+    int TotalLZW_13 = INT_MAX;
+    int TotalLZW_14 = INT_MAX;
+    int TotalLZW_15 = INT_MAX;
+    int TotalLZW_16 = INT_MAX;
 
     // Try each compression method
-    int TotalRLE_4       = CRLE_4_Method       (&Data_RLE_4,       pRawData, DataSize, DataOffset);
-    int TotalRLE_8       = CRLE_8_Method       (&Data_RLE_8,       pRawData, DataSize, DataOffset);
-    int TotalRLE_16      = CRLE_16_Method      (&Data_RLE_16,      pRawData, DataSize, DataOffset);
-    int TotalRLE_32      = CRLE_32_Method      (&Data_RLE_32,      pRawData, DataSize, DataOffset);
-    int TotalRLE_16_CLUT = CRLE_16_CLUT_Method (&Data_RLE_16_CLUT, pRawData, DataSize, DataOffset);
-    int TotalRLE_32_CLUT = CRLE_32_CLUT_Method (&Data_RLE_32_CLUT, pRawData, DataSize, DataOffset);
+    if((MethodType & METHOD_TYPE_RLE4) != 0)
+    {
+        TotalRLE_4       = CRLE_4_Method       (&Data_RLE_4,       pRawData, DataSize, DataOffset);
+    }    
 
-    pLZW_Method = new lzw(12);
-    int TotalLZW_12      = pLZW_Method->Compress(&Data_LZW_12,     pRawData, DataSize, DataOffset);
-    delete pLZW_Method;
-    pLZW_Method = new lzw(13);
-    int TotalLZW_13      = pLZW_Method->Compress(&Data_LZW_13,     pRawData, DataSize, DataOffset);
-    delete pLZW_Method;
-    pLZW_Method = new lzw(14);
-    int TotalLZW_14      = pLZW_Method->Compress(&Data_LZW_14,     pRawData, DataSize, DataOffset);
-    delete pLZW_Method;
-    pLZW_Method = new lzw(15);
-    int TotalLZW_15      = pLZW_Method->Compress(&Data_LZW_15,     pRawData, DataSize, DataOffset);
-    delete pLZW_Method;
-    pLZW_Method = new lzw(16);
-    int TotalLZW_16      = pLZW_Method->Compress(&Data_LZW_16,     pRawData, DataSize, DataOffset);
-    delete pLZW_Method;
+    if((MethodType & METHOD_TYPE_RLE8) != 0)
+    {
+        TotalRLE_8       = CRLE_8_Method       (&Data_RLE_8,       pRawData, DataSize, DataOffset);
+    }
 
+    if((MethodType & METHOD_TYPE_RLE16) != 0)
+    {
+        TotalRLE_16      = CRLE_16_Method      (&Data_RLE_16,      pRawData, DataSize, DataOffset);
+    }
+
+    if((MethodType & METHOD_TYPE_RLE32) != 0)
+    {
+        TotalRLE_32      = CRLE_32_Method      (&Data_RLE_32,      pRawData, DataSize, DataOffset);
+    }
+    
+    if((MethodType & METHOD_TYPE_RLE_CLUT) != 0)
+    {
+        TotalRLE_16_CLUT = CRLE_16_CLUT_Method (&Data_RLE_16_CLUT, pRawData, DataSize, DataOffset);
+        TotalRLE_32_CLUT = CRLE_32_CLUT_Method (&Data_RLE_32_CLUT, pRawData, DataSize, DataOffset);
+    }
+    
+    if((MethodType & METHOD_TYPE_LZW ) == METHOD_TYPE_LZW)
+    {
+        pLZW_Method = new lzw(12);
+        TotalLZW_12      = pLZW_Method->Compress(&Data_LZW_12,     pRawData, DataSize, DataOffset);
+        delete pLZW_Method;
+        pLZW_Method = new lzw(13);
+        TotalLZW_13      = pLZW_Method->Compress(&Data_LZW_13,     pRawData, DataSize, DataOffset);
+        delete pLZW_Method;
+        pLZW_Method = new lzw(14);
+        TotalLZW_14      = pLZW_Method->Compress(&Data_LZW_14,     pRawData, DataSize, DataOffset);
+        delete pLZW_Method;
+        pLZW_Method = new lzw(15);
+        TotalLZW_15      = pLZW_Method->Compress(&Data_LZW_15,     pRawData, DataSize, DataOffset);
+        delete pLZW_Method;
+        pLZW_Method = new lzw(16);
+        TotalLZW_16      = pLZW_Method->Compress(&Data_LZW_16,     pRawData, DataSize, DataOffset);
+        delete pLZW_Method;
+    }
+    
     // Select the best compression method
     BestTotal = DataSize;
     Compression = COMPRESSION_NONE;
