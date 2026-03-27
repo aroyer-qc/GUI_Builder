@@ -229,7 +229,7 @@ void MainWindow::PrintStructBody(QString& BaseName, QTextStream& Stream, int Arr
 
     Temp = QString("%1").arg(m_Scale.width() * VarSize);
     Stream << "    " << Temp.toUtf8() << ",\r\n";
-    Temp = QString("%1").arg(m_Scale.height());
+    Temp = QString("%1").arg(8 * VarSize);
     Stream << "    " << Temp.toUtf8() << ",\r\n";
     Stream << "    " << BaseName << ",\r\n";
     Temp = QString("%1").arg(ArraySize);
