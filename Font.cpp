@@ -237,14 +237,6 @@ void MainWindow::on_TableFont_currentCellChanged(int currentRow, int currentColu
 
 // ************************************************************************************************
 
-void MainWindow::on_TableFont_cellClicked(int row, int column)
-{
-    Q_UNUSED(column);
-    LoadFont(row);
-}
-
-// ************************************************************************************************
-
 void MainWindow::on_TableFont_cellDoubleClicked(int row, int column)
 {
     QString Item;
@@ -384,6 +376,23 @@ void MainWindow::on_checkBoxFixed_clicked(bool checked)
     else                m_SamplingFont[row] &= ~SAMPLING_FIXED_NUMERIC;
 
     LoadFont(row);
+}
+
+// ************************************************************************************************
+
+
+void MainWindow::on_ButtonConvertFont_clicked()
+{
+    on_TableFont_cellActivated(ui->TableFont->currentRow(), 0);
+}
+
+// ************************************************************************************************
+
+void MainWindow::on_TableFont_cellClicked(int row, int column)
+{
+    Q_UNUSED(column);
+
+    // save font into CPP File
 }
 
 // ************************************************************************************************

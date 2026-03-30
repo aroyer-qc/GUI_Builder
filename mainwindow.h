@@ -128,6 +128,7 @@ class MainWindow : public QMainWindow
         void on_ButtonRemoveFont_clicked();
         void on_ButtonUpFont_clicked();
         void on_ButtonDownFont_clicked();
+        void on_ButtonConvertFont_clicked();
         void on_TableFont_cellActivated(int row, int column);
         void on_TableFont_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
         void on_TableFont_cellClicked(int row, int column);
@@ -246,9 +247,9 @@ class MainWindow : public QMainWindow
         void     InitConverter           ();
         void     ResetConverterGUI       ();
         void     ClearSceneConverter     ();
-        int      Extract                 (QVector<uint8_t>* pOutData, int Index);
-        void     PrintArrayBody          (QTextStream& Stream, const QVector<uint8_t>& Data, int Index);
-        void     PrintStructBody         (QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String);
+        int      Extract                 (QVector<uint8_t>* pOutData, int Index, int* pCompressionIndex);
+        void     PrintArrayBody          (QTextStream& Stream, const QVector<uint8_t>& Data, QString& BaseName, int IndexFormat, int& CompressionIndex);
+        void     PrintStructBody         (QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String, int CompressionIndex);
 
         void     Find                    ();
         void     AdjustTabConverter      (QSize Offset, QRect ViewRect);

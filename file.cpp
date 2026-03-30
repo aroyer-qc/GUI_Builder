@@ -251,6 +251,6 @@ bool MainWindow::SaveSkinAndClearData()
 void MainWindow::setSkinHasUnsavedData(bool State)
 {
     m_IsSkinHasUnsavedData = State;
-    if(State)   this->setWindowTitle("* Skin Builder");
-    else        this->setWindowTitle("Skin Builder");
+    if(State)   this->setWindowTitle("* GUI Builder");
+    else        this->setWindowTitle("GUI Builder");
 }

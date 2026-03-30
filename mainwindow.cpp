@@ -376,4 +376,3 @@ void MainWindow::on_SetNewPathAudio(QString Path)
     m_AudioDir.setPath(Path);
     SetConfigToXML();
 }
-
