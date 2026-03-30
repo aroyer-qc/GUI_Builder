@@ -25,6 +25,12 @@
 #include <QPixmap>
 #include <QRegExp>
 
+
+struct FontMeta {
+    QString Name;
+    int Size;
+};
+
 // ************************************************************************************************
 // *
 // *  Slot
@@ -381,17 +387,10 @@ void MainWindow::on_checkBoxFixed_clicked(bool checked)
 
 // ************************************************************************************************
 
-
 void MainWindow::on_ButtonConvertFont_clicked()
 {
-    on_TableFont_cellActivated(ui->TableFont->currentRow(), 0);
-}
-
-// ************************************************************************************************
-
-void MainWindow::on_TableFont_cellClicked(int row, int column)
-{
-    Q_UNUSED(column);
+    QVector<uint8_t>* pRawData;
+    QVector<FontMeta> m_FontMetaList;
 
     // Save font into CPP File
     QTableWidgetItem* item = ui->TableFont->item(row, 0);
@@ -431,9 +430,215 @@ void MainWindow::on_TableFont_cellClicked(int row, int column)
         Stream << "#include \"digini_cfg.h\"\r\n";
         Stream << "#ifdef DIGINI_USE_GRAFX\r\n";
         Stream << "#include \"lib_grafx.h\"\r\n";
-        Stream << "#include \"lib_compression.h\"\r\n\r\n";
-    }
+//        Stream << "#include \"lib_compression.h\"\r\n\r\n";
+        
+        
+        // Create Raw data before write
+        Append_uint16(pRawData, (uint16_t)m_FontCount);                 // Put font count in compressed data
+        m_TotalCharCount = 0;                                           // Reset value of the character count
 
+        for(int Count = 0; Count < m_FontCount; Count++)
+        {
+            m_OffsetFontHeight.append(pRawData->size());                // Kept offset so we can modifed then later
+            pRawData->append(0x00);                                     // Reserve space for height for this font
+            pRawData->append(0x00);                                     // Reserve space for interline for this font
+        }
+
+        for(int Count = 0; Count < m_FontCount; Count++)
+        {
+            m_InFontCharCount = 0;
+
+            m_pFont       = &m_pFontInfo->at(Count);
+            m_pFontMetric = new QFontMetrics(*m_pFont);
+
+            FontMeta Meta;
+            Meta.Name = m_pFont->family();
+            Meta.Size = m_pFont->pointSize();
+            m_FontMetaList.append(Meta);
+
+            // Put font count in compressed data
+            Append_uint32(pRawData, Count);                             // For now we use count number as ID
+
+            // Reserve space in compressed data for character count
+            uint32_t OffsetFontCharCountHeader = pRawData->size();      // Keep offset for later
+            pRawData->append(0x00);                                     // Value rewritten when count is knowned
+
+            // Sample all alpha character
+            if((m_pFontSamplingInfo->at(Count) & SAMPLING_ALPHA) != 0)
+            {
+                for(uint32_t CharCount = 'a'; CharCount <= 'z'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = 'A'; CharCount <= 'Z'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+            }
+
+            // Sample all numeric character
+            if((m_pFontSamplingInfo->at(Count) & SAMPLING_NUMERIC) != 0)
+            {
+                int MaxX;
+
+                for(uint32_t CharCount = '0'; CharCount <= '9'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+            }
+
+            // Sample all symbol character
+            if((m_pFontSamplingInfo->at(Count) & SAMPLING_SYMBOL) != 0)
+            {
+                for(uint32_t CharCount = ' '; CharCount <= '/'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = ':'; CharCount <= '@'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = '['; CharCount <= '`'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = '{'; CharCount <= '~'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+            }
+
+            // Sample all extra symbol character
+            if((m_pFontSamplingInfo->at(Count) & SAMPLING_EXTRA_SYMBOL) != 0)
+            {
+                ExtractFontInfo(pRawData, 153); //'tm'
+                ExtractFontInfo(pRawData, 169); //'©'
+                ExtractFontInfo(pRawData, 174); //'®'
+                ExtractFontInfo(pRawData, 176); //'°'
+                ExtractFontInfo(pRawData, 185); //'±'
+            }
+
+            // Sample all latin character
+            if((m_pFontSamplingInfo->at(Count) & SAMPLING_LATIN) != 0)
+            {
+                for(uint32_t CharCount = 192/*'À'*/; CharCount <= 214/*'Ö'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = 216/*'Ø'*/; CharCount <= 246/*'ö'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                for(uint32_t CharCount = 248/*'ø'*/; CharCount <= 254/*'þ'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+            }
+
+            pRawData->replace(m_OffsetFontCharCountHeader, m_InFontCharCount); // Write character count
+        }
+        
+        // extract data and write File.
+        
+    }
+}
+
+
+#if 0 
+
+typedef struct
+{
+    uint8_t  code;        // ASCII ou extended
+    uint8_t  width;
+    uint8_t  height;
+    uint8_t  bearingX;
+    uint8_t  bearingY;
+    uint8_t  advance;
+    uint16_t bitmapSize;  // taille du bitmap en octets
+    const uint8_t *bitmap;
+} FontChar_t;
+
+typedef struct
+{
+    uint8_t     height;        // rempli après extraction
+    uint8_t     interline;     // rempli après extraction
+    uint32_t    fontID;        // Count dans ton code
+    uint8_t     charCount;     // nombre de caractères
+    const FontChar_t *chars;   // tableau de caractères
+} FontEntry_t;
+
+
+typedef struct
+{
+    uint16_t      fontCount;
+    const FontEntry_t *fonts;
+} FontFile_t;
+
+
+
+typedef enum
+{
+    FONT_Roboto_12,
+    FONT_Roboto_16,
+    FONT_Arial_10,
+    FONT_Arial_14,
+    FONT_Count
+} FontId_t;
+
+
+const uint8_t g_FontRawData[] =
+{
+    0x02, 0x00,  // fontCount = 2
+    0x0C, 0x02,  // height/interline font 0
+    0x10, 0x03,  // height/interline font 1
+    ...
+    // tout ton pRawData ici
+};
+
+const FontEntry_t g_FontTable[FONT_Count] =
+{
+    [FONT_Roboto_12] =
+    {
+        .height    = 12,
+        .interline = 2,
+        .fontID    = 0,
+        .charCount = 96,
+        .chars     = g_Font0_Chars
+    },
+
+    [FONT_Roboto_16] =
+    {
+        .height    = 16,
+        .interline = 3,
+        .fontID    = 1,
+        .charCount = 96,
+        .chars     = g_Font1_Chars
+    }
+};
+
+
+#ifndef FONT_DATA_H
+#define FONT_DATA_H
+
+#include <stdint.h>
+
+typedef enum
+{
+    FONT_Roboto_12,
+    FONT_Roboto_16,
+    FONT_Arial_10,
+    FONT_Arial_14,
+    FONT_Count
+} FontId_t;
+
+extern const uint8_t g_FontRawData[];
+extern const FontEntry_t g_FontTable[FONT_Count];
+
+#endif
+
+
+#include "FontData.h"
+
+const uint8_t g_FontRawData[] =
+{
+    // ton pRawData ici
+};
+
+const FontChar_t g_Font0_Chars[] =
+{
+    // offsets dans g_FontRawData
+};
+
+const FontChar_t g_Font1_Chars[] =
+{
+    // offsets dans g_FontRawData
+};
+
+const FontEntry_t g_FontTable[FONT_Count] =
+{
+    { 12, 2, 0, 96, g_Font0_Chars },
+    { 16, 3, 1, 96, g_Font1_Chars },
+};
+
+
+#endif
+
+// ************************************************************************************************
+
+void MainWindow::on_TableFont_cellClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    LoadFont(row);
 }
 
 // ************************************************************************************************
