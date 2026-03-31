@@ -55,6 +55,55 @@ const int BytesPerPixel[19] =
         4,  // 18
 };
 
+
+
+struct FontSize_t
+{
+    uint8_t        Width;
+    uint8_t        Height;
+};
+
+struct FontInfo_t
+{
+    uint8_t        Height;
+    uint8_t        Interline;
+    uint8_t        Width;
+};
+
+struct FontDescriptor_t
+{
+    int8_t         LeftBearing;
+    int8_t         RightBearing;
+    FontSize_t     Size;                                    // Width and Height pixel zone
+    uint8_t        Width;                                   // Width increment
+    int8_t         OffsetY;                                 // Offset in Y for this character
+    uint16_t       TotalSize;
+    uint32_t       Address;
+};
+
+struct FontListInfo_t
+{
+    QString Name;
+    int Size;
+};
+
+
+/*
+struct CharMeta
+{
+    uint32_t Offset;
+    uint16_t BitmapSize;
+    uint8_t  Code;
+    uint8_t  Width;
+    uint8_t  Height;
+    uint8_t  BearingX;
+    uint8_t  BearingY;
+    uint8_t  Advance;
+};
+*/
+
+
+
 namespace Ui {
 class MainWindow;
 }
@@ -236,8 +285,8 @@ class MainWindow : public QMainWindow
         void     DisplayExample          (int row);
         void     checkValidFont          ();
                  // Generate code file
-        void     ExtractFontInfo         (QVector<uint8_t>* pFileRawData, uint8_t Char);
-        void     SaveEachCharFont        (QVector<uint8_t>* pFileRawData, uint8_t Char);
+        void     InsertEmptyFontInfo     (QVector<uint8_t>* pFileRawData, uint8_t Char);
+        void     SaveEachCharFont        (QVector<uint8_t>* pFileRawData, uint8_t Char, int FontIndex);
 
         // Function for Audio
         void     InitAudio               ();
@@ -339,6 +388,7 @@ class MainWindow : public QMainWindow
         const QFont*                m_pFont;
         QFontMetrics*               m_pFontMetric;
         uint8_t                     m_MaxX_FixedFont;
+        QVector<QVector<FontDescriptor_t>> m_FontDescriptorList;
 
 
         // Variable for Audio Tab
