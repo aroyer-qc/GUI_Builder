@@ -235,6 +235,9 @@ class MainWindow : public QMainWindow
         void     CheckBoxActivation      (bool state);
         void     DisplayExample          (int row);
         void     checkValidFont          ();
+                 // Generate code file
+        void     ExtractFontInfo         (QVector<uint8_t>* pFileRawData, uint8_t Char);
+        void     SaveEachCharFont        (QVector<uint8_t>* pFileRawData, uint8_t Char);
 
         // Function for Audio
         void     InitAudio               ();
@@ -322,6 +325,21 @@ class MainWindow : public QMainWindow
         QVector<uint8_t>            m_SamplingFont;
         ComboBoxDelegate*           m_pFontComboBoxDelegate;
         bool                        m_IsAllFontValid;
+            // Save generated code file
+        int                         m_TotalCharCount;
+        int                         m_InFontCharCount;
+        QVector<uint32_t>           m_OffsetFontHeader;
+        QVector<uint8_t>            m_MinX;
+        QVector<uint8_t>            m_MaxX;
+        QVector<uint8_t>            m_MinY;
+        QVector<uint8_t>            m_MaxY;
+        QVector<uint8_t>            m_Width;
+        QVector<int8_t>             m_LeftBearing;
+        QVector<int8_t>             m_RightBearing;
+        const QFont*                m_pFont;
+        QFontMetrics*               m_pFontMetric;
+        uint8_t                     m_MaxX_FixedFont;
+
 
         // Variable for Audio Tab
         QDir                        m_AudioDir;

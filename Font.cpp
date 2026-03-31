@@ -387,37 +387,189 @@ void MainWindow::on_checkBoxFixed_clicked(bool checked)
 
 // ************************************************************************************************
 
+struct CharMeta
+{
+    uint32_t Offset;
+    uint16_t BitmapSize;
+    uint8_t  Code;
+    uint8_t  Width;
+    uint8_t  Height;
+    uint8_t  BearingX;
+    uint8_t  BearingY;
+    uint8_t  Advance;
+};
+
 void MainWindow::on_ButtonConvertFont_clicked()
 {
-    QVector<uint8_t>* pRawData;
-    QVector<FontMeta> m_FontMetaList;
+    QVector<uint8_t> RawData;
+    QVector<FontMeta> FontMetaList;
+    QString BaseName = "StaticFont";
+    uint32_t OffsetFontCharCountHeader;
+    QVector<uint32_t> OffsetFontHeight;
+    QVector<QVector<CharMeta>> FontCharMeta;
 
-    // Save font into CPP File
-    QTableWidgetItem* item = ui->TableFont->item(row, 0);
-    QString FileName = m_CurrentDir.absoluteFilePath(item->text());
-    QFileInfo FileInfo(FileName);
-    QString BaseName = FileInfo.baseName();                     // Get the file name without extension
-    QString Temp;
-
-    Q_UNUSED(column);
-
-    // Replace '-' or ' ' by '_' with regex
-    QRegExp Regex("[- ]+");
-    int s = -1;
-    while((s = Regex.indexIn(BaseName, s + 1)) >= 0)
+    // Create Raw data before write
+    Append_uint16(&RawData, (uint16_t)m_Font.count());              // Put font count in compressed data
+    for(int Count = 0; Count < m_Font.count(); Count++)
     {
-        BaseName[s] = '_';
+        OffsetFontHeight.append(RawData.size());                    // Kept offset so we can modifed then later
+        RawData.append(0x00);                                       // Reserve space for height for this font
+        RawData.append(0x00);                                       // Reserve space for interline for this font
+    }
+    m_TotalCharCount = 0;                                           // Reset value of the character count
+
+    for(int Count = 0; Count < m_Font.count(); Count++)
+    {
+        m_InFontCharCount = 0;
+        m_pFont       = &m_Font.at(Count);
+        m_pFontMetric = new QFontMetrics(*m_pFont);
+
+        FontMeta Meta;
+        Meta.Name = m_pFont->family();
+        Meta.Size = m_pFont->pointSize();
+        FontMetaList.append(Meta);
+
+        // Put font count in compressed data
+        Append_uint32(&RawData, Count);                             // For now we use count number as ID
+
+        // Reserve space in compressed data for character count
+        OffsetFontCharCountHeader = RawData.size();                 // Keep offset for later
+        RawData.append(0x00);                                       // Value rewritten when count is knowned
+
+        // Sample all alpha character
+        if((m_SamplingFont.at(Count) & SAMPLING_ALPHA) != 0)
+        {
+            for(uint32_t CharCount = 'a'; CharCount <= 'z'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = 'A'; CharCount <= 'Z'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+        }
+
+        // Sample all numeric character
+        if((m_SamplingFont.at(Count) & SAMPLING_NUMERIC) != 0)
+        {
+            int MaxX;
+
+            for(uint32_t CharCount = '0'; CharCount <= '9'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+        }
+
+        // Sample all symbol character
+        if((m_SamplingFont.at(Count) & SAMPLING_SYMBOL) != 0)
+        {
+            for(uint32_t CharCount = ' '; CharCount <= '/'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = ':'; CharCount <= '@'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = '['; CharCount <= '`'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = '{'; CharCount <= '~'; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+        }
+
+        // Sample all extra symbol character
+        if((m_SamplingFont.at(Count) & SAMPLING_EXTRA_SYMBOL) != 0)
+        {
+            ExtractFontInfo(&RawData, 153); //'tm'
+            ExtractFontInfo(&RawData, 169); //'©'
+            ExtractFontInfo(&RawData, 174); //'®'
+            ExtractFontInfo(&RawData, 176); //'°'
+            ExtractFontInfo(&RawData, 185); //'±'
+        }
+
+        // Sample all latin character
+        if((m_SamplingFont.at(Count) & SAMPLING_LATIN) != 0)
+        {
+            for(uint32_t CharCount = 192/*'À'*/; CharCount <= 214/*'Ö'*/; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = 216/*'Ø'*/; CharCount <= 246/*'ö'*/; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+            for(uint32_t CharCount = 248/*'ø'*/; CharCount <= 254/*'þ'*/; CharCount++) ExtractFontInfo(&RawData, char(CharCount));
+        }
+
+        RawData.replace(OffsetFontCharCountHeader, m_InFontCharCount); // Write character count
     }
 
-    // Replace all numeric from the beginning of the name
-    Regex.setPattern("[^0-9]+[_A-Za-z0-9]+");
-    if(Regex.indexIn(BaseName, 0) >= 0)
+    m_TotalCharCount = 0;                                      // Reset value of the character count
+
+    for(int Count = 0; Count < m_Font.count(); Count++)
     {
-        BaseName = Regex.cap(0);
+        uint32_t StartOffsetFont = m_TotalCharCount;
+        uint32_t StartNumericalOffsetFont;
+        uint8_t MinY = 0xFF;
+        uint8_t MaxY = 0x00;
+
+        m_pFont       = &m_Font.at(Count);
+        m_pFontMetric = new QFontMetrics(*m_pFont);
+        m_MaxX_FixedFont = 0;
+
+        // Sample all alpha character
+        if((m_SamplingFont.at(Count) & SAMPLING_ALPHA) != 0)
+        {
+            for(uint32_t CharCount = 'a'; CharCount <= 'z'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = 'A'; CharCount <= 'Z'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+        }
+
+        // Sample all numeric character
+        if((m_SamplingFont.at(Count) & SAMPLING_NUMERIC) != 0)
+        {
+            StartNumericalOffsetFont = m_TotalCharCount;
+
+            for(uint32_t CharCount = '0'; CharCount <= '9'; CharCount++)
+            {
+                SaveEachCharFont(&RawData, char(CharCount));
+            }
+        }
+
+        // Sample all symbol character
+        if((m_SamplingFont.at(Count) & SAMPLING_SYMBOL) != 0)
+        {
+            for(uint32_t CharCount = ' '; CharCount <= '/'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = ':'; CharCount <= '@'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = '['; CharCount <= '`'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = '{'; CharCount <= '~'; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+        }
+
+        // Sample all extra symbol character
+        if((m_SamplingFont.at(Count) & SAMPLING_EXTRA_SYMBOL) != 0)
+        {
+            SaveEachCharFont(&RawData, 153); //'tm'
+            SaveEachCharFont(&RawData, 169); //'©'
+            SaveEachCharFont(&RawData, 174); //'®'
+            SaveEachCharFont(&RawData, 176); //'°'
+            SaveEachCharFont(&RawData, 185); //'±'
+        }
+
+        // Sample all latin character
+        if((m_SamplingFont.at(Count) & SAMPLING_LATIN) != 0)
+        {
+            for(uint32_t CharCount = 192/*'À'*/; CharCount <= 214/*'Ö'*/; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = 216/*'Ø'*/; CharCount <= 246/*'ö'*/; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+            for(uint32_t CharCount = 248/*'ø'*/; CharCount <= 254/*'þ'*/; CharCount++) SaveEachCharFont(&RawData, char(CharCount));
+        }
+
+        // Rescan for lowest Y minimum and
+        for(uint32_t CharCount = StartOffsetFont; CharCount < m_TotalCharCount; CharCount++)
+        {
+            if(MinY > m_MinY[CharCount]) MinY = m_MinY[CharCount];
+            if(MaxY < m_MaxY[CharCount]) MaxY = m_MaxY[CharCount];
+        }
+
+        // Write the new height for the font
+        RawData.replace(OffsetFontHeight[Count], (MaxY - MinY) + 1);
+
+
+        // Rescan numerical value for max width
+        //if((m_pFontSamplingInfo->at(Count) & SAMPLING_FIXED_NUMERIC) != 0)
+        {
+            for(uint32_t CharCount = StartNumericalOffsetFont; CharCount < (StartNumericalOffsetFont) + 10; CharCount++)
+            {
+                RawData.replace( m_OffsetFontHeader[CharCount] + 7, m_MaxX_FixedFont);
+            }
+        }
+
+        // We subtract this absolute minimum from height, and all other minimum and maximum
+        for(uint32_t CharCount = StartOffsetFont; CharCount < m_TotalCharCount; CharCount++)
+        {
+            RawData.replace(m_OffsetFontHeader[CharCount] + 8,  m_MinY[CharCount] -= MinY);
+        }
     }
 
-    // Stream data to file
-    QFile File(BaseName + ".cpp");
+
+    // Create the header file
+    QFile File(BaseName + ".h");
+
     if(File.open(QIODevice::WriteOnly))
     {
         QTextStream Stream(&File);
@@ -428,91 +580,301 @@ void MainWindow::on_ButtonConvertFont_clicked()
 
         Stream << "#include <stdint.h>\r\n";
         Stream << "#include \"digini_cfg.h\"\r\n";
+        Stream << "#ifdef DIGINI_USE_GRAFX\r\n\r\n";
+
+        Stream << "//-------------------------------------------\r\n\r\n";
+       
+        Stream << "struct FONT_Char_t\r\n{\r\n";
+        Stream << "    uint8_t  Code;\r\n";
+        Stream << "    uint8_t  Width;\r\n";
+        Stream << "    uint8_t  Height;\r\n";
+        Stream << "    uint8_t  BearingX;\r\n";
+        Stream << "    uint8_t  BearingY;\r\n";
+        Stream << "    uint8_t  Advance;\r\n";
+        Stream << "    uint16_t BitmapSize;\r\n";
+        Stream << "    const uint8_t* pBitmap;\r\n";
+        Stream << "};\r\n\r\n";
+
+        Stream << "struct FONT_Entry_t\r\n{\r\n";
+        Stream << "    uint8_t        Height;\r\n";
+        Stream << "    uint8_t        Interline;\r\n";
+        Stream << "    uint32_t       FontID;\r\n";
+        Stream << "    uint8_t        CharCount;\r\n";
+        Stream << "    const FontChar_t* pChars;\r\n";
+        Stream << "};\r\n\r\n";
+
+        Stream << "struct FONT_File_t\r\n{\r\n";
+        Stream << "    uint16_t           FontCount;\r\n";
+        Stream << "    const FontEntry_t* pFonts;\r\n";
+        Stream << "};\r\n\r\n";
+
+        Stream << "//-------------------------------------------\r\n\r\n";
+        
+        Stream << "enum FONT_ListID_t\r\n{\r\n";
+
+        for(int i = 0; i < FontMetaList.size(); i++)
+        {
+            QString CleanName = FontMetaList[i].Name;
+            CleanName.replace(" ", "_");
+            CleanName.replace("-", "_");
+
+            Stream << "    FONT_" 
+                   << CleanName.toUpper() 
+                   << "_" 
+                   << FontMetaList[i].Size;
+
+            if(i < FontMetaList.size() - 1)
+            {
+                Stream << ",\r\n";
+            }
+            else
+            {
+                Stream << "\r\n";
+            }
+        }
+
+        Stream << "};\r\n\r\n";
+
+        Stream << "//-------------------------------------------\r\n\r\n";
+
+        Stream << "extern const uint8_t FONT_RawData[];\r\n";
+        Stream << "extern const FontEntry_t FONT_Table[];\r\n\r\n";
+        
+        Stream << "//-------------------------------------------\r\n\r\n";
+        Stream << "#endif // DIGINI_USE_GRAFX\r\n";
+
+        File.close();
+    }
+        
+    // Create th CPP file
+    File.setFileName(BaseName + ".cpp");
+
+    if(File.open(QIODevice::WriteOnly))
+    {
+        QTextStream Stream(&File);
+
+        Stream << "//-------------------------------------------\r\n";
+        Stream << "// This file was autogenerated by GUI Builder\r\n";
+        Stream << "//-------------------------------------------\r\n\r\n";
+        Stream << "#include <stdint.h>\r\n";
+        Stream << "#include \"digini_cfg.h\"\r\n";
         Stream << "#ifdef DIGINI_USE_GRAFX\r\n";
-        Stream << "#include \"lib_grafx.h\"\r\n";
-//        Stream << "#include \"lib_compression.h\"\r\n\r\n";
-        
-        
-        // Create Raw data before write
-        Append_uint16(pRawData, (uint16_t)m_FontCount);                 // Put font count in compressed data
-        m_TotalCharCount = 0;                                           // Reset value of the character count
+        Stream << "#include \"" << BaseName << ".h\"\r\n\r\n";
+        Stream << "//-------------------------------------------\r\n\r\n";
 
-        for(int Count = 0; Count < m_FontCount; Count++)
+        // Raw data array
+        Stream << "const uint8_t FONT_RawData[] =\r\n";
+        Stream << "{\r\n";
+
+        Stream << "    ";
+
+        for(int i = 0; i < RawData.size(); i++)
         {
-            m_OffsetFontHeight.append(pRawData->size());                // Kept offset so we can modifed then later
-            pRawData->append(0x00);                                     // Reserve space for height for this font
-            pRawData->append(0x00);                                     // Reserve space for interline for this font
+            uint8_t value = RawData.at(i);
+
+            Stream << "0x"
+                   << QString("%1").arg(value, 2, 16, QLatin1Char('0')).toUpper();
+
+            if(i < RawData.size() - 1)
+            {
+                Stream << ", ";
+            }
+
+            if(((i + 1) % 16) == 0 && (i < RawData.size() - 1))
+            {
+                Stream << "\r\n    ";
+            }
         }
 
-        for(int Count = 0; Count < m_FontCount; Count++)
+        Stream << "\r\n};\r\n\r\n";
+
+        for(int f = 0; f < FontMetaList.size(); f++)
         {
-            m_InFontCharCount = 0;
+            Stream << "const FONT_Char_t FONT_" << f << "_Chars[] =\r\n";
+            Stream << "{\r\n";
 
-            m_pFont       = &m_pFontInfo->at(Count);
-            m_pFontMetric = new QFontMetrics(*m_pFont);
+            const auto &CharList = FontCharMeta[f];
 
-            FontMeta Meta;
-            Meta.Name = m_pFont->family();
-            Meta.Size = m_pFont->pointSize();
-            m_FontMetaList.append(Meta);
-
-            // Put font count in compressed data
-            Append_uint32(pRawData, Count);                             // For now we use count number as ID
-
-            // Reserve space in compressed data for character count
-            uint32_t OffsetFontCharCountHeader = pRawData->size();      // Keep offset for later
-            pRawData->append(0x00);                                     // Value rewritten when count is knowned
-
-            // Sample all alpha character
-            if((m_pFontSamplingInfo->at(Count) & SAMPLING_ALPHA) != 0)
+            for(int c = 0; c < CharList.size(); c++)
             {
-                for(uint32_t CharCount = 'a'; CharCount <= 'z'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = 'A'; CharCount <= 'Z'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
+                const CharMeta &M = CharList[c];
+
+                Stream << "    { "
+                       << (int)M.Code       << ", "
+                       << (int)M.Width      << ", "
+                       << (int)M.Height     << ", "
+                       << (int)M.BearingX   << ", "
+                       << (int)M.BearingY   << ", "
+                       << (int)M.Advance    << ", "
+                       << M.BitmapSize      << ", "
+                       << "&FONT_RawData["  << M.Offset << "] }";
+
+                if(c < CharList.size() - 1)
+                {
+                    Stream << ",";
+                }
+                
+                Stream << "\r\n";
             }
 
-            // Sample all numeric character
-            if((m_pFontSamplingInfo->at(Count) & SAMPLING_NUMERIC) != 0)
-            {
-                int MaxX;
-
-                for(uint32_t CharCount = '0'; CharCount <= '9'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-            }
-
-            // Sample all symbol character
-            if((m_pFontSamplingInfo->at(Count) & SAMPLING_SYMBOL) != 0)
-            {
-                for(uint32_t CharCount = ' '; CharCount <= '/'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = ':'; CharCount <= '@'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = '['; CharCount <= '`'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = '{'; CharCount <= '~'; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-            }
-
-            // Sample all extra symbol character
-            if((m_pFontSamplingInfo->at(Count) & SAMPLING_EXTRA_SYMBOL) != 0)
-            {
-                ExtractFontInfo(pRawData, 153); //'tm'
-                ExtractFontInfo(pRawData, 169); //'©'
-                ExtractFontInfo(pRawData, 174); //'®'
-                ExtractFontInfo(pRawData, 176); //'°'
-                ExtractFontInfo(pRawData, 185); //'±'
-            }
-
-            // Sample all latin character
-            if((m_pFontSamplingInfo->at(Count) & SAMPLING_LATIN) != 0)
-            {
-                for(uint32_t CharCount = 192/*'À'*/; CharCount <= 214/*'Ö'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = 216/*'Ø'*/; CharCount <= 246/*'ö'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-                for(uint32_t CharCount = 248/*'ø'*/; CharCount <= 254/*'þ'*/; CharCount++) ExtractFontInfo(pRawData, char(CharCount));
-            }
-
-            pRawData->replace(m_OffsetFontCharCountHeader, m_InFontCharCount); // Write character count
+            Stream << "};\r\n\r\n";
         }
-        
-        // extract data and write File.
-        
+
+        //---------------------------------------------------------
+        // Font table
+        //---------------------------------------------------------
+
+        Stream << "const FontEntry_t FONT_Table[] =\r\n";
+        Stream << "{\r\n";
+
+        for(int f = 0; f < FontMetaList.size(); f++)
+        {
+            Stream << "    { "
+              //     << (int)FontHeights[f]     << ", "             // TODO fix
+              //     << (int)FontInterlines[f]  << ", "
+                   << f                       << ", "
+                   << FontCharMeta[f].size()  << ", "
+                   << "FONT_" << f << "_Chars }";
+
+            if(f < FontMetaList.size() - 1)
+            {
+                Stream << ",";
+            }
+            
+            Stream << "\r\n";
+        }
+
+        Stream << "};\r\n\r\n";
+
+        Stream << "//-------------------------------------------\r\n\r\n";
+
+        Stream << "#endif // DIGINI_USE_GRAFX\r\n";
+        File.close();
     }
 }
 
+
+void MainWindow::ExtractFontInfo(QVector<uint8_t>* pRawData, uint8_t Char)
+{
+    m_OffsetFontHeader.append(pRawData->size());          // Kept the offset for this character header
+    pRawData->append(Char);                               // 0     - Put the character value
+    Append_uint16(pRawData, (uint16_t)0x0000);            // 1-2   - Reserve space for data size
+    pRawData->append(0x00);                               // 3     - Reserve space for left bearing
+    pRawData->append(0x00);                               // 4     - Reserve space for right bearing
+    pRawData->append(0x00);                               // 5     - Reserve space for width Pixel
+    pRawData->append(0x00);                               // 6     - Reserve space for height Pixel
+    pRawData->append(0x00);                               // 7     - Reserve space for width
+    pRawData->append(0x00);                               // 8     - Reserve space for Offset Y
+    pRawData->append(0x00);                               // 9     - Reserve space for compression
+    Append_uint32(pRawData, (uint32_t)0x00000000);        // 10-13 - Reserve space for offset in raw data
+
+    m_TotalCharCount++;
+    m_InFontCharCount++;
+}
+
+void MainWindow::SaveEachCharFont(QVector<uint8_t>* pRawData, uint8_t Char)
+{
+    QPixmap* pPix = new QPixmap(SAMPLING_BOX_X_SIZE, SAMPLING_BOX_Y_SIZE);
+    QPainter* pPainter = new QPainter(pPix);
+    QImage Image;
+    uint16_t Count = 0;
+    uint8_t CompressionMethod;
+    QVector<uint8_t> InputData;
+    uint32_t OffsetFontHeader = m_OffsetFontHeader[m_TotalCharCount];
+    int     Size;
+    bool FoundPixel = false;
+
+    // Add new min/max X
+    m_MinX.append(SAMPLING_BOX_X_SIZE);
+    m_MaxX.append(0);
+    m_MinY.append(SAMPLING_BOX_Y_SIZE);
+    m_MaxY.append(0);
+    m_Width.append(m_pFontMetric->horizontalAdvance(QChar(Char)));
+    m_LeftBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
+    m_RightBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
+
+    if(Char >= '0' && Char <='9')
+    {
+        if(m_pFontMetric->horizontalAdvance(QChar(Char)) > m_MaxX_FixedFont)
+        {
+            m_MaxX_FixedFont = m_pFontMetric->horizontalAdvance(QChar(Char));
+        }
+    }
+
+    // Prepare Pix map for character drawing white in black
+    pPainter->setPen(Qt::white);
+    pPainter->fillRect(0, 0, SAMPLING_BOX_X_SIZE, SAMPLING_BOX_Y_SIZE, Qt::black);
+    pPainter->setFont(*m_pFont);
+    pPainter->drawText(QPoint(20, m_pFontMetric->height()), QString("%1").arg(Char));
+    Image = pPix->toImage();
+
+    // Found the sampling rectangle size
+    for(uint8_t y = 0; y < SAMPLING_BOX_Y_SIZE; y++)
+    {
+        for(uint8_t x = 0; x < SAMPLING_BOX_X_SIZE; x++)
+        {
+            QRgb ColorPixel;
+
+            ColorPixel = Image.pixel(x, y);
+            if((ColorPixel & 0x00FFFFFF) != 0x00000000)
+            {
+                FoundPixel = true;
+                if(x < m_MinX[m_TotalCharCount]) m_MinX[m_TotalCharCount] = x;
+                if(x > m_MaxX[m_TotalCharCount]) m_MaxX[m_TotalCharCount] = x;
+                if(y < m_MinY[m_TotalCharCount]) m_MinY[m_TotalCharCount] = y;
+                if(y > m_MaxY[m_TotalCharCount]) m_MaxY[m_TotalCharCount] = y;
+            }
+        }
+    }
+
+    // Write the raw data offset address in character structure only if character has data (example 'SPACE' has no data)
+    if(FoundPixel == true)
+    {
+        Replace_uint32(pRawData, OffsetFontHeader + 10, pRawData->size());      // Write raw data offset for this character
+    }
+
+    // Copy rectangle found data in linear data for compression
+    for(uint8_t y = m_MinY[m_TotalCharCount]; y <= m_MaxY[m_TotalCharCount]; y++)
+    {
+        for(uint8_t x = m_MinX[m_TotalCharCount]; x <= m_MaxX[m_TotalCharCount]; x++)
+        {
+            uint8_t Data;
+
+            Data = qGray(Image.pixel(x, y));
+            InputData.append(Data);                                                 // Put data into temporary buffer for compression if true
+            Count++;
+        }
+    }
+
+    if(Count)
+    {
+        // Copy raw data from InputData to pRawData
+        for(uint16_t i = 0; i < Count; i++)
+        {
+            pRawData->append(InputData[i]);
+        }
+
+        // Write datasize for this font
+        Replace_uint16(pRawData, OffsetFontHeader + 1, Count);
+
+        int8_t lb = m_pFontMetric->leftBearing(QChar(Char));
+
+        if(lb < 0)
+        {
+            lb--;
+            lb++;
+        }
+
+        pRawData->replace(OffsetFontHeader + 3, uint8_t(lb));
+        int8_t rb = m_pFontMetric->rightBearing(QChar(Char));
+        pRawData->replace(OffsetFontHeader + 4, uint8_t(rb));
+        pRawData->replace(OffsetFontHeader + 5,  (m_MaxX[m_TotalCharCount] - m_MinX[m_TotalCharCount]) + 1);
+        pRawData->replace(OffsetFontHeader + 6,  (m_MaxY[m_TotalCharCount] - m_MinY[m_TotalCharCount]) + 1);
+    }
+
+    pRawData->replace(OffsetFontHeader + 7,  m_pFontMetric->horizontalAdvance(QChar(Char)));     // outside because space need width but has no data
+    m_TotalCharCount++;
+}
 
 #if 0 
 

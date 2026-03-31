@@ -148,10 +148,6 @@ void MainWindow::ClearAllData()
     m_Font.clear();             // Remove all font info structure
     m_SamplingFont.clear();     // Remove all Sampling info structure
 
-    // Font
-    m_Font.clear();             // Remove all font info structure
-    m_SamplingFont.clear();     // Remove all Sampling info structure
-
     // Label
     m_LabelInfo.clear();       // Remove all Label info structure
     m_RawLabel.clear();        // Remove all Label
