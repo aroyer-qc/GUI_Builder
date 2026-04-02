@@ -584,7 +584,7 @@ void SkinSave::SaveEachCharFont(QVector<uint8_t>* pFileRawData, uint8_t Char)
         }
     }
 
-    if(Count)
+    if(Count != 0)
     {
         Size = pFileRawData->size();
         CompressionMethod = Compress(pFileRawData, &InputData, Count, 0);
@@ -593,13 +593,6 @@ void SkinSave::SaveEachCharFont(QVector<uint8_t>* pFileRawData, uint8_t Char)
         // Write raw compress datasize for this image
         Replace_uint16(pFileRawData, OffsetFontHeader + 1, uint16_t(Size));
         int8_t lb = m_pFontMetric->leftBearing(QChar(Char));
-
-        if(lb < 0)
-        {
-            lb--;
-            lb++;
-        }
-
         pFileRawData->replace(OffsetFontHeader + 3, uint8_t(lb));
         int8_t rb = m_pFontMetric->rightBearing(QChar(Char));
         pFileRawData->replace(OffsetFontHeader + 4, uint8_t(rb));

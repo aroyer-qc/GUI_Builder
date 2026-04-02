@@ -55,30 +55,25 @@ const int BytesPerPixel[19] =
         4,  // 18
 };
 
-
-
-struct FontSize_t
-{
-    uint8_t        Width;
-    uint8_t        Height;
-};
-
-struct FontInfo_t
-{
-    uint8_t        Height;
-    uint8_t        Interline;
-    uint8_t        Width;
-};
-
 struct FontDescriptor_t
 {
     int8_t         LeftBearing;
     int8_t         RightBearing;
-    FontSize_t     Size;                                    // Width and Height pixel zone
-    uint8_t        Width;                                   // Width increment
+    uint8_t        WidthPixel;
+    uint8_t        HeightPixel;
+    uint8_t        HorizontalAdvance;
     int8_t         OffsetY;                                 // Offset in Y for this character
     uint16_t       TotalSize;
     uint32_t       Address;
+};
+
+// this struct exist only into Digini. here for reference
+struct StaticFontInfo_t
+{
+    uint8_t*          pLookUpTable;
+    uint8_t           FirstCaracter;
+    uint8_t           LastCaracter;
+    FontDescriptor_t* pDescriptor;
 };
 
 struct FontListInfo_t
@@ -86,23 +81,6 @@ struct FontListInfo_t
     QString Name;
     int Size;
 };
-
-
-/*
-struct CharMeta
-{
-    uint32_t Offset;
-    uint16_t BitmapSize;
-    uint8_t  Code;
-    uint8_t  Width;
-    uint8_t  Height;
-    uint8_t  BearingX;
-    uint8_t  BearingY;
-    uint8_t  Advance;
-};
-*/
-
-
 
 namespace Ui {
 class MainWindow;
@@ -287,6 +265,7 @@ class MainWindow : public QMainWindow
                  // Generate code file
         void     InsertEmptyFontInfo     (QVector<uint8_t>* pFileRawData, uint8_t Char);
         void     SaveEachCharFont        (QVector<uint8_t>* pFileRawData, uint8_t Char, int FontIndex);
+        QString  GetFontName             (FontListInfo_t* pFont, int Index);
 
         // Function for Audio
         void     InitAudio               ();
@@ -389,7 +368,7 @@ class MainWindow : public QMainWindow
         QFontMetrics*               m_pFontMetric;
         uint8_t                     m_MaxX_FixedFont;
         QVector<QVector<FontDescriptor_t>> m_FontDescriptorList;
-
+        QVector<QVector<uint8_t>>   m_SampledValid;
 
         // Variable for Audio Tab
         QDir                        m_AudioDir;

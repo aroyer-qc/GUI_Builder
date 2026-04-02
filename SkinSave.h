@@ -94,7 +94,7 @@
 //                  |   4     right Bearing             (int8_t)   |  |   |       |    |
 //                  |   5     Width Pixel Zone          (uint8_t)  |  |   |       |    |
 //                  |   6     Height Pixel Zone         (uint8_t)  |  |   |       |    |
-//                  |   7     Width                     (uint8_t)  |  |   |       |    |
+//                  |   7     Horizontal Advance        (uint8_t)  |  |   |       |    |
 //                  |   8     Offset Y                  (uint8_t)  |  |  /_\      |   /_\
 //                  |   9     Compression               (uint8_t)  |  |   |       |    |
 //                  |   10-13 Offset in data            (uint32_t) |  |   |       |    |
