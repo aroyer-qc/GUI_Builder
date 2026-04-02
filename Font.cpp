@@ -363,15 +363,20 @@ void MainWindow::on_ButtonConvertFont_clicked()
     QString BaseName = "StaticFont";
     QVector<uint8_t> FirstChar;
     QVector<uint8_t> LastChar;
+    QVector<uint8_t> MinY;
+    QVector<uint8_t> MaxY;
 
     int FontCount = m_Font.count();
     m_SampledValid.clear();
     m_SampledValid.resize(FontCount);
+    MinY.clear();
+    MinY.resize(FontCount);
+    MaxY.clear();
+    MaxY.resize(FontCount);
     FirstChar.clear();
     FirstChar.resize(FontCount);
     LastChar.clear();
     LastChar.resize(FontCount);
-
 
     for(int Count = 0; Count < FontCount; Count++)
     {
@@ -382,6 +387,7 @@ void MainWindow::on_ButtonConvertFont_clicked()
         FontListInfo_t Font;
         Font.Name = m_pFont->family();
         Font.Size = m_pFont->pointSize();
+;
         FontListInfo.append(Font);
 
         // Sample all alpha character
@@ -427,12 +433,11 @@ void MainWindow::on_ButtonConvertFont_clicked()
 
     m_TotalCharCount = 0;                                               // Reset value of the character count
 
-    for(int Count = 0; Count < m_Font.count(); Count++)
+    for(int Count = 0; Count < FontCount; Count++)
     {
         m_FontDescriptorList.append(QVector<FontDescriptor_t>());
-        //uint8_t MinY  = 0xFF;
-        //uint8_t MaxY  = 0x00;
-
+        MinY[Count]      = 0xFF;
+        MaxY[Count]      = 0x00;
         FirstChar[Count] = 0xFF;
         LastChar[Count]  = 0xFF;
 
@@ -496,7 +501,6 @@ void MainWindow::on_ButtonConvertFont_clicked()
             for(uint32_t CharCount = '{'; CharCount <= '~'; CharCount++) SaveEachCharFont(&RawData, char(CharCount), Count);
         }
 
-
         // Sample all extra symbol character
         if((m_SamplingFont.at(Count) & SAMPLING_EXTRA_SYMBOL) != 0)
         {
@@ -520,13 +524,12 @@ void MainWindow::on_ButtonConvertFont_clicked()
         }
 
         // Rescan for lowest Y minimum and      <- check in SaveSkin to know what it was used for???
-        //for(uint32_t CharCount = 0; CharCount < m_TotalCharCount; CharCount++)
-        //{
-        //    if(MinY > m_MinY[CharCount]) MinY = m_MinY[CharCount];
-        //    if(MaxY < m_MaxY[CharCount]) MaxY = m_MaxY[CharCount];
-        //}
+        for(uint32_t CharCount = 0; CharCount < m_TotalCharCount; CharCount++)
+        {
+            if(MinY[Count] > m_MinY[CharCount]) MinY[Count] = m_MinY[CharCount];
+            if(MaxY[Count] < m_MaxY[CharCount]) MaxY[Count] = m_MaxY[CharCount];
+        }
     }
-
 
     // Create the header file
     QFile File(BaseName + ".h");
@@ -583,11 +586,15 @@ void MainWindow::on_ButtonConvertFont_clicked()
 
         for(int f = 0; f < FontCount; f++)
         {
+            m_pFont       = &m_Font.at(f);
+            m_pFontMetric = new QFontMetrics(*m_pFont);
             QString FontName = GetFontName(&FontListInfo[f], f);
             Stream << "    {" << FontName
                               << "_LookupTable, "
                               << FirstChar[f] << ", "
                               << LastChar[f] << ", "
+                              << (MaxY[f] - MinY[f]) + 1 << ", "
+                              << m_pFontMetric->lineSpacing() << ", "
                               << FontName << "_Data }";
 
             if(f < FontListInfo.size() - 1)
@@ -823,10 +830,7 @@ void MainWindow::SaveEachCharFont(QVector<uint8_t>* pRawData, uint8_t Char, int 
         {
             pRawData->append(InputData[i]);
         }
-
-        //Replace_uint16(pRawData, OffsetFontHeader + OFFSET_TOTAL_SIZE, Count);                                                  // Write datasize for this font
     }
-
     
     FontDescriptor_t Descriptor;
 

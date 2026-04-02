@@ -73,6 +73,8 @@ struct StaticFontInfo_t
     uint8_t*          pLookUpTable;
     uint8_t           FirstCaracter;
     uint8_t           LastCaracter;
+    uint8_t           FontHeight;
+    uint8_t           FontInterline;
     FontDescriptor_t* pDescriptor;
 };
 
