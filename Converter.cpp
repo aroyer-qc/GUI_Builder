@@ -108,7 +108,6 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
     int IndexFormat;
     qint8 BytePerPixel;
     QVector<uint8_t> Data;
-    int ByteSize;
     int Count;
     int CompressionIndex;
 
@@ -144,83 +143,44 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
 
         IndexFormat = ui->comboBoxPixelFormat->currentIndex();
 
-        if(IndexFormat == FORMAT_RGB565)
+        if((IndexFormat == FORMAT_RGB565) || (IndexFormat == FORMAT_ARGB8888))
         {
-            ByteSize = this->Extract(&Data, IndexFormat, &CompressionIndex);
-
-            if(CompressionIndex == RLE_16)
-            {
-                Count = ByteSize / (sizeof(uint8_t) + sizeof(uint16_t));        // struct StaticImageRLE_16_t in Digini
-            }
-            else
-            {
-                Count = ByteSize / sizeof(uint16_t);
-            }
-
-            PrintArrayBody(Stream, Data, BaseName, IndexFormat, CompressionIndex);
-        }
-        else if(IndexFormat == FORMAT_ARGB8888)
-        {
-            ByteSize = this->Extract(&Data, IndexFormat, &CompressionIndex);
-
-            if(CompressionIndex == RLE_32)
-            {
-                Count = ByteSize / (sizeof(uint8_t) + sizeof(uint32_t));        // struct StaticImageRLE_32_t in Digini
-            }
-            else
-            {
-                Count = ByteSize / sizeof(uint32_t);
-            }
-
-            PrintArrayBody(Stream, Data, BaseName, IndexFormat, CompressionIndex);
+            this->Extract(&Data, IndexFormat, &CompressionIndex);
+            Count = PrintArrayBody(Stream, Data, BaseName, IndexFormat, CompressionIndex);
         }
 
-        Stream << "extern const StaticImageInfo_t SII_" << BaseName << ";\r\n";
         Stream << "const StaticImageInfo_t SII_" << BaseName << " =\r\n";
-        Stream << "{\r\n";
+        Stream << "{\r\n    {\r\n        (void*)";
+        Stream << BaseName << ",\r\n";
         Temp = QString("%1").arg(m_Scale.width());
-        Stream << "    " << Temp.toUtf8() << ",\r\n";
+        Stream << "        {" << Temp.toUtf8() << ", ";
         Temp = QString("%1").arg(m_Scale.height());
+        Stream << Temp.toUtf8() << "},\r\n        PIXEL_FORMAT_";
+
+        switch(IndexFormat)
+        {
+            case FORMAT_RGB565:{ BytePerPixel = 4; Format    = QString("RGB565");   break;}
+            case FORMAT_ARGB8888: { BytePerPixel = 2; Format = QString("ARGB8888"); break;}
+        }
+
+        Stream << Format;
+        Stream << "\r\n    },\r\n";
+
+        Temp = QString("%1").arg(m_Scale.width() * BytePerPixel);
         Stream << "    " << Temp.toUtf8() << ",\r\n";
+        Temp = QString("%1").arg(8 * BytePerPixel);
+        Stream << "    " << Temp.toUtf8() << ",\r\n";
+        Temp = QString("%1").arg(Count);
+        Stream << "    " << Temp.toUtf8() << ",\r\n    COMPX_";
 
-        if(IndexFormat == FORMAT_RGB565)
+        switch(CompressionIndex)
         {
-            PrintStructBody(BaseName, Stream, Count, sizeof(uint16_t), QString("RGB565"), CompressionIndex);
-        }
-        else if(IndexFormat == FORMAT_ARGB8888)
-        {
-            PrintStructBody(BaseName, Stream, Count, sizeof(uint32_t), QString("ARGB8888"), CompressionIndex);
-        }
-        
-        else // FORMAT_FILE_DATA -> No Conversion
-        {
-           switch(m_pImage->format())
-           {
-               case QImage::Format_ARGB32:{ BytePerPixel = 4; Format = QString("ARGB8888"); break;}
-               case QImage::Format_RGB16: { BytePerPixel = 2; Format = QString("RGB565");   break;}
-               default:                   { BytePerPixel = 0; Format = QString("Unknown");  break;}
-           }
-
-           Temp = QString("%1").arg(m_Scale.width() * BytePerPixel);
-           Stream << "    " << Temp.toUtf8() << ",\r\n";
-           Temp = QString("%1").arg(8 * BytePerPixel);
-           Stream << "    " << Temp.toUtf8() << ",\r\n";
-
-           Stream << "    (uint8_t*)" << BaseName << ",\r\n";
-           Temp = QString("%1").arg(m_FileSize);
-           Stream << "    " << Temp.toUtf8() << ",\r\n";
-           Stream << "    " << Format << ",\r\n";
-           if((FileInfo.completeSuffix().toUpper() == QString("JPG").toUpper()) ||
-              (FileInfo.completeSuffix().toUpper() == QString("JPEG").toUpper()))
-           {
-              Stream << "    COMPX_JPEG,\r\n};\r\n\r\n";
-           }
-           else if(FileInfo.completeSuffix().toUpper() == QString("PNG").toUpper())
-           {
-              Stream << "    COMPX_PNG,\r\n};\r\n\r\n";
-           }
+            case COMPRESSION_NONE:   Stream << "COMPRESSION_NONE";      break;
+            case RLE_16:             Stream << "RLE_16";                break;
+            case RLE_32:             Stream << "RLE_32";                break;
         }
 
+        Stream << "\r\n};\r\n\r\n";
         Stream << "//-------------------------------------------------------------------------------------------------\r\n\r\n";
         Stream << "#endif // DIGINI_USE_GRAFX\r\n";
 
@@ -231,7 +191,7 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
 
 // ************************************************************************************************
 
-void MainWindow::PrintArrayBody(QTextStream& Stream, const QVector<uint8_t>& Data, QString& BaseName, int IndexFormat, int& CompressionIndex)
+int MainWindow::PrintArrayBody(QTextStream& Stream, const QVector<uint8_t>& Data, QString& BaseName, int IndexFormat, int& CompressionIndex)
 {
     int ElementSize = (IndexFormat == FORMAT_RGB565) ? sizeof(uint16_t) : sizeof(uint32_t);
     int Count;
@@ -358,29 +318,8 @@ void MainWindow::PrintArrayBody(QTextStream& Stream, const QVector<uint8_t>& Dat
     }
 
     Stream << "\r\n};\r\n\r\n";
-}
 
-// ************************************************************************************************
-
-void MainWindow::PrintStructBody(QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String, int CompressionIndex)
-{
-    QString Temp;
-
-    Temp = QString("%1").arg(m_Scale.width() * VarSize);
-    Stream << "    " << Temp.toUtf8() << ",\r\n";
-    Temp = QString("%1").arg(8 * VarSize);
-    Stream << "    " << Temp.toUtf8() << ",\r\n";
-    Stream << "    " << BaseName << ",\r\n";
-    Temp = QString("%1").arg(ArraySize);
-    Stream << "    " << Temp.toUtf8() << ",\r\n";
-    Stream << "    " << String << ",\r\n";
-
-    switch(CompressionIndex)
-    {
-        case COMPRESSION_NONE:   Stream << "    COMPX_COMPRESSION_NONE,\r\n};\r\n\r\n";      break;
-        case RLE_16:             Stream << "    COMPX_RLE_16,\r\n};\r\n\r\n";                break;
-        case RLE_32:             Stream << "    COMPX_RLE_32,\r\n};\r\n\r\n";                break;
-    }
+    return Count;
 }
 
 // ************************************************************************************************

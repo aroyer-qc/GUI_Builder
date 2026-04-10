@@ -281,8 +281,7 @@ class MainWindow : public QMainWindow
         void     ResetConverterGUI       ();
         void     ClearSceneConverter     ();
         int      Extract                 (QVector<uint8_t>* pOutData, int Index, int* pCompressionIndex);
-        void     PrintArrayBody          (QTextStream& Stream, const QVector<uint8_t>& Data, QString& BaseName, int IndexFormat, int& CompressionIndex);
-        void     PrintStructBody         (QString& BaseName, QTextStream& Stream, int ArraySize, size_t VarSize, QString String, int CompressionIndex);
+        int      PrintArrayBody          (QTextStream& Stream, const QVector<uint8_t>& Data, QString& BaseName, int IndexFormat, int& CompressionIndex);
 
         void     Find                    ();
         void     AdjustTabConverter      (QSize Offset, QRect ViewRect);
