@@ -106,7 +106,6 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
     QString Temp;
     QString Format;
     int IndexFormat;
-    qint8 BytePerPixel;
     QVector<uint8_t> Data;
     int Count;
     int CompressionIndex;
@@ -159,17 +158,12 @@ void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
 
         switch(IndexFormat)
         {
-            case FORMAT_RGB565:{ BytePerPixel = 4; Format    = QString("RGB565");   break;}
-            case FORMAT_ARGB8888: { BytePerPixel = 2; Format = QString("ARGB8888"); break;}
+        case FORMAT_RGB565:   { Format = QString("RGB565");   break;}
+        case FORMAT_ARGB8888: { Format = QString("ARGB8888"); break;}
         }
 
         Stream << Format;
         Stream << "\r\n    },\r\n";
-
-        Temp = QString("%1").arg(m_Scale.width() * BytePerPixel);
-        Stream << "    " << Temp.toUtf8() << ",\r\n";
-        Temp = QString("%1").arg(8 * BytePerPixel);
-        Stream << "    " << Temp.toUtf8() << ",\r\n";
         Temp = QString("%1").arg(Count);
         Stream << "    " << Temp.toUtf8() << ",\r\n    COMPX_";
 
