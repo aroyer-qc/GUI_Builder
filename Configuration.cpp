@@ -252,8 +252,9 @@ void MainWindow::on_ButtonApplyConfig_clicked()
     if(m_SkinConfig.DisplaySize != m_TempDisplaySize)                       // don't do anything if nothing has change
     {
         SaveSkinAndClearData();
-        SetSizeDisplay();
         m_SkinConfig.DisplaySize = m_TempDisplaySize;
+        SetSizeDisplay();
+        ApplyConverterDisplaySize();
     }
 
     SetButtonState(false);

@@ -191,6 +191,8 @@ class MainWindow : public QMainWindow
         void on_ComboBoxDirectory_currentIndexChanged(int index);
         void on_horizontalScrollBarConverter_valueChanged(int value);
         void on_verticalScrollBarConverter_valueChanged(int value);
+        void on_ButtonLoadBackGround_clicked();
+
 
         // Slot for Configurator tab
         void on_checkBoxBinary_checkStateChanged(Qt::CheckState state);
@@ -289,6 +291,9 @@ class MainWindow : public QMainWindow
         void     ReloadImageConverter    ();
         void     LoadImageConverter      (int row, Resizer_e Resizer);
         void     BinToFile               (QTextStream* pStream, QString pFileName);
+        void     LoadBackgroundImage     ();
+        void     ReloadSceneWithBackground();
+        void     ApplyConverterDisplaySize();
 
         // Function for configurator
         void     InitConfigurator        ();
@@ -399,6 +404,8 @@ class MainWindow : public QMainWindow
         QSize                       m_Scale;
         size_t                      m_TotalCount;
         size_t                      m_FileSize;
+        QImage*                     m_pBackgroundImage;
+        QGraphicsPixmapItem*        m_pBackgroundItem;
 
         // Variable for Configurator Tab
         SkinConfig_t                m_SkinConfig;

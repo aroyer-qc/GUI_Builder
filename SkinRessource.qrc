@@ -35,5 +35,6 @@
         <file>graphic/RLE.png</file>
         <file>graphic/lzw.png</file>
         <file>graphic/apply20.png</file>
+        <file>graphic/BackIcon.png</file>
     </qresource>
 </RCC>

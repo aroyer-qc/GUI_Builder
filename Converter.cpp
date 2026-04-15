@@ -95,6 +95,12 @@ void MainWindow::on_ButtonConvert_clicked()
     on_TableFilesFound_cellActivated(ui->TableFilesFound->currentRow(), 0);
 }
 
+
+void MainWindow::on_ButtonLoadBackGround_clicked()
+{
+   LoadBackgroundImage();
+}
+
 // ************************************************************************************************
 
 void MainWindow::on_TableFilesFound_cellActivated(int row, int column)
@@ -374,6 +380,8 @@ void MainWindow::InitConverter()
 {
     m_pImage          = nullptr;
     m_pProcessedImage = nullptr;
+    m_pBackgroundImage = nullptr;
+    m_pBackgroundItem = nullptr;
 
     ui->ComboBoxDirectory->blockSignals(true);
     ui->ComboBoxDirectory->setCurrentText(m_CurrentDir.absolutePath());
@@ -414,6 +422,76 @@ void MainWindow::ClearSceneConverter()
     ui->graphicsViewConverter->setScene(&m_SceneConverter);
     int position = ui->CheckerBoardSlider->value();  // Update checker board to default value of ui slider
     ui->graphicsViewConverter->setStyleSheet(QString("background-color: #%1;").arg(position + (position << 8) + (position << 16), 6, 16, QChar('0')));
+}
+
+// ************************************************************************************************
+
+void MainWindow::LoadBackgroundImage()
+{
+    QString Filename = QFileDialog::getOpenFileName(
+        this,
+        "Select Background Image",
+        m_CurrentDir.absolutePath(),
+        "Images (*.png *.jpg *.bmp)"
+        );
+
+    if(Filename.isEmpty())
+        return;
+
+    if(m_pBackgroundImage != nullptr)
+    {
+        delete m_pBackgroundImage;
+        m_pBackgroundImage = nullptr;
+    }
+
+    m_pBackgroundImage = new QImage();
+    m_pBackgroundImage->load(Filename);
+
+    // Redraw scene
+    ReloadSceneWithBackground();
+}
+
+// ************************************************************************************************
+
+void MainWindow::ApplyConverterDisplaySize()
+{
+    QSize sz = m_SkinConfig.DisplaySize;
+
+    // Resize the graphics view of the converter
+    ui->graphicsViewConverter->setMinimumSize(sz);
+    ui->graphicsViewConverter->resize(sz);
+
+    // Resize the scene
+    ui->graphicsViewConverter->setSceneRect(0, 0, sz.width(), sz.height());
+
+    // Optionnel : ajuster la fenêtre
+    this->adjustSize();
+}
+
+// ************************************************************************************************
+
+void MainWindow::ReloadSceneWithBackground()
+{
+    ClearSceneConverter();   // Remet le checkerboard
+
+    if(m_pBackgroundImage != nullptr)
+    {
+        QPixmap Pix = QPixmap::fromImage(*m_pBackgroundImage);
+        m_pBackgroundItem = m_SceneConverter.addPixmap(Pix);
+        m_pBackgroundItem->setZValue(-10);   // Sous tout
+        m_pBackgroundItem->setPos(0, 0);
+    }
+
+    // Si une image convertie existe, on la remet par-dessus
+    if(m_pProcessedImage != nullptr)
+    {
+        m_pPixmapItem = m_SceneConverter.addPixmap(QPixmap::fromImage(*m_pProcessedImage));
+        QPoint Point = CenterPoint(m_pProcessedImage->size(), m_SkinConfig.DisplaySize);
+        m_pPixmapItem->setPos(Point);
+        m_pPixmapItem->setZValue(10);
+    }
+
+    ui->graphicsViewConverter->setScene(&m_SceneConverter);
 }
 
 // ************************************************************************************************
@@ -512,6 +590,13 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
     QImage* pResizedImage;
 
     ClearSceneConverter();
+
+    if(m_pBackgroundImage != nullptr)
+    {
+        QGraphicsPixmapItem* pBg = m_SceneConverter.addPixmap(QPixmap::fromImage(*m_pBackgroundImage));
+        pBg->setZValue(-10);   // Sous tout
+        pBg->setPos(0, 0);
+    }
 
     pResizedImage = new QImage();
     ScaleToRequirement(m_pImage, pResizedImage, &m_SkinConfig.DisplaySize, (Scale_e)ui->comboBoxResize->currentIndex());
@@ -794,6 +879,7 @@ void MainWindow::AdjustTabConverter(QSize Offset, QRect ViewRect)
 
     // Reposition Button
     setWidgetXY(ui->ButtonConvert,                  -1,                                     Offset.height() + 200);
+    setWidgetXY(ui->ButtonLoadBackGround,           -1,                                     Offset.height() + 200);
 
     // Reposition Checker color slider
     setWidgetXY(ui->LabelStaticCheckerColor,        Offset.width() + 480,                   Offset.height() + 95);
