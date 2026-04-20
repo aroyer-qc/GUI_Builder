@@ -573,6 +573,8 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
     m_pImage = new QImage();
     m_pImage->load(PathAndFilename);
 
+    // Convertir en ARGB32 pour uniformiser
+    //m_pImage = new QImage(m_pImage->convertToFormat(QImage::Format_ARGB32));
     // Information that do not change if setting change
     ui->LabelFilename->setText(item->text());
     ui->LabelFilename->setStyleSheet(QString("color: black;"));
@@ -608,7 +610,8 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
     }
 
     m_pProcessedImage = new QImage();
-    *m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormatConverter);
+    //*m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormatConverter);
+    *m_pProcessedImage = *pResizedImage;
     delete pResizedImage;
 
     // Set the size for the image info
@@ -677,62 +680,6 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
 }
 
 // ************************************************************************************************
-/*
-void MainWindow::Extract(QTextStream* pStream, int Index)
-{
-    QRgb Pixel;
-    int X1;
-    int Y1;
-    int X2;
-    int Y2;
-    QString Temp;
-    size_t Counter = 0;
-
-    *pStream << "{\r\n    ";
-
-    X1 = (ui->horizontalScrollBarConverter->value() / 100);
-    Y1 = (ui->verticalScrollBarConverter->value() / 100);
-    X2 = m_Scale.width()  + X1;
-    Y2 = m_Scale.height() + Y1;
-
-    for(int y = Y1; y < Y2; y++)
-    {
-        for(int x = X1; x < X2; x++)
-        {
-            Pixel = m_pProcessedImage->pixel(x, y);
-
-            if(Index == FORMAT_RGB565)
-            {
-                uint16_t Value;
-
-                Value  = (uint16_t)((Pixel >> 3) & 0x3F);
-                Value |= (uint16_t)(((Pixel >> 19) & 0x1F) << 11);
-                Value |= (uint16_t)(((Pixel >> 10)  & 0x3F)  << 5);
-                Temp = QString("%1").arg(Value, 4, 16, QChar('0')).toUpper();
-
-            }
-            else if(Index == FORMAT_ARGB8888)
-            {
-                Temp = QString("%1").arg(Pixel, 8, 16, QChar('0')).toUpper();
-            }
-            *pStream << "0x" << Temp;
-
-            if((size_t)((x + 1) * (y + 1)) < m_TotalCount)
-            {
-                *pStream << ", ";
-                Counter++;
-                if(Counter == 16)
-                {
-                    Counter = 0;
-                    *pStream << Qt::endl << "    ";
-                }
-            }
-        }
-    }
-
-    *pStream << "\r\n};\r\n\r\n\r\n";
-}
-*/
 
 int MainWindow::Extract(QVector<uint8_t>* pOutData, int Index, int* pCompressionIndex)
 {
@@ -745,15 +692,17 @@ int MainWindow::Extract(QVector<uint8_t>* pOutData, int Index, int* pCompression
     // 1. Determine extraction region
     X1 = (ui->horizontalScrollBarConverter->value() / 100);
     Y1 = (ui->verticalScrollBarConverter->value() / 100);
-    X2 = m_Scale.width()  + X1;
+    X2 = m_Scale.width() + X1;
     Y2 = m_Scale.height() + Y1;
 
     // 2. Build RAW byte buffer
+    int PixelIndex;
+
     for(int y = Y1; y < Y2; y++)
     {
         for(int x = X1; x < X2; x++)
         {
-            Pixel = m_pProcessedImage->pixel(x, y);
+            Pixel = m_pProcessedImage->pixel(x,y);
 
             if(Index == FORMAT_RGB565)
             {

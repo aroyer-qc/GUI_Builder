@@ -68,8 +68,9 @@ void                    ChangeEndianAt_uint32               (QVector<uint8_t>* p
 // ---------- Load Image in a QImage ----------
 
 void                    LoadImageFromFile                   (QImage* pImage, QString PathAndFile);
+QImage                  LoadBMP_ARGB8888                    (const QString &path);
 
-// ---------- Scaling Image Support Function ----------
+    // ---------- Scaling Image Support Function ----------
 
 void                    ScaleToRequirement                  (QImage* pImage, QImage* pProcessedImage, QSize* pSize, Scale_e Scale);
 void                    ScaleToFit                          (QImage* pImage, QImage* pProcessedImage, QSize* pSize);

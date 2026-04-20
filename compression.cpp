@@ -316,12 +316,16 @@ int CRLE_16_Method(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int
         DataOffset += 2;
         Count      -= 2;
 
-        if((ReadValue != LastValue) && (LastValue != -1))                   // We are not at the beginning
+        if((ReadValue != LastValue) && (LastValue != -1))
         {
-            pCompxData->append((uint8_t)LenghtEncodeCount - 1);
-            Append_uint16(pCompxData, LastValue);
+            if (LenghtEncodeCount > 0)
+            {
+                pCompxData->append((uint8_t)(LenghtEncodeCount - 1));
+                Append_uint16(pCompxData, LastValue);
+            }
             LenghtEncodeCount = 0;
         }
+
 
         LastValue = ReadValue;
 
@@ -335,9 +339,9 @@ int CRLE_16_Method(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int
         LenghtEncodeCount++;
     }
 
-    if(LenghtEncodeCount > 0)                                               // Write what was left when size reach 0
+    if(LenghtEncodeCount > 0)
     {
-        pCompxData->append((uint8_t)LenghtEncodeCount - 1);
+        pCompxData->append((uint8_t)(LenghtEncodeCount - 1));
         Append_uint16(pCompxData, LastValue);
     }
 
@@ -369,10 +373,13 @@ int CRLE_32_Method(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int
         DataOffset += 4;
         Count      -= 4;
 
-        if((ReadValue != LastValue) && (LastValue != -1))                   // We are not at the beginning
+        if((ReadValue != LastValue) && (LastValue != -1))
         {
-            pCompxData->append((uint8_t)LenghtEncodeCount - 1);
-            Append_uint32(pCompxData, LastValue);
+            if (LenghtEncodeCount > 0)
+            {
+                pCompxData->append((uint8_t)(LenghtEncodeCount - 1));
+                Append_uint32(pCompxData, LastValue);
+            }
             LenghtEncodeCount = 0;
         }
 
@@ -388,9 +395,9 @@ int CRLE_32_Method(QVector<uint8_t>* pCompxData, QVector<uint8_t>* pRawData, int
         LenghtEncodeCount++;
     }
 
-    if(LenghtEncodeCount > 0)                                             // Write what was left when size reach 0
+    if(LenghtEncodeCount > 0)
     {
-        pCompxData->append((uint8_t)LenghtEncodeCount - 1);
+        pCompxData->append((uint8_t)(LenghtEncodeCount - 1));
         Append_uint32(pCompxData, LastValue);
     }
 

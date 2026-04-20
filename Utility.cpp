@@ -718,4 +718,40 @@ QString getDirectoryFromDialog(QWidget* parent, const QString& title, const QStr
 
 // ************************************************************************************************
 
+QImage LoadBMP_ARGB8888(const QString &path)
+{
+    QFile f(path);
+    if (!f.open(QIODevice::ReadOnly))
+        return QImage();
+
+    QByteArray data = f.readAll();
+    const uchar* bytes = reinterpret_cast<const uchar*>(data.constData());
+
+    // Header BMP
+    const int offset = *reinterpret_cast<const uint32_t*>(bytes + 10);
+    const int width  = *reinterpret_cast<const int32_t*>(bytes + 18);
+    const int height = *reinterpret_cast<const int32_t*>(bytes + 22);
+    const int bpp    = *reinterpret_cast<const uint16_t*>(bytes + 28);
+
+    if (bpp != 32)
+        return QImage(); // On veut du 32 bits seulement
+
+    const uchar* pixelData = bytes + offset;
+
+    // IMPORTANT : BMP est stocké en BGRA
+    QImage img(width, height, QImage::Format_ARGB32);
+
+    for (int y = 0; y < height; y++)
+    {
+        const uchar* src = pixelData + (height - 1 - y) * width * 4;
+        uchar* dst = img.scanLine(y);
+
+        memcpy(dst, src, width * 4);
+    }
+
+    return img;
+}
+
+// ************************************************************************************************
+
 
