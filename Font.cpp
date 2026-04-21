@@ -623,7 +623,7 @@ void MainWindow::on_ButtonConvertFont_clicked()
             int Scan  = 0;
             int Count = 0;
 
-            for(int i = FirstChar[f]; i <LastChar[f]; i++)
+            for(int i = FirstChar[f]; i < (LastChar[f] + 1); i++)
             {
                 int OutVal = 255;
 
