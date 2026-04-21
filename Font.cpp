@@ -363,12 +363,18 @@ void MainWindow::on_ButtonConvertFont_clicked()
     QString BaseName = "StaticFont";
     QVector<uint8_t> FirstChar;
     QVector<uint8_t> LastChar;
+    QVector<uint8_t> MinX;
+    QVector<uint8_t> MaxX;
     QVector<uint8_t> MinY;
     QVector<uint8_t> MaxY;
 
     int FontCount = m_Font.count();
     m_SampledValid.clear();
     m_SampledValid.resize(FontCount);
+    MinX.clear();
+    MinX.resize(FontCount);
+    MaxX.clear();
+    MaxX.resize(FontCount);
     MinY.clear();
     MinY.resize(FontCount);
     MaxY.clear();
@@ -436,6 +442,8 @@ void MainWindow::on_ButtonConvertFont_clicked()
     for(int Count = 0; Count < FontCount; Count++)
     {
         m_FontDescriptorList.append(QVector<FontDescriptor_t>());
+        MinX[Count]      = 0xFF;
+        MaxX[Count]      = 0x00;
         MinY[Count]      = 0xFF;
         MaxY[Count]      = 0x00;
         FirstChar[Count] = 0xFF;
@@ -526,6 +534,8 @@ void MainWindow::on_ButtonConvertFont_clicked()
         // Rescan for lowest Y minimum and      <- check in SaveSkin to know what it was used for???
         for(uint32_t CharCount = 0; CharCount < m_TotalCharCount; CharCount++)
         {
+            if(MinX[Count] > m_MinX[CharCount]) MinX[Count] = m_MinX[CharCount];
+            if(MaxX[Count] < m_MaxX[CharCount]) MaxX[Count] = m_MaxX[CharCount];
             if(MinY[Count] > m_MinY[CharCount]) MinY[Count] = m_MinY[CharCount];
             if(MaxY[Count] < m_MaxY[CharCount]) MaxY[Count] = m_MaxY[CharCount];
         }
@@ -563,7 +573,7 @@ void MainWindow::on_ButtonConvertFont_clicked()
         File.close();
     }
         
-    // Create th CPP file
+    // Create the CPP file
     File.setFileName(BaseName + ".cpp");
 
     if(File.open(QIODevice::WriteOnly))
@@ -593,6 +603,7 @@ void MainWindow::on_ButtonConvertFont_clicked()
                               << "_LookupTable, "
                               << FirstChar[f] << ", "
                               << LastChar[f] << ", "
+                              << (MaxX[f] - MinX[f]) + 1 << ", "
                               << (MaxY[f] - MinY[f]) + 1 << ", "
                               << m_pFontMetric->lineSpacing() << ", "
                               << FontName << "_Data }";
@@ -616,14 +627,14 @@ void MainWindow::on_ButtonConvertFont_clicked()
             Stream << "const uint8_t "
                    << FontName
                    << "_LookupTable["
-                   << LastChar[f] - FirstChar[f]
+                   << (LastChar[f] - FirstChar[f]) + 1
                    << "] =\r\n";              // we lookup for caractere 32 to 255   (256 - 32)
             Stream << "{\r\n";
 
             int Scan  = 0;
             int Count = 0;
 
-            for(int i = FirstChar[f]; i < (LastChar[f] + 1); i++)
+            for(int i = FirstChar[f]; i <= LastChar[f]; i++)
             {
                 int OutVal = 255;
 
@@ -782,7 +793,7 @@ void MainWindow::SaveEachCharFont(QVector<uint8_t>* pRawData, uint8_t Char, int 
     pPainter->setPen(Qt::white);
     pPainter->fillRect(0, 0, SAMPLING_BOX_X_SIZE, SAMPLING_BOX_Y_SIZE, Qt::black);
     pPainter->setFont(*m_pFont);
-    pPainter->drawText(QPoint(20, m_pFontMetric->height()), QString("%1").arg(Char));
+    pPainter->drawText(QPoint(20, m_pFontMetric->height()), QString("%1").arg(QChar(Char)));
     Image = pPix->toImage();
 
     // Found the sampling rectangle size

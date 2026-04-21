@@ -573,7 +573,6 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
     m_pImage = new QImage();
     m_pImage->load(PathAndFilename);
 
-    // Convertir en ARGB32 pour uniformiser
     //m_pImage = new QImage(m_pImage->convertToFormat(QImage::Format_ARGB32));
     // Information that do not change if setting change
     ui->LabelFilename->setText(item->text());
@@ -610,8 +609,7 @@ void MainWindow::LoadImageConverter(int row, Resizer_e Resizer)
     }
 
     m_pProcessedImage = new QImage();
-    //*m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormatConverter);
-    *m_pProcessedImage = *pResizedImage;
+    *m_pProcessedImage = pResizedImage->convertToFormat(m_PixelFormatConverter);
     delete pResizedImage;
 
     // Set the size for the image info
@@ -692,17 +690,15 @@ int MainWindow::Extract(QVector<uint8_t>* pOutData, int Index, int* pCompression
     // 1. Determine extraction region
     X1 = (ui->horizontalScrollBarConverter->value() / 100);
     Y1 = (ui->verticalScrollBarConverter->value() / 100);
-    X2 = m_Scale.width() + X1;
+    X2 = m_Scale.width()  + X1;
     Y2 = m_Scale.height() + Y1;
 
     // 2. Build RAW byte buffer
-    int PixelIndex;
-
     for(int y = Y1; y < Y2; y++)
     {
         for(int x = X1; x < X2; x++)
         {
-            Pixel = m_pProcessedImage->pixel(x,y);
+            Pixel = m_pProcessedImage->pixel(x, y);
 
             if(Index == FORMAT_RGB565)
             {

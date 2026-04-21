@@ -9,13 +9,28 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-# --- FreeType (MSVC version) ---
-set(FREETYPE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Freetype/include")
-set(FREETYPE_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/Freetype/freetype.lib")
+# ---------------------------------------------------------
+# FreeType: auto-detect MSVC vs MinGW
+# ---------------------------------------------------------
+if (MSVC)
+    message(STATUS "Compiler: MSVC → Using 'Freetype - MSVC'")
+    set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Freetype - MSVC")
+elseif (MINGW)
+    message(STATUS "Compiler: MinGW → Using 'Freetype'")
+    set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Freetype")
+else()
+    message(FATAL_ERROR "Unsupported compiler for FreeType setup")
+endif()
+
+set(FREETYPE_INCLUDE_DIR "${FREETYPE_ROOT}/include")
+set(FREETYPE_LIBRARY "${FREETYPE_ROOT}/freetype.lib")
 
 include_directories(${FREETYPE_INCLUDE_DIR})
+link_directories(${FREETYPE_ROOT})
 
-# --- Qt6 ONLY ---
+# ---------------------------------------------------------
+# Qt6 ONLY
+# ---------------------------------------------------------
 find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
@@ -25,7 +40,9 @@ find_package(Qt6 REQUIRED COMPONENTS
     Multimedia
 )
 
-# --- Sources ---
+# ---------------------------------------------------------
+# Sources
+# ---------------------------------------------------------
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
@@ -70,13 +87,17 @@ set(PROJECT_SOURCES
     ressources.rc
 )
 
-# --- Executable ---
+# ---------------------------------------------------------
+# Executable
+# ---------------------------------------------------------
 qt_add_executable(GUI_Builder
     SkinRessource.qrc
     ${PROJECT_SOURCES}
 )
 
-# --- Linking ---
+# ---------------------------------------------------------
+# Linking
+# ---------------------------------------------------------
 target_link_libraries(GUI_Builder PRIVATE
     Qt6::Core
     Qt6::Gui
@@ -87,10 +108,8 @@ target_link_libraries(GUI_Builder PRIVATE
     ${FREETYPE_LIBRARY}
 )
 
-# --- Windows executable ---
+# ---------------------------------------------------------
+# Windows executable
+# ---------------------------------------------------------
 set_target_properties(GUI_Builder PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
-
-# --- Finalize for Qt6 ---
-qt_finalize_executable(GUI_Builder)
+    WIN32_EXECUT
