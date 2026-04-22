@@ -10,106 +10,99 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # ---------------------------------------------------------
-# FreeType: auto-detect MSVC vs MinGW
+# FreeType (portable)
 # ---------------------------------------------------------
-if (MSVC)
-    message(STATUS "Compiler: MSVC → Using 'Freetype - MSVC'")
-    set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Freetype - MSVC")
-elseif (MINGW)
-    message(STATUS "Compiler: MinGW → Using 'Freetype'")
-    set(FREETYPE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/Freetype")
-else()
-    message(FATAL_ERROR "Unsupported compiler for FreeType setup")
-endif()
-
-set(FREETYPE_INCLUDE_DIR "${FREETYPE_ROOT}/include")
-set(FREETYPE_LIBRARY "${FREETYPE_ROOT}/freetype.lib")
-
-include_directories(${FREETYPE_INCLUDE_DIR})
-link_directories(${FREETYPE_ROOT})
+set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/freetype/include/")
+set(FREETYPE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/freetype/freetype.lib")
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # ---------------------------------------------------------
-# Qt6 ONLY
+# Qt portable (Qt5 ou Qt6 selon le kit)
 # ---------------------------------------------------------
-find_package(Qt6 REQUIRED COMPONENTS
-    Core
-    Gui
-    Widgets
-    Xml
-    Core5Compat
-    Multimedia
-)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Xml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Xml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core5Compat)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Multimedia)
 
 # ---------------------------------------------------------
 # Sources
 # ---------------------------------------------------------
 set(PROJECT_SOURCES
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    AddingAudio.cpp
-    AddingAudio.h
-    AddingAudio.ui
-    AddingImage.cpp
-    AddingImage.h
-    AddingImage.ui
-    Audio.cpp
-    Configuration.cpp
-    ComboBoxDelegate.cpp
-    ComboBoxDelegate.h
-    compression.cpp
-    compression.h
-    Converter.cpp
-    file.cpp
-    Font.cpp
-    Image.cpp
-    ImageSpinBox.cpp
-    ImageSpinBox.h
-    lzw.cpp
-    option.cpp
-    progress.cpp
-    progress.h
-    progress.ui
-    qxmlputget.cpp
-    qxmlputget.h
-    Simulator.cpp
-    SkinOpen.cpp
-    SkinOpen.h
-    SkinSave.cpp
-    SkinSave.h
-    SpinBoxDelegate.cpp
-    SpinBoxDelegate.h
-    typedef.h
-    Utility.cpp
-    Utility.h
-    widget.cpp
-    ressources.rc
+        main.cpp
+        mainwindow.cpp
+        mainwindow.h
+        mainwindow.ui
+        AddingAudio.cpp
+        AddingAudio.h
+        AddingAudio.ui
+        AddingImage.cpp
+        AddingImage.h
+        AddingImage.ui
+        Audio.cpp
+        Configuration.cpp
+        ComboBoxDelegate.cpp
+        ComboBoxDelegate.h
+        compression.cpp
+        compression.h
+        Converter.cpp
+        editdefine.ui
+        file.cpp
+        Font.cpp
+        Image.cpp
+        ImageSpinBox.cpp
+        ImageSpinBox.h
+        lzw.cpp
+        option.cpp
+        progress.cpp
+        progress.h
+        progress.ui
+        qxmlputget.cpp
+        qxmlputget.h
+        Simulator.cpp
+        SkinOpen.cpp
+        SkinOpen.h
+        SkinSave.cpp
+        SkinSave.h
+        SpinBoxDelegate.cpp
+        SpinBoxDelegate.h
+        typedef.h
+        Utility.cpp
+        Utility.h
+        widget.cpp
+        ressources.rc
 )
 
 # ---------------------------------------------------------
-# Executable
+# Executable (Qt5/Qt6 compatible)
 # ---------------------------------------------------------
-qt_add_executable(GUI_Builder
-    SkinRessource.qrc
-    ${PROJECT_SOURCES}
-)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(GUI_Builder
+        SkinRessource.qrc
+        MANUAL_FINALIZATION
+        ${PROJECT_SOURCES}
+    )
+else()
+    add_executable(GUI_Builder
+        ${PROJECT_SOURCES}
+    )
+endif()
 
 # ---------------------------------------------------------
 # Linking
 # ---------------------------------------------------------
 target_link_libraries(GUI_Builder PRIVATE
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Widgets
-    Qt6::Xml
-    Qt6::Core5Compat
-    Qt6::Multimedia
-    ${FREETYPE_LIBRARY}
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Xml
+    Qt${QT_VERSION_MAJOR}::Core5Compat
+    Qt${QT_VERSION_MAJOR}::Multimedia
+    ${FREETYPE_LIBRARIES}
 )
 
-# ---------------------------------------------------------
-# Windows executable
-# ---------------------------------------------------------
 set_target_properties(GUI_Builder PROPERTIES
-    WIN32_EXECUT
+    WIN32_EXECUTABLE TRUE
+)
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(GUI_Builder)
+endif()
