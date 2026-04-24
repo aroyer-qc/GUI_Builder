@@ -370,6 +370,8 @@ class MainWindow : public QMainWindow
         QVector<uint8_t>            m_Width;
         QVector<int8_t>             m_LeftBearing;
         QVector<int8_t>             m_RightBearing;
+        QVector<int8_t>             m_MaxOffsetY;
+        QVector<int8_t>             m_OffsetY;
         const QFont*                m_pFont;
         QFontMetrics*               m_pFontMetric;
         uint8_t                     m_MaxX_FixedFont;

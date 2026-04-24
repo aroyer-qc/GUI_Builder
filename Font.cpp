@@ -48,8 +48,6 @@ void MainWindow::on_ButtonAddFont_clicked()
     int row;
     bool ok;
 
-    //fontDialog.setOption(QFontDialog::DontUseNativeDialog, true);
-    //fontDialog.resize(800, 600);
     fontDialog.setStyleSheet("QPushButton {color: #DFD;background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97); border-width: 3px; border-color: #778EB8; border-style: solid; border-radius: 7; padding: 3px; font: bold \"Ubuntu\"; font-size: 12px; padding-left: 5px; padding-right: 5px; }");
     fontDialog.repaint();
 
@@ -379,6 +377,8 @@ void MainWindow::on_ButtonConvertFont_clicked()
     MinY.resize(FontCount);
     MaxY.clear();
     MaxY.resize(FontCount);
+    m_MaxOffsetY.clear();
+    m_MaxOffsetY.resize(FontCount);
     FirstChar.clear();
     FirstChar.resize(FontCount);
     LastChar.clear();
@@ -677,9 +677,11 @@ void MainWindow::on_ButtonConvertFont_clicked()
             {
                 const FontDescriptor_t &M = CharDescriptorList[c];
 
+                int OffsetY = m_MaxOffsetY[f] - M.OffsetY;
+
                 QString LB = QString("%1").arg(M.LeftBearing,  4, 10, QLatin1Char(' '));
                 QString RB = QString("%1").arg(M.RightBearing, 4, 10, QLatin1Char(' '));
-                QString OY = QString("%1").arg(M.OffsetY,      4, 10, QLatin1Char(' '));
+                QString OY = QString("%1").arg(OffsetY,        4, 10, QLatin1Char(' '));
 
                 QString WP = "0x" + QString("%1").arg(M.WidthPixel,        2, 16, QLatin1Char('0')).toUpper();
                 QString HP = "0x" + QString("%1").arg(M.HeightPixel,       2, 16, QLatin1Char('0')).toUpper();
@@ -781,6 +783,14 @@ void MainWindow::SaveEachCharFont(QVector<uint8_t>* pRawData, uint8_t Char, int 
     m_LeftBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
     m_RightBearing.append(m_pFontMetric->leftBearing(QChar(Char)));
 
+    QRect Rectangle = m_pFontMetric->boundingRect(QChar(Char));
+    m_OffsetY.append(-Rectangle.top());
+
+    if(-(Rectangle.top()) > m_MaxOffsetY[FontIndex])
+    {
+        m_MaxOffsetY[FontIndex] = -(Rectangle.top());
+    }
+
     if(Char >= '0' && Char <= '9')
     {
         if(m_pFontMetric->horizontalAdvance(QChar(Char)) > m_MaxX_FixedFont)
@@ -851,7 +861,7 @@ void MainWindow::SaveEachCharFont(QVector<uint8_t>* pRawData, uint8_t Char, int 
     Descriptor.WidthPixel        = (m_MaxX[m_TotalCharCount] - m_MinX[m_TotalCharCount]) + 1;
     Descriptor.HeightPixel       = (m_MaxY[m_TotalCharCount] - m_MinY[m_TotalCharCount]) + 1;
     Descriptor.TotalSize         = Count;
-    Descriptor.OffsetY           = 0;
+    Descriptor.OffsetY           = -Rectangle.top();
     Descriptor.Address           = FoundPixel ? pRawData->size() - Count : 0;
 
     m_FontDescriptorList[FontIndex].append(Descriptor);

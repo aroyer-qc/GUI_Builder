@@ -69,18 +69,37 @@ QComboBox::drop-down {
 }
 
 QPushButton {
-color: white;
-background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,  stop: 0 #6B82AC, stop: 0.49 #566D97, stop: 0.5 #445B85, stop: 1 #566D97);
-border-width: 2px;
-border-color: #778EB8;
-border-style: solid;
-border-radius: 7;
-padding: 3px;
-font: bold &quot;Ubuntu&quot;;
-font-size: 12px;
-padding-left: 5px;
-padding-right: 5px;
+    color: white;
+    background-color: QLinearGradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #6B82AC,
+        stop: 0.49 #566D97,
+        stop: 0.5 #445B85,
+        stop: 1 #566D97
+    );
+    border-width: 2px;
+    border-color: #778EB8;
+    border-style: solid;
+    border-radius: 7;
+    padding: 3px;
+    font: bold "Ubuntu";
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
+
+QPushButton:pressed {
+    background-color: QLinearGradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #5A6F94,
+        stop: 0.49 #4A5F88,
+        stop: 0.5 #3A4E72,
+        stop: 1 #4A5F88
+    );
+    border-color: #5A6F94;
+    padding-top: 4px;   /* petit effet "bouton enfoncé" */
+}
+
 QScrollBar:horizontal {
 border-width: 2px;
 border-color: #778EB8;
@@ -218,7 +237,7 @@ border-style: solid;
      <string notr="true"/>
     </property>
     <property name="tabShape">
-     <enum>QTabWidget::Triangular</enum>
+     <enum>QTabWidget::TabShape::Triangular</enum>
     </property>
     <property name="currentIndex">
      <number>3</number>
@@ -243,10 +262,10 @@ border-style: solid;
        </rect>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="backgroundBrush">
        <brush brushstyle="NoBrush">
@@ -294,10 +313,10 @@ border-style: solid;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -354,7 +373,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticFilenameImage">
@@ -598,7 +617,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QSlider" name="ImageCheckerBoardSlider">
@@ -617,7 +636,7 @@ border-style: solid;
        <number>200</number>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
     </widget>
@@ -650,10 +669,10 @@ border-style: solid;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -809,7 +828,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="Line" name="line_H_Font">
@@ -822,7 +841,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticFontInfo">
@@ -932,7 +951,7 @@ border-style: solid;
        <string>Normal, Italic</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
       </property>
       <property name="wordWrap">
        <bool>false</bool>
@@ -1025,7 +1044,7 @@ border-style: solid;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxExtraSymbolFont">
@@ -1110,10 +1129,10 @@ border-color: black;
 border-width: 2px;</string>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxFixed">
@@ -1311,10 +1330,10 @@ border-width: 2px;</string>
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -1420,7 +1439,7 @@ border-width: 2px;</string>
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticSizeAudio">
@@ -1495,7 +1514,7 @@ color: black</string>
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
     </widget>
@@ -1598,10 +1617,10 @@ color: black</string>
        <string notr="true">background-color: lightgray;</string>
       </property>
       <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
       <property name="backgroundBrush">
        <brush brushstyle="NoBrush">
@@ -1631,7 +1650,7 @@ color: black</string>
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QTableWidget" name="TableFilesFound">
@@ -1665,10 +1684,10 @@ font-size: 12px;
        <number>-1</number>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
       </property>
       <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
       </property>
       <property name="sortingEnabled">
        <bool>false</bool>
@@ -1959,7 +1978,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QScrollBar" name="horizontalScrollBarConverter">
@@ -1978,7 +1997,7 @@ font-size: 12px;
        <bool>true</bool>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QScrollBar" name="verticalScrollBarConverter">
@@ -1991,7 +2010,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelScaleSize">
@@ -2304,7 +2323,7 @@ font-size: 12px;
        </rect>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QLabel" name="LabelStaticCheckerColor">
@@ -2342,7 +2361,7 @@ font-size: 12px;
        <number>200</number>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
      <widget class="QPushButton" name="ButtonLoadBackGround">
@@ -3180,7 +3199,7 @@ font: 20pt bold &quot;Arial Black&quot;;</string>
      <x>0</x>
      <y>0</y>
      <width>1281</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
