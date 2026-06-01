@@ -148,7 +148,7 @@ void SkinOpen::run(void)
     emit OpenProgress("", 0);
 
     ReadXML(FileInfo.absolutePath() + "/" + FileInfo.baseName() + ".skn");
-    File.setFileName(FileInfo.baseName() + (".skn"));
+    File.setFileName(FileInfo.absolutePath() + "/" + FileInfo.baseName() + (".skn"));
     bool Result = File.open(QIODevice::ReadOnly);
     Q_UNUSED(Result);
     File.seek(0);
@@ -356,54 +356,41 @@ void SkinOpen::ReadXML(QString Path)
         m_pSkinConfig->UseBinary = false;
     }
 
-
     if(xmlGet.findNext("Image"))
     {
         xmlGet.descend();
 
         if(xmlGet.findNext("Count"))
-        {
             m_ImageCount = xmlGet.getInt();
-        }
-        
+
         for(int i = 0; i < m_ImageCount; i++)
         {
-            ImageInfo = m_pImageInfo->at(i);
-
             if(xmlGet.findNext("Data"))
             {
                 xmlGet.descend();
 
                 if(xmlGet.findNext("File"))
-                {
-                    ImageInfo.Filename = xmlGet.getString();
-                }
+                    (*m_pImageInfo)[i].Filename = xmlGet.getString();
 
                 if(xmlGet.findNext("OffSet"))
-                {
-                    (*m_pImageInfo)[i].RawIndex = QImage::Format(xmlGet.getInt());
-                }
+                    (*m_pImageInfo)[i].RawIndex = xmlGet.getInt();
 
                 if(xmlGet.findNext("Size"))
-                {
                     (*m_pImageInfo)[i].DataSize = size_t(xmlGet.getInt());
-                }
 
                 if(xmlGet.findNext("Format"))
-                {
                     (*m_pImageInfo)[i].PixelFormat = QImage::Format(xmlGet.getInt());
-                }
 
                 if(xmlGet.findNext("Width"))
-                {
-                    (*m_pImageInfo)[i].DataSize = xmlGet.getInt();
-                }
-                
+                    (*m_pImageInfo)[i].Size.setWidth(xmlGet.getInt());
+
+                if(xmlGet.findNext("Height"))
+                    (*m_pImageInfo)[i].Size.setHeight(xmlGet.getInt());
+
                 xmlGet.rise();
             }
-
-            m_pImageInfo->replace(i, ImageInfo);
         }
+
         xmlGet.rise();
     }
 
