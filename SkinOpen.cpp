@@ -164,6 +164,14 @@ void SkinOpen::run(void)
 
     // Process data
     OpenImageInfo(&CompxData);                    // Open image info structure
+
+    // XML is read before image headers are parsed, so defer filename mapping until now.
+    int NameCount = qMin(m_pImageInfo->size(), m_ImageFilenameFromXML.size());
+    for(int i = 0; i < NameCount; i++)
+    {
+        (*m_pImageInfo)[i].Filename = m_ImageFilenameFromXML[i];
+    }
+
     DeCompressAllImage(&CompxData);               // Read all Image and Decompress according to method found in file
     // OpenAudioInfo(&CompxData);                 // Open audio info structure
     // DeCompressAllAudio(&CompxData);            // Read all Audio and Decompress according to method found in file
@@ -271,10 +279,13 @@ void SkinOpen::OpenImageInfo(QVector<uint8_t>* pCompxData)
 
 void SkinOpen::ReadXML(QString Path)
 {
-    ImageInfo_t ImageInfo;
     QXmlGet     xmlGet;
+    QString     EndianText;
+    bool        HasBinaryBlock;
 
     xmlGet.load(Path);
+
+    m_ImageFilenameFromXML.clear();
 
     if(xmlGet.findNext("Width"))
     {
@@ -288,38 +299,37 @@ void SkinOpen::ReadXML(QString Path)
 
     if(xmlGet.findNext("Endian"))
     {
-        xmlGet.descend();
-        if(xmlGet.findNext("State"))
+        EndianText = xmlGet.getString();
+        if(!EndianText.isEmpty())
         {
-            m_pSkinConfig->Endianess = (xmlGet.getString() == "Little") ? LITTLE_ENDIAN : BIG_ENDIAN;
+            m_pSkinConfig->Endianess = (EndianText == "Little") ? LITTLE_ENDIAN : BIG_ENDIAN;
         }
-        xmlGet.rise();
+        else
+        {
+            xmlGet.descend();
+            if(xmlGet.findNext("State"))
+            {
+                m_pSkinConfig->Endianess = (xmlGet.getString() == "Little") ? LITTLE_ENDIAN : BIG_ENDIAN;
+            }
+            xmlGet.rise();
+        }
     }
     else
     {
         m_pSkinConfig->Endianess = BIG_ENDIAN;
     }
 
-
-    if(xmlGet.findNext("Endian"))
+    HasBinaryBlock = xmlGet.findNext("Binary");
+    if(HasBinaryBlock == false)
     {
-        xmlGet.descend();
-        if(xmlGet.findNext("State"))
-        {
-            m_pSkinConfig->Endianess = (xmlGet.getString() == "Little") ? LITTLE_ENDIAN : BIG_ENDIAN;
-        }
-        xmlGet.rise();
-    }
-    else
-    {
-        m_pSkinConfig->Endianess = BIG_ENDIAN;
+        HasBinaryBlock = xmlGet.findNext("binary");
     }
 
-    if(xmlGet.findNext("Binary"))
+    if(HasBinaryBlock)
     {
         xmlGet.descend();
 
-        if(xmlGet.findNext("Enable"));
+        if(xmlGet.findNext("Enable"))
         {
             m_pSkinConfig->UseBinary = (xmlGet.getString() == "Yes") ? true : false;
         }
@@ -344,7 +354,7 @@ void SkinOpen::ReadXML(QString Path)
             m_pSkinConfig->LabelMax = xmlGet.getInt();
         }
 
-        if(xmlGet.findNext("Label Max"))
+        if(xmlGet.findNext("Label List Max"))
         {
             m_pSkinConfig->LabelListMax = xmlGet.getInt();
         }
@@ -370,22 +380,9 @@ void SkinOpen::ReadXML(QString Path)
                 xmlGet.descend();
 
                 if(xmlGet.findNext("File"))
-                    (*m_pImageInfo)[i].Filename = xmlGet.getString();
-
-                if(xmlGet.findNext("OffSet"))
-                    (*m_pImageInfo)[i].RawIndex = xmlGet.getInt();
-
-                if(xmlGet.findNext("Size"))
-                    (*m_pImageInfo)[i].DataSize = size_t(xmlGet.getInt());
-
-                if(xmlGet.findNext("Format"))
-                    (*m_pImageInfo)[i].PixelFormat = QImage::Format(xmlGet.getInt());
-
-                if(xmlGet.findNext("Width"))
-                    (*m_pImageInfo)[i].Size.setWidth(xmlGet.getInt());
-
-                if(xmlGet.findNext("Height"))
-                    (*m_pImageInfo)[i].Size.setHeight(xmlGet.getInt());
+                {
+                    m_ImageFilenameFromXML.append(xmlGet.getString());
+                }
 
                 xmlGet.rise();
             }
@@ -401,7 +398,7 @@ void SkinOpen::ReadXML(QString Path)
 
         if(xmlGet.findNext("Count"))
         {
-            m_ImageCount = xmlGet.getInt();
+            xmlGet.getInt();
         }
 
         while(xmlGet.findNext("Family"))

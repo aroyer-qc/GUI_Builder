@@ -24,6 +24,7 @@
 #include "mainwindow.h"
 #include <QThread>
 #include <QTimer>
+#include <QString>
 
 
 class SkinOpen : public QThread
@@ -58,6 +59,7 @@ class SkinOpen : public QThread
         uint16_t                    m_ImageCount;
         int                         m_OffsetImageCount;
         int                         m_OffsetImageHeader;
+        QVector<QString>            m_ImageFilenameFromXML;
 
         // Font
         QVector<QFont>*             m_pFontInfo;
